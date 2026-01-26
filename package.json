@@ -1,0 +1,42 @@
+{
+  "name": "remark-kroki-a11y",
+  "version": "0.1.0",
+  "description": "Remark plugin for Docusaurus that adds accessible source code details and natural language descriptions to Kroki diagrams (PlantUML, Mermaid, C4, GraphViz, etc.)",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "remark",
+    "remark-plugin",
+    "docusaurus",
+    "kroki",
+    "plantuml",
+    "mermaid",
+    "c4",
+    "graphviz",
+    "accessibility",
+    "a11y",
+    "diagrams",
+    "uml"
+  ],
+  "author": "AIM-ENE",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AIM-ENE/remark-kroki-a11y.git"
+  },
+  "bugs": {
+    "url": "https://github.com/AIM-ENE/remark-kroki-a11y/issues"
+  },
+  "homepage": "https://github.com/AIM-ENE/remark-kroki-a11y#readme",
+  "peerDependencies": {
+    "unist-util-visit": "^4.0.0 || ^5.0.0"
+  },
+  "devDependencies": {
+    "unist-util-visit": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}
