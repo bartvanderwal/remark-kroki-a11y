@@ -47,7 +47,8 @@
  */
 
 const { visit } = require('unist-util-visit');
-const { parsePlantUMLStateDiagram, generateAccessibleDescription } = require('./parsers/stateDiagramParser');
+const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
+const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 
 // Escape HTML special characters to prevent XSS
 function escapeHtml(text) {
@@ -211,9 +212,29 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			if (shouldAttemptA11y && imgType === 'plantuml' && diagramType === 'stateDiagram') {
 				try {
 					const parsed = parsePlantUMLStateDiagram(node.value);
-					a11yDescription = generateAccessibleDescription(parsed, opts.locale);
+					a11yDescription = generateStateDescription(parsed, opts.locale);
 				} catch (e) {
 					console.warn('Failed to parse PlantUML state diagram for a11y:', e.message);
+				}
+			}
+
+			// Class diagram parsing (PlantUML)
+			if (shouldAttemptA11y && !a11yDescription && imgType === 'plantuml' && diagramType === 'classDiagram') {
+				try {
+					const parsed = parsePlantUMLClassDiagram(node.value);
+					a11yDescription = generateClassDescription(parsed, opts.locale);
+				} catch (e) {
+					console.warn('Failed to parse PlantUML class diagram for a11y:', e.message);
+				}
+			}
+
+			// Class diagram parsing (Mermaid via Kroki)
+			if (shouldAttemptA11y && !a11yDescription && imgType === 'mermaid' && node.value.toLowerCase().includes('classdiagram')) {
+				try {
+					const parsed = parseMermaidClassDiagram(node.value);
+					a11yDescription = generateClassDescription(parsed, opts.locale);
+				} catch (e) {
+					console.warn('Failed to parse Mermaid class diagram for a11y:', e.message);
 				}
 			}
 
