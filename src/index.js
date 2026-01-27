@@ -115,11 +115,28 @@ const diagramTypeNames = {
 };
 
 // Human-readable names for diagram languages
+// Note: 'kroki' maps to 'Diagram' because Kroki is a tool, not a language.
+// The actual language (PlantUML, Mermaid, etc.) should come from imgType.
 const languageNames = {
-	kroki: 'Kroki',
+	kroki: 'Diagram',  // Fallback - should rarely be used if imgType is set correctly
 	plantuml: 'PlantUML',
+	mermaid: 'Mermaid',
 	graphviz: 'GraphViz',
 	d2: 'D2',
+	c4plantuml: 'C4 (PlantUML)',
+	structurizr: 'Structurizr',
+	ditaa: 'Ditaa',
+	erd: 'ERD',
+	nomnoml: 'Nomnoml',
+	svgbob: 'Svgbob',
+	vega: 'Vega',
+	vegalite: 'Vega-Lite',
+	wavedrom: 'WaveDrom',
+	bpmn: 'BPMN',
+	bytefield: 'Bytefield',
+	excalidraw: 'Excalidraw',
+	pikchr: 'Pikchr',
+	umlet: 'UMLet',
 };
 
 // Fallback text when no a11y description can be generated
