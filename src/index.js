@@ -76,6 +76,13 @@ function extractTitle(meta) {
 	return null;
 }
 
+// Extract locale override from meta string (e.g., lang="nl" -> "nl")
+function extractLocale(meta) {
+	if (!meta) return null;
+	const match = meta.match(/lang="([^"]+)"/);
+	return match ? match[1] : null;
+}
+
 // Detect PlantUML diagram type from content
 function detectPlantUMLDiagramType(content) {
 	const lowerContent = content.toLowerCase();
@@ -199,7 +206,9 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			// Extract metadata
 			const imgType = extractDiagramType(node.meta);
 			const diagramType = imgType === 'plantuml' ? detectPlantUMLDiagramType(node.value) : 'diagram';
-			const title = extractTitle(node.meta) || (diagramTypeNames[opts.locale] || diagramTypeNames.nl)[diagramType] || diagramType;
+			// Support per-block locale override via lang="nl" or lang="en"
+			const blockLocale = extractLocale(node.meta) || opts.locale;
+			const title = extractTitle(node.meta) || (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
 			const langName = languageNames[imgType] || languageNames[node.lang] || node.lang;
 
 			const escapedCode = escapeHtml(node.value);
@@ -212,7 +221,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			if (shouldAttemptA11y && imgType === 'plantuml' && diagramType === 'stateDiagram') {
 				try {
 					const parsed = parsePlantUMLStateDiagram(node.value);
-					a11yDescription = generateStateDescription(parsed, opts.locale);
+					a11yDescription = generateStateDescription(parsed, blockLocale);
 				} catch (e) {
 					console.warn('Failed to parse PlantUML state diagram for a11y:', e.message);
 				}
@@ -222,7 +231,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			if (shouldAttemptA11y && !a11yDescription && imgType === 'plantuml' && diagramType === 'classDiagram') {
 				try {
 					const parsed = parsePlantUMLClassDiagram(node.value);
-					a11yDescription = generateClassDescription(parsed, opts.locale);
+					a11yDescription = generateClassDescription(parsed, blockLocale);
 				} catch (e) {
 					console.warn('Failed to parse PlantUML class diagram for a11y:', e.message);
 				}
@@ -232,7 +241,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			if (shouldAttemptA11y && !a11yDescription && imgType === 'mermaid' && node.value.toLowerCase().includes('classdiagram')) {
 				try {
 					const parsed = parseMermaidClassDiagram(node.value);
-					a11yDescription = generateClassDescription(parsed, opts.locale);
+					a11yDescription = generateClassDescription(parsed, blockLocale);
 				} catch (e) {
 					console.warn('Failed to parse Mermaid class diagram for a11y:', e.message);
 				}
@@ -240,7 +249,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 
 			// Fallback: always show a generic message when no parser output is available
 			if (shouldAttemptA11y && !a11yDescription) {
-				const fallback = (opts.fallbackA11yText && opts.fallbackA11yText[opts.locale]) || opts.fallbackA11yText.en;
+				const fallback = (opts.fallbackA11yText && opts.fallbackA11yText[blockLocale]) || opts.fallbackA11yText.en;
 				a11yDescription = fallback;
 			}
 

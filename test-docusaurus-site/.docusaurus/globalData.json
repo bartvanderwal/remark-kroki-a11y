@@ -1,0 +1,43 @@
+{
+  "docusaurus-plugin-content-docs": {
+    "default": {
+      "path": "/",
+      "versions": [
+        {
+          "name": "current",
+          "label": "Next",
+          "isLast": true,
+          "path": "/",
+          "mainDocId": "index",
+          "docs": [
+            {
+              "id": "index",
+              "path": "/",
+              "sidebar": "docs"
+            },
+            {
+              "id": "plantuml-class-diagrams-en",
+              "path": "/plantuml-class-diagrams-en",
+              "sidebar": "docs"
+            },
+            {
+              "id": "plantuml-class-diagrams-nl",
+              "path": "/plantuml-class-diagrams-nl",
+              "sidebar": "docs"
+            }
+          ],
+          "draftIds": [],
+          "sidebars": {
+            "docs": {
+              "link": {
+                "path": "/",
+                "label": "index"
+              }
+            }
+          }
+        }
+      ],
+      "breadcrumbs": true
+    }
+  }
+}

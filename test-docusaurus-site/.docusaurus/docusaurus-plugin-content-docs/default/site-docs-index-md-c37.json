@@ -1,0 +1,19 @@
+{
+  "id": "index",
+  "title": "remark-kroki-a11y Test Site",
+  "description": "This test site demonstrates the accessibility features of the remark-kroki-a11y plugin.",
+  "source": "@site/docs/index.md",
+  "sourceDirName": ".",
+  "slug": "/",
+  "permalink": "/",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docs",
+  "next": {
+    "title": "PlantUML Example Scenarios",
+    "permalink": "/plantuml-class-diagrams-en"
+  }
+}

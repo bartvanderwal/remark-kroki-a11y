@@ -16,6 +16,7 @@ A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible sourc
 ## Supported Diagram Types
 
 Works with any diagram type supported by [Kroki](https://kroki.io/), including:
+
 - PlantUML
 - Mermaid
 - C4 (via PlantUML)
@@ -23,6 +24,7 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 - And many more...
 
 Natural language description generation currently supports:
+
 - PlantUML state diagrams
 
 ## Installation

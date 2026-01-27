@@ -3,26 +3,59 @@
 Thanks for considering a contribution! This plugin is plain JavaScript (no build step) and is tested primarily in Docusaurus.
 
 ## Prerequisites
+
 - Node.js >= 16
 - npm or yarn
 
 ## Local development
+
 1. Install dependencies:
-   ```bash
-   npm install
-   # or
-   yarn install
-   ```
+
+  ```bash
+  npm install
+  # or
+  yarn install
+  ```
+
 2. Make changes in `src/` (the entry point is `src/index.js`).
-3. Run basic sanity checks (no automated tests yet):
-   - Ensure `npm pack` or `yarn pack` succeeds.
-   - Optionally run `node -c src/index.js` to catch syntax errors.
+
+3. Run basic sanity checks:
+  - Ensure `npm pack` or `yarn pack` succeeds.
+  - Optionally run `node -c src/index.js` to catch syntax errors.
+
+## Running BDD tests
+
+BDD tests are located in the `test/` directory. Run them with:
+
+```bash
+yarn test
+# or
+npm test
+```
+
+These tests will execute all `.feature` files and check a11y functionality and rendering.
+
+## Manual testing with Docusaurus
+
+To manually test the plugin in a Docusaurus site, use the example markdown file in `test-docusaurus-site/plantuml-examples.md`.
+
+This file contains various PlantUML diagram scenarios:
+
+- Diagram only
+- Source code only (expandable)
+- Diagram + source code
+- Diagram + source code + a11y description/tab
+
+You can copy or import this file into your test Docusaurus site to verify plugin behavior.
+
+See the README for more info on plugin configuration.
 
 ## Testing in a Docusaurus site
 
 You can link the plugin into a local Docusaurus project to verify behavior:
 
-Option A: `npm link`
+### Test Option A: `npm link`
+
 ```bash
 # In this repo
 npm link
@@ -30,7 +63,7 @@ npm link
 npm link remark-kroki-a11y
 ```
 
-Option B: file dependency
+### Test Option B: file dependency
 
 ```bash
 # In the Docusaurus project package.json

@@ -1,0 +1,15 @@
+{
+  "id": "plantuml-examples",
+  "title": "PlantUML Example Scenarios",
+  "description": "This file contains various PlantUML diagram scenarios for manual plugin testing in Docusaurus:",
+  "source": "@site/docs/plantuml-examples.md",
+  "sourceDirName": ".",
+  "slug": "/plantuml-examples",
+  "permalink": "/docs/plantuml-examples",
+  "draft": false,
+  "unlisted": false,
+  "tags": [],
+  "version": "current",
+  "frontMatter": {},
+  "sidebar": "docs"
+}
