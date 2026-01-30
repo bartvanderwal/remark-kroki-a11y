@@ -51,6 +51,12 @@ const i18n = {
 		dependency: 'heeft een afhankelijkheid naar',
 		withName: 'met naam',
 		multiplicity: 'multipliciteit',
+		multiplicityTo: 'naar',
+		withStereotype: 'met stereotype',
+		// Empty members
+		noAttributes: 'geen attributen',
+		noMethods: 'geen methoden',
+		noMethodsAndAttributes: 'zonder methoden en attributen',
 		// Array types
 		array: 'Array',
 	},
@@ -89,6 +95,12 @@ const i18n = {
 		dependency: 'has a dependency to',
 		withName: 'named',
 		multiplicity: 'multiplicity',
+		multiplicityTo: 'to',
+		withStereotype: 'with stereotype',
+		// Empty members
+		noAttributes: 'no attributes',
+		noMethods: 'no methods',
+		noMethodsAndAttributes: 'without methods and attributes',
 		// Array types
 		array: 'Array',
 	}
@@ -349,14 +361,13 @@ function parsePlantUMLClassDiagram(code) {
 
 		// Skip empty lines, comments, and directives
 		if (!trimmed || trimmed.startsWith('@') || trimmed.startsWith('\'') ||
-			trimmed.startsWith('hide') || trimmed.startsWith('skinparam')) {
-			continue;
-		}
-
-		// End of class block
-		if (trimmed === '}') {
-			inClassBlock = false;
-			currentClass = null;
+			trimmed.startsWith('hide') || trimmed.startsWith('skinparam') ||
+			trimmed.startsWith('rectangle') || trimmed === '}') {
+			// Note: we skip 'rectangle' blocks (used for grouping like Aggregates) but continue parsing their contents
+			if (trimmed === '}') {
+				inClassBlock = false;
+				currentClass = null;
+			}
 			continue;
 		}
 
@@ -388,26 +399,30 @@ function parsePlantUMLClassDiagram(code) {
 			continue;
 		}
 
-		// Regular class: class ClassName
-		const classMatch = trimmed.match(/^class\s+(\w+)\s*\{?\s*$/);
+		// Regular class: class ClassName or class ClassName <<stereotype>> or class ClassName <<stereotype>> {
+		const classMatch = trimmed.match(/^class\s+(\w+)(?:\s*<<([^>]+)>>)?\s*\{?\s*$/);
 		if (classMatch) {
 			currentClass = classMatch[1];
+			const stereotype = classMatch[2] || null;
 			inClassBlock = trimmed.includes('{');
 			if (!result.classes[currentClass]) {
 				result.classes[currentClass] = {
 					name: currentClass,
-					stereotype: null,
+					stereotype: stereotype,
 					attributes: [],
 					methods: [],
 				};
+			} else if (stereotype) {
+				// Update stereotype if class was already declared (e.g., from a relation)
+				result.classes[currentClass].stereotype = stereotype;
 			}
 			continue;
 		}
 
 		// Member inside class block
 		if (inClassBlock && currentClass) {
-			// Method: +methodName(params) : returnType
-			const methodMatch = trimmed.match(/^([+\-#~])?(\w+)\s*\(([^)]*)\)\s*(?::\s*)?(\w+)?$/);
+			// Method: +methodName(params) : returnType or + methodName(params) : returnType (with space after visibility)
+			const methodMatch = trimmed.match(/^([+\-#~])?\s*(\w+)\s*\(([^)]*)\)\s*(?::\s*)?(\w+)?$/);
 			if (methodMatch) {
 				const [, visibility, name, params, returnType] = methodMatch;
 				result.classes[currentClass].methods.push({
@@ -419,8 +434,8 @@ function parsePlantUMLClassDiagram(code) {
 				continue;
 			}
 
-			// Attribute: +attributeName : Type
-			const attrMatch = trimmed.match(/^([+\-#~])?(\w+)\s*:\s*(.+)$/);
+			// Attribute: +attributeName : Type or + attributeName : Type (with space after visibility)
+			const attrMatch = trimmed.match(/^([+\-#~])?\s*(\w+)\s*:\s*(.+)$/);
 			if (attrMatch) {
 				result.classes[currentClass].attributes.push({
 					visibility: attrMatch[1] || '-',
@@ -459,6 +474,8 @@ function parsePlantUMLRelation(line, result) {
 	// A --o B : aggregation
 	// A --* B : composition
 	// A ..> B : dependency
+	// A "1" -- "*" B : association with multiplicities on both sides
+	// A "1" -l- "4" B : directional association (l=left, r=right, u=up, d=down)
 
 	const patterns = [
 		{ regex: /^(\w+)\s*\.\.\|>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation' },
@@ -472,17 +489,26 @@ function parsePlantUMLRelation(line, result) {
 		{ regex: /^(\w+)\s*\.\.>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
 		{ regex: /^(\w+)\s*-->\s*"([^"]+)"\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association', hasMultiplicity: true },
 		{ regex: /^(\w+)\s*-->\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
+		// PlantUML with multiplicities on both sides: A "1" -- "*" B or A "1" -l- "4" B
+		{ regex: /^(\w+)\s+"([^"]+)"\s+-[lrud]?-\s+"([^"]+)"\s+(\w+)$/, type: 'association', hasBothMultiplicities: true },
 		{ regex: /^(\w+)\s*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
 	];
 
 	for (const pattern of patterns) {
 		const match = line.match(pattern.regex);
 		if (match) {
-			let from, to, label, multiplicity;
+			let from, to, label, multiplicityFrom, multiplicityTo;
 
-			if (pattern.hasMultiplicity) {
+			if (pattern.hasBothMultiplicities) {
+				// A "1" -- "*" B format
 				from = match[1];
-				multiplicity = match[2];
+				multiplicityFrom = match[2];
+				multiplicityTo = match[3];
+				to = match[4];
+				label = null;
+			} else if (pattern.hasMultiplicity) {
+				from = match[1];
+				multiplicityTo = match[2];
 				to = match[3];
 				label = match[4];
 			} else if (pattern.reverse) {
@@ -500,7 +526,8 @@ function parsePlantUMLRelation(line, result) {
 				to,
 				type: pattern.type,
 				label: label ? label.trim() : null,
-				multiplicity: multiplicity || null,
+				multiplicityFrom: multiplicityFrom || null,
+				multiplicityTo: multiplicityTo || null,
 			});
 			return true;
 		}
@@ -530,43 +557,62 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 		for (const [className, classData] of Object.entries(parsed.classes)) {
 			// Class header with stereotype
 			let classHeader;
-			if (classData.stereotype === 'interface') {
+			const stereotypeLower = classData.stereotype ? classData.stereotype.toLowerCase() : null;
+			if (stereotypeLower === 'interface') {
 				classHeader = `${t.interface} ${className}`;
-			} else if (classData.stereotype === 'abstract') {
+			} else if (stereotypeLower === 'abstract') {
 				classHeader = `${t.abstractClass} ${className}`;
-			} else if (classData.stereotype === 'enumeration') {
+			} else if (stereotypeLower === 'enumeration') {
 				classHeader = `${t.enumeration} ${className}`;
+			} else if (classData.stereotype) {
+				// Custom stereotype (e.g., Aggregate Root, Entity, Value Object) - preserve original casing
+				classHeader = `${t.class} ${className} ${t.withStereotype} ${classData.stereotype}`;
 			} else {
 				classHeader = `${t.class} ${className}`;
 			}
 
-			const hasMembers = classData.attributes.length > 0 || classData.methods.length > 0;
+			const hasAttributes = classData.attributes.length > 0;
+			const hasMethods = classData.methods.length > 0;
+			const hasMembers = hasAttributes || hasMethods;
 			if (hasMembers) {
 				classHeader += ` ${t.with}:`;
 			}
 			parts.push(classHeader);
 
-			// Attributes
-			for (const attr of classData.attributes) {
-				const visibility = parseVisibility(attr.visibility, locale);
-				const type = parseType(attr.type, locale);
-				parts.push(`  - ${visibility} ${t.attribute} ${attr.name} ${t.ofType} ${type}`);
-			}
+			// Check if class has no members at all
+			if (!hasMembers) {
+				parts.push(`  - ${t.noMethodsAndAttributes}`);
+			} else {
+				// Methods
+				for (const method of classData.methods) {
+					const visibility = parseVisibility(method.visibility, locale);
+					let methodDesc = `  - ${visibility} ${t.method} ${method.name}`;
 
-			// Methods
-			for (const method of classData.methods) {
-				const visibility = parseVisibility(method.visibility, locale);
-				let methodDesc = `  - ${visibility} ${t.method} ${method.name}`;
+					if (method.parameters.length === 0) {
+						methodDesc += `, ${t.withoutParameters}`;
+					} else {
+						const paramDescs = method.parameters.map(p => `${p.name} ${t.ofType} ${p.type}`);
+						methodDesc += `, ${t.withParameters} ${paramDescs.join(', ')}`;
+					}
 
-				if (method.parameters.length === 0) {
-					methodDesc += `, ${t.withoutParameters}`;
-				} else {
-					const paramDescs = method.parameters.map(p => `${p.name} ${t.ofType} ${p.type}`);
-					methodDesc += `, ${t.withParameters} ${paramDescs.join(', ')}`;
+					methodDesc += `, ${t.returnType} ${method.returnType}`;
+					parts.push(methodDesc);
 				}
 
-				methodDesc += `, ${t.returnType} ${method.returnType}`;
-				parts.push(methodDesc);
+				// Attributes
+				for (const attr of classData.attributes) {
+					const visibility = parseVisibility(attr.visibility, locale);
+					const type = parseType(attr.type, locale);
+					parts.push(`  - ${visibility} ${t.attribute} ${attr.name} ${t.ofType} ${type}`);
+				}
+
+				// Explicit messages for missing members when class has some members
+				if (!hasAttributes && hasMethods) {
+					parts.push(`  - ${t.noAttributes}`);
+				}
+				if (!hasMethods && hasAttributes) {
+					parts.push(`  - ${t.noMethods}`);
+				}
 			}
 		}
 	}
@@ -605,7 +651,12 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			if (rel.label) {
 				relDesc += `, ${t.withName} ${rel.label}`;
 			}
-			if (rel.multiplicity) {
+			// Handle multiplicities (both old 'multiplicity' format and new 'multiplicityFrom/To' format)
+			if (rel.multiplicityFrom && rel.multiplicityTo) {
+				relDesc += `, ${t.multiplicity} ${rel.multiplicityFrom} ${t.multiplicityTo} ${rel.multiplicityTo}`;
+			} else if (rel.multiplicityTo) {
+				relDesc += `, ${t.multiplicity} ${rel.multiplicityTo}`;
+			} else if (rel.multiplicity) {
 				relDesc += `, ${t.multiplicity} ${rel.multiplicity}`;
 			}
 

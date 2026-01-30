@@ -97,28 +97,34 @@ function detectPlantUMLDiagramType(content) {
 	if (lowerContent.includes('entity ')) return 'erDiagram';
 	if (lowerContent.includes('component ')) return 'componentDiagram';
 	if (lowerContent.includes('usecase ')) return 'usecaseDiagram';
+	// Activity diagram detection: look for start/stop, while/repeat, split, fork/join
+	if (lowerContent.includes('start') || lowerContent.includes('stop') ||
+	    lowerContent.includes('while ') || lowerContent.includes('repeat') ||
+	    lowerContent.includes('fork') || lowerContent.includes('split')) return 'activityDiagram';
 	return 'diagram';
 }
 
 // Human-readable names for diagram types
 const diagramTypeNames = {
 	nl: {
-		stateDiagram: 'toestandsdiagram',
-		classDiagram: 'klassendiagram',
-		sequenceDiagram: 'sequentiediagram',
-		erDiagram: 'ER-diagram',
-		componentDiagram: 'componentdiagram',
-		usecaseDiagram: 'use case diagram',
-		diagram: 'diagram',
+		stateDiagram: 'toestandsdiagrammen',
+		classDiagram: 'klassendiagrammen',
+		sequenceDiagram: 'sequentiediagrammen',
+		activityDiagram: 'activiteitendiagrammen',
+		erDiagram: 'ER-diagrammen',
+		componentDiagram: 'componentdiagrammen',
+		usecaseDiagram: 'use case diagrammen',
+		diagram: 'dit diagram type',
 	},
 	en: {
-		stateDiagram: 'state diagram',
-		classDiagram: 'class diagram',
-		sequenceDiagram: 'sequence diagram',
-		erDiagram: 'ER diagram',
-		componentDiagram: 'component diagram',
-		usecaseDiagram: 'use case diagram',
-		diagram: 'diagram',
+		stateDiagram: 'state diagrams',
+		classDiagram: 'class diagrams',
+		sequenceDiagram: 'sequence diagrams',
+		activityDiagram: 'activity diagrams',
+		erDiagram: 'ER diagrams',
+		componentDiagram: 'component diagrams',
+		usecaseDiagram: 'use case diagrams',
+		diagram: 'this diagram type',
 	}
 };
 
@@ -148,9 +154,10 @@ const languageNames = {
 };
 
 // Fallback text when no a11y description can be generated
+// Use {diagramType} as placeholder for the specific diagram type name
 const defaultFallbackA11yText = {
-	nl: 'Natuurlijke taal beschrijving is nog niet beschikbaar voor dit diagram type.',
-	en: 'Natural language description is not available for this diagram type yet.',
+	nl: 'Natuurlijke taal beschrijving nog niet beschikbaar voor {diagramType}.',
+	en: 'Natural language description not yet available for {diagramType}.',
 };
 
 // Default options
@@ -189,15 +196,18 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			// Check for hide flags
 			const hideSource = node.meta && node.meta.includes('hideSource');
 			const hideA11y = node.meta && node.meta.includes('hideA11y');
+			const hideDiagram = node.meta && node.meta.includes('hideDiagram');
 
 			// Clean meta from flags
 			if (node.meta) {
 				node.meta = node.meta
 					.split(/\s+/)
-					.filter((m) => m !== 'hideSource' && m !== 'hideA11y')
+					.filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram')
 					.join(' ');
 			}
 
+			// If hideDiagram is set, skip all extra UI (only diagram will be rendered by downstream plugin)
+			if (hideDiagram) return;
 			// If both are hidden, skip
 			if (hideSource && hideA11y) return;
 			if (hideSource && !opts.showA11yDescription) return;
@@ -249,8 +259,10 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 
 			// Fallback: always show a generic message when no parser output is available
 			if (shouldAttemptA11y && !a11yDescription) {
-				const fallback = (opts.fallbackA11yText && opts.fallbackA11yText[blockLocale]) || opts.fallbackA11yText.en;
-				a11yDescription = fallback;
+				const fallbackTemplate = (opts.fallbackA11yText && opts.fallbackA11yText[blockLocale]) || opts.fallbackA11yText.en;
+				// Get the human-readable diagram type name for the fallback message
+				const diagramTypeName = (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
+				a11yDescription = fallbackTemplate.replace('{diagramType}', diagramTypeName);
 			}
 
 			const nodesToInsert = [];

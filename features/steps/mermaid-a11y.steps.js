@@ -1,26 +1,51 @@
 const { Given, When, Then, Before } = require('@cucumber/cucumber');
 const assert = require('assert');
 const MermaidClassdiagramA11YReader = require('../../src/mermaid-classdiagram-a11y');
+const { parsePlantUMLClassDiagram, generateAccessibleDescription } = require('../../src/parsers/classDiagramParser');
 
 // Shared state
 let reader;
 let currentDiagram;
 let generatedDescription;
 let generatedAriaStructure;
+let isPlantUML = false;
 
 Before(function() {
 	reader = new MermaidClassdiagramA11YReader({ locale: 'nl' });
 	currentDiagram = null;
 	generatedDescription = null;
 	generatedAriaStructure = null;
+	isPlantUML = false;
 });
 
 Given('het volgende klassediagram:', function(diagramSource) {
 	currentDiagram = diagramSource;
+	isPlantUML = false;
+});
+
+Given('het volgende PlantUML klassediagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	isPlantUML = true;
+});
+
+// English step definitions
+Given('the following PlantUML class diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	isPlantUML = true;
 });
 
 When('ik een beschrijving genereer', function() {
-	generatedDescription = reader.generateDescription(currentDiagram);
+	if (isPlantUML) {
+		const parsed = parsePlantUMLClassDiagram(currentDiagram);
+		generatedDescription = generateAccessibleDescription(parsed, 'nl');
+	} else {
+		generatedDescription = reader.generateDescription(currentDiagram);
+	}
+});
+
+When('I generate a description in English', function() {
+	const parsed = parsePlantUMLClassDiagram(currentDiagram);
+	generatedDescription = generateAccessibleDescription(parsed, 'en');
 });
 
 When('ik ARIA navigatiestructuur genereer', function() {
@@ -69,5 +94,23 @@ Then('zou de structuur sectie {string} moeten bevatten met label {string}', func
 		section.label,
 		expectedLabel,
 		`Verwachtte label "${expectedLabel}", maar vond "${section.label}"`
+	);
+});
+
+// English Then steps
+Then('the description should contain {string}', function(expectedText) {
+	assert.ok(
+		generatedDescription.includes(expectedText),
+		`Expected "${expectedText}" in description, but found:\n${generatedDescription}`
+	);
+});
+
+Then('the first line should be:', function(expectedDocString) {
+	const firstLine = (generatedDescription || '').split('\n')[0].trim();
+	const expected = (expectedDocString || '').trim();
+	assert.strictEqual(
+		firstLine,
+		expected,
+		`First line mismatch. Expected:\n${expected}\nBut got:\n${firstLine}`
 	);
 });

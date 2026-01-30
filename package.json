@@ -1,5 +1,5 @@
 {
-  "name": "remark-kroki-a11y",
+  "name": "rka11",
   "version": "0.1.0",
   "description": "Remark plugin for Docusaurus that adds accessible source code details and natural language descriptions to Kroki diagrams (PlantUML, Mermaid, C4, GraphViz, etc.)",
   "main": "src/index.js",

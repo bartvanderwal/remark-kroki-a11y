@@ -31,3 +31,59 @@ Functionaliteit: Basis klassediagram parsing
       """
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse EmptyClass"
+
+  Scenario: PlantUML klasse zonder methoden en attributen expliciet vermeld
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class EmptyClass
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Klasse EmptyClass"
+    En zou de beschrijving moeten bevatten "zonder methoden en attributen"
+
+  Scenario: PlantUML klasse met alleen methoden vermeldt geen attributen
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Service {
+        + doSomething()
+      }
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Klasse Service"
+    En zou de beschrijving moeten bevatten "publieke methode doSomething"
+    En zou de beschrijving moeten bevatten "geen attributen"
+
+  Scenario: PlantUML klasse met alleen attributen vermeldt geen methoden
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class DataClass {
+        - name : String
+      }
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Klasse DataClass"
+    Dan zou de beschrijving moeten bevatten "private attribuut name"
+    En zou de beschrijving moeten bevatten "geen methoden"
+
+  Scenario: PlantUML klasse met stereotype
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Car <<Aggregate Root>> {
+        + drive()
+      }
+      class Wheel <<Entity>> {
+      }
+      class Color <<Value Object>>
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Klasse Car met stereotype Aggregate Root"
+    En zou de beschrijving moeten bevatten "Klasse Wheel met stereotype Entity"
+    En zou de beschrijving moeten bevatten "Klasse Color met stereotype Value Object"
