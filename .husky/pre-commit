@@ -30,6 +30,22 @@ if [ ! -f "test-docusaurus-site/yarn.lock" ]; then
   echo ""
 fi
 
+# Run linting - this is a WARNING only, not blocking
+echo "🔍 Running linters..."
+if ! yarn lint:js 2>/dev/null; then
+  echo ""
+  echo "⚠️  WARNING: ESLint found issues!"
+  echo "  Run 'yarn lint:fix' to auto-fix some issues."
+  echo ""
+fi
+
+if ! yarn lint:md 2>/dev/null; then
+  echo ""
+  echo "⚠️  WARNING: Markdownlint found issues!"
+  echo "  Run 'yarn lint:fix' to auto-fix some issues."
+  echo ""
+fi
+
 # Run BDD tests - this IS blocking
 echo "🧪 Running BDD tests..."
 if ! yarn test; then

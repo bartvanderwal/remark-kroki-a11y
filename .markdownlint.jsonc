@@ -1,0 +1,28 @@
+{
+  // Markdownlint configuration
+  // See: https://github.com/DavidAnson/markdownlint/blob/main/doc/Rules.md
+
+  // Allow duplicate headings in different sections (e.g., "Documentatie" in multiple contexts)
+  "MD024": {
+    "siblings_only": true
+  },
+
+  // Allow ordered list prefixes to restart (1. 2. 3. pattern)
+  "MD029": {
+    "style": "ordered"
+  },
+
+  // Relax indent rules for nested lists
+  "MD007": {
+    "indent": 2
+  },
+
+  // Allow inline HTML (needed for Docusaurus components)
+  "MD033": false,
+
+  // These are often violated but we want to fix them incrementally
+  "MD032": true,
+  "MD022": true,
+  "MD031": true,
+  "MD040": true
+}
