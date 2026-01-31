@@ -31,7 +31,7 @@ This documentation site is itself powered by remark-kroki-a11y! Every diagram yo
 
 Here's a class diagram with automatically generated accessible description:
 
-```kroki imgType="plantuml" imgTitle="Strategy Pattern"
+```kroki imgType="plantuml" imgTitle="Strategy Pattern" lang="en"
 @startuml
 class Woordenlijst {
   -woorden : String[]
