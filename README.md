@@ -1,22 +1,13 @@
 # remark-kroki-a11y
 
+[![npm version](https://img.shields.io/npm/v/remark-kroki-a11y.svg)](https://www.npmjs.com/package/remark-kroki-a11y)
+[![license](https://img.shields.io/npm/l/remark-kroki-a11y.svg)](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/LICENSE)
+[![Node.js](https://img.shields.io/node/v/remark-kroki-a11y.svg)](https://nodejs.org/)
+[![BDD Tests](https://img.shields.io/badge/BDD%20tests-37%20passing-brightgreen)](https://github.com/bartvanderwal/remark-kroki-a11y)
+
 A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
-![Strategy Pattern class diagram example](docs/img/strategy-pattern-example.svg)
-
 > **Note:** This plugin has only been tested with [Docusaurus](https://docusaurus.io/). It should work with other unified/remark-based systems, but this has not been verified.
-
-## Meta: Eating Our Own Dog Food
-
-This project has a delightful meta aspect: we build an accessibility plugin for "diagrams-as-code" in Docusaurus, and we use Docusaurus with those same diagrams to document the plugin itself. This is delightful, but also potentially confusing, so here a short elaboraton on this in an attempt to stop any confusion.
-
-**The technical domain:** The plugin operates in the landscape of Markdown, HTML generation, and diagram-as-code syntaxes (PlantUML, Mermaid). We use these same tools to document the plugin's architecture with C4 diagrams, class diagrams, and sequence diagrams.
-
-**The problem domain:** We address accessibility (a11y) for visual diagrams - a challenge driven by both the [continuous documentation](https://www.writethedocs.org/guide/docs-as-code/) movement in software engineering and broader societal/legal requirements like [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) and the [European Accessibility Act](https://ec.europa.eu/social/main.jsp?catId=1202).
-
-To see a more concrete example check the Docusaurus page with diagrams and documentation for this plugin itself. We also use that to test/validate our own plugin.
-
-In short: *A plugin that makes software diagrams accessible, and uses diagrams to explain how we do that (and these then test/validate if we are succeeding 😉).*
 
 ## Features
 
@@ -268,6 +259,7 @@ Control per-diagram behavior using flags in the code block meta:
 ~~~
 
 The `customDescription` attribute is useful when:
+
 - The diagram type is not yet supported for automatic description generation
 - You want to provide a more context-specific description
 - The automatic description doesn't capture the intended meaning
@@ -317,6 +309,20 @@ The pipeline:
 The `README.md` and `CONTRIBUTING.md` files are maintained in the repository root for GitHub visibility. These files are automatically copied to the Docusaurus docs folder by `start-docs.sh` (with added front-matter for Docusaurus).
 
 **Important:** Do NOT add Docusaurus-specific front-matter (the `---` YAML block) to these root files, as they need to render correctly on GitHub. The `start-docs.sh` script adds the necessary front-matter when copying.
+
+## Meta: Eating Our Own Dog Food
+
+This project has a delightful meta aspect: we build an accessibility plugin for "diagrams-as-code" in Docusaurus, and we use Docusaurus with those same diagrams to document the plugin itself.
+
+![Strategy Pattern class diagram example](docs/img/strategy-pattern-example.svg)
+
+**The technical domain:** The plugin operates in the landscape of Markdown, HTML generation, and diagram-as-code syntaxes (PlantUML, Mermaid). We use these same tools to document the plugin's architecture with C4 diagrams, class diagrams, and sequence diagrams.
+
+**The problem domain:** We address accessibility (a11y) for visual diagrams - a challenge driven by both the [continuous documentation](https://www.writethedocs.org/guide/docs-as-code/) movement in software engineering and broader societal/legal requirements like [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) and the [European Accessibility Act](https://ec.europa.eu/social/main.jsp?catId=1202).
+
+To see a more concrete example check the Docusaurus page with diagrams and documentation for this plugin itself. We also use that to test/validate our own plugin.
+
+In short: *A plugin that makes software diagrams accessible, and uses diagrams to explain how we do that (and these then test/validate if we are succeeding).*
 
 ## Acknowledgments
 
