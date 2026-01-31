@@ -316,6 +316,18 @@ The `README.md` and `CONTRIBUTING.md` files are maintained in the repository roo
 
 **Important:** Do NOT add Docusaurus-specific front-matter (the `---` YAML block) to these root files, as they need to render correctly on GitHub. The `start-docs.sh` script adds the necessary front-matter when copying.
 
+## Acknowledgments
+
+This plugin was originally conceived by [Remco Veurink](https://www.linkedin.com/in/remco-veurink-01a76521/), lecturer at HAN University of Applied Sciences.
+
+### Related Work
+
+The Mermaid project is also exploring accessibility for diagram-as-code. As noted in their [accessibility discussion](https://github.com/mermaid-js/mermaid/issues/5632):
+
+> While I recognize that this is not going to be easy, I also believe that Mermaid is uniquely situated to solve this problem. The entire concept of Mermaid is that we can represent this visual content as plain structured text. Mermaid diagrams aren't just static images generated in Photoshop; they are rendered dynamically from structured data.
+
+This insight applies equally to PlantUML and other diagram-as-code formats - the structured source text is inherently accessible, we just need to present it properly.
+
 ## Contributing
 
 Want to help? Or update and run this plugin itself? See [CONTRIBUTING.md](CONTRIBUTING.md) for local development setup and publishing tips.
