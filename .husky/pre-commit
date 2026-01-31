@@ -29,3 +29,15 @@ if [ ! -f "test-docusaurus-site/yarn.lock" ]; then
   echo "The CI/CD pipeline will fail. Run 'cd test-docusaurus-site && yarn install' to generate it."
   echo ""
 fi
+
+# Run BDD tests - this IS blocking
+echo "🧪 Running BDD tests..."
+if ! yarn test; then
+  echo ""
+  echo "❌ ERROR: BDD tests failed!"
+  echo ""
+  echo "Please fix the failing tests before committing."
+  echo ""
+  exit 1
+fi
+echo "✅ BDD tests passed"
