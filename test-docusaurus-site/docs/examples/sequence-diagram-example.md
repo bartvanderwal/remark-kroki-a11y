@@ -60,8 +60,6 @@ Bob --> Alice: geefDrankje("appelsap")
 @enduml
 ```
 
-Klik op de "Natuurlijke taal" tab hierboven om de automatische melding te zien.
-
 ---
 
 ## Vergelijk met het klassieke Alice & Bob voorbeeld

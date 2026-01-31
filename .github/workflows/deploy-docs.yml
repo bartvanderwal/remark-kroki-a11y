@@ -91,7 +91,28 @@ jobs:
           ---
 
           EOF
-          cat CONTRIBUTING.md >> test-docusaurus-site/docs/contributing.md
+          # Fix definition-of-done.md link for Docusaurus
+          sed -e 's|(definition-of-done.md)|(./definition-of-done)|g' \
+              CONTRIBUTING.md >> test-docusaurus-site/docs/contributing.md
+
+          # Copy definition-of-done.md with Docusaurus front-matter
+          cat > test-docusaurus-site/docs/definition-of-done.md << 'EOF'
+          ---
+          id: definition-of-done
+          title: Definition of Done
+          sidebar_label: Definition of Done
+          description: Quality standards and acceptance criteria for contributions
+          ---
+
+          :::info Single Source of Truth
+          This page is automatically copied from the repository root `definition-of-done.md` file.
+          Edit the root `definition-of-done.md` to update this page.
+          :::
+
+          ---
+
+          EOF
+          cat definition-of-done.md >> test-docusaurus-site/docs/definition-of-done.md
 
           # Copy ADRs with front-matter
           mkdir -p test-docusaurus-site/docs/adr

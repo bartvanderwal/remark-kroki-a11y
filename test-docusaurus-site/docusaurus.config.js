@@ -39,11 +39,12 @@ module.exports = {
   },
   themes: [
     [
-      require.resolve('@cmfcmf/docusaurus-search-local'),
+      require.resolve('@easyops-cn/docusaurus-search-local'),
       {
         indexDocs: true,
         indexBlog: false,
-        language: 'en',
+        language: ['en'],
+        hashed: true,
       },
     ],
   ],
