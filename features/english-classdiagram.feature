@@ -21,7 +21,35 @@ Feature: English class diagram descriptions
     And the description should contain "Class Wheel with stereotype Entity"
     And the description should contain "Class Color with stereotype Value Object"
 
-  Scenario: PlantUML class diagram with multiplicities (English)
+  Scenario: PlantUML association without name (English)
+    Given the following PlantUML class diagram:
+      """
+      @startuml
+      class Order {
+      }
+      class Customer {
+      }
+      Order --> Customer
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "Order has an association-relationship with Customer"
+
+  Scenario: PlantUML association with name (English)
+    Given the following PlantUML class diagram:
+      """
+      @startuml
+      class Order {
+      }
+      class Customer {
+      }
+      Order --> Customer : placedBy
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "Order has an association-relationship named 'placedBy' with Customer"
+
+  Scenario: PlantUML association with multiplicities without name (English)
     Given the following PlantUML class diagram:
       """
       @startuml
@@ -41,5 +69,21 @@ Feature: English class diagram descriptions
       """
       Class diagram with 3 class(es) and 2 relation(s).
       """
-    And the description should contain "Car has an association-relationship with Wheel (is associated with), multiplicity 1 to 4"
-    And the description should contain "Car has an association-relationship with Engine (is associated with), multiplicity 1 to 1"
+    And the description should contain "Car has an association-relationship with Wheel, multiplicity 1 to 4"
+    And the description should contain "Car has an association-relationship with Engine, multiplicity 1 to 1"
+
+  Scenario: PlantUML association with name and multiplicity (English)
+    Given the following PlantUML class diagram:
+      """
+      @startuml
+      class ClockDisplay {
+      }
+      class NumberDisplay {
+      }
+      ClockDisplay "1" --> "1" NumberDisplay : minutes
+      ClockDisplay "1" --> "1" NumberDisplay : hours
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "ClockDisplay has an association-relationship named 'minutes' with NumberDisplay"
+    And the description should contain "ClockDisplay has an association-relationship named 'hours' with NumberDisplay"

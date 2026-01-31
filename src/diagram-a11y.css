@@ -1,0 +1,127 @@
+/**
+ * remark-kroki-a11y default styles
+ *
+ * These styles provide the default look for diagram source code expandables
+ * and accessibility description tabs. Import this CSS in your Docusaurus
+ * custom.css or include it via a CSS plugin.
+ *
+ * Usage in Docusaurus:
+ *   @import 'remark-kroki-a11y/src/diagram-a11y.css';
+ *
+ * Or copy these styles to your custom.css file.
+ */
+
+/* Main expandable source container */
+.diagram-expandable-source summary {
+	cursor: pointer;
+	font-weight: 500;
+	padding: 0.25rem 0;
+	user-select: none;
+	font-size: 0.9em;
+	line-height: 1.4;
+	display: flex;
+	align-items: center;
+}
+
+.diagram-expandable-source:not([open]) {
+	margin: 0.25rem 0;
+}
+
+.diagram-expandable-source summary:hover {
+	color: var(--ifm-color-primary, #2e8555);
+}
+
+.diagram-expandable-source pre {
+	background: var(--prism-background-color, #1e1e1e);
+	color: var(--prism-color, #d4d4d4);
+	padding: 1rem;
+	border-radius: var(--ifm-code-border-radius, 4px);
+	overflow-x: auto;
+	margin: 0.5rem 0;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+}
+
+[data-theme='light'] .diagram-expandable-source pre {
+	background: var(--ifm-code-background, #f6f8fa);
+	color: var(--ifm-font-color-base, #1c1e21);
+}
+
+/* Tabs for source code and A11y description */
+.diagram-expandable-source-tabs {
+	margin-top: 0.5rem;
+}
+
+.diagram-expandable-source-tab-buttons {
+	display: flex;
+	gap: 0;
+	border-bottom: 1px solid var(--ifm-color-emphasis-300, #dadde1);
+	margin-bottom: 0;
+}
+
+.diagram-expandable-source-tab-btn {
+	padding: 0.5rem 1rem;
+	border: none;
+	background: transparent;
+	cursor: pointer;
+	font-size: 0.9em;
+	font-weight: 500;
+	color: var(--ifm-font-color-secondary, #525860);
+	border-bottom: 2px solid transparent;
+	margin-bottom: -1px;
+	transition: color 0.2s, border-color 0.2s;
+}
+
+.diagram-expandable-source-tab-btn:hover {
+	color: var(--ifm-color-primary, #2e8555);
+}
+
+.diagram-expandable-source-tab-btn.active {
+	color: var(--ifm-color-primary, #2e8555);
+	border-bottom-color: var(--ifm-color-primary, #2e8555);
+}
+
+.diagram-expandable-source-tab-content {
+	display: none;
+}
+
+.diagram-expandable-source-tab-content.active {
+	display: block;
+}
+
+/* A11y description styling (standalone, without tabs) */
+.diagram-a11y-description summary {
+	cursor: pointer;
+	font-weight: 500;
+	padding: 0.25rem 0;
+	user-select: none;
+	font-size: 0.9em;
+	line-height: 1.4;
+	display: flex;
+	align-items: center;
+}
+
+.diagram-a11y-description:not([open]) {
+	margin: 0.25rem 0;
+}
+
+.diagram-a11y-description summary:hover {
+	color: var(--ifm-color-primary, #2e8555);
+}
+
+.diagram-a11y-description pre {
+	background: var(--ifm-background-surface-color, #f8f9fa);
+	color: var(--ifm-font-color-base, #1c1e21);
+	padding: 1rem;
+	border-radius: var(--ifm-code-border-radius, 4px);
+	border: 1px solid var(--ifm-color-emphasis-200, #ebedf0);
+	overflow-x: auto;
+	margin: 0.5rem 0;
+	white-space: pre-wrap;
+	word-wrap: break-word;
+	font-family: var(--ifm-font-family-base, system-ui, -apple-system, sans-serif);
+	font-size: 0.95em;
+	line-height: 1.6;
+}
+
+/* Tab switching JavaScript (inline in HTML, but CSS handles visibility) */

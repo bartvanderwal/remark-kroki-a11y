@@ -1,1 +1,4 @@
 /* Custom styles for test Docusaurus site (optional) */
+
+/* Import diagram A11y styles from the plugin */
+@import '../../../src/diagram-a11y.css';

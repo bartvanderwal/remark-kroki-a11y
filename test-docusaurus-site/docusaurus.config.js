@@ -22,6 +22,10 @@ module.exports = {
   organizationName: 'test',
   projectName: 'test-docusaurus-site',
   onBrokenLinks: 'throw',
+  // Client-side module for tab switching
+  clientModules: [
+    require.resolve('../src/diagramTabs.js'),
+  ],
   markdown: {
     hooks: {
       onBrokenMarkdownLinks: 'warn',
@@ -43,10 +47,6 @@ module.exports = {
             [require('../src/index.js'), {
               showSource: true,
               showA11yDescription: true,
-              summaryText: '{type} source for "{title}"',
-              a11ySummaryText: 'Natural language description for "{title}"',
-              tabSourceLabel: 'Source',
-              tabA11yLabel: 'Description',
               cssClass: 'diagram-expandable-source',
               languages: ['kroki'],
               locale: 'en',

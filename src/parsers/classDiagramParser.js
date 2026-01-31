@@ -42,25 +42,19 @@ const i18n = {
 		withParameters: 'met parameter(s)',
 		withoutParameters: 'zonder parameters',
 		parameter: 'parameter',
-		// Relation types
-		inheritance: 'erft van',
+		// Relation types (format: "A heeft een associatie-relatie met naam 'x' met B")
+		inheritance: 'erft over van',
 		implementation: 'implementeert interface',
-		association: 'heeft een associatie-relatie met',
-		aggregation: 'heeft een aggregatie-relatie met',
-		composition: 'heeft een compositie-relatie met',
+		association: 'heeft een associatie-relatie',
+		aggregation: 'heeft een aggregatie-relatie',
+		composition: 'heeft een compositie-relatie',
 		dependency: 'heeft een afhankelijkheid naar',
-		withName: 'met naam',
+		dependencyFrom: 'heeft een afhankelijkheid vanaf',
+		withNamedRelation: "met naam '{name}' met",
+		withUnnamedRelation: 'met',
 		multiplicity: 'multipliciteit',
 		multiplicityTo: 'naar',
 		withStereotype: 'met stereotype',
-		relationShort: {
-			association: '(is gekoppeld aan)',
-			aggregation: '(heeft een)',
-			composition: '(bestaat uit)',
-			inheritance: '(is een)',
-			implementation: '(implementeert)',
-			dependency: '(is afhankelijk van)'
-		},
 		// Empty members
 		noAttributes: 'geen attributen',
 		noMethods: 'geen methoden',
@@ -80,7 +74,7 @@ const i18n = {
 		with: 'with',
 		relations: 'Relations',
 		notes: 'Notes',
-		noteFor: 'For class {class}',
+		noteFor: 'Note for class {class}',
 		// Visibility
 		public: 'public',
 		private: 'private',
@@ -94,25 +88,19 @@ const i18n = {
 		withParameters: 'with parameter(s)',
 		withoutParameters: 'without parameters',
 		parameter: 'parameter',
-		// Relation types
+		// Relation types (format: "A has an association-relationship named 'x' with B")
 		inheritance: 'extends',
 		implementation: 'implements interface',
-		association: 'has an association-relationship with',
-		aggregation: 'has an aggregation-relationship with',
-		composition: 'has a composition-relationship with',
+		association: 'has an association-relationship',
+		aggregation: 'has an aggregation-relationship',
+		composition: 'has a composition-relationship',
 		dependency: 'has a dependency to',
-		withName: 'named',
+		dependencyFrom: 'has a dependency from',
+		withNamedRelation: "named '{name}' with",
+		withUnnamedRelation: 'with',
 		multiplicity: 'multiplicity',
 		multiplicityTo: 'to',
 		withStereotype: 'with stereotype',
-		relationShort: {
-			association: '(is associated with)',
-			aggregation: '(has a)',
-			composition: '(consists of)',
-			inheritance: '(is a)',
-			implementation: '(implements)',
-			dependency: '(depends on)'
-		},
 		// Empty members
 		noAttributes: 'no attributes',
 		noMethods: 'no methods',
@@ -127,13 +115,13 @@ const i18n = {
  */
 function parseVisibility(symbol, locale) {
 	const t = i18n[locale] || i18n.nl;
-	switch (symbol) {
-		case '+': return t.public;
-		case '-': return t.private;
-		case '#': return t.protected;
-		case '~': return t.packagePrivate;
-		default: return t.public;
-	}
+	const visibilityMap = {
+		'+': t.public,
+		'-': t.private,
+		'#': t.protected,
+		'~': t.packagePrivate,
+	};
+	return visibilityMap[symbol] || t.public;
 }
 
 /**
@@ -145,13 +133,415 @@ function parseType(typeStr, locale) {
 
 	// Handle array notations: String[], List<String>, etc.
 	if (typeStr.endsWith('[]')) {
-		return `${typeStr.slice(0, -2)} ${t.array}`;
+		return typeStr.slice(0, -2) + ' ' + t.array;
 	}
-	if (typeStr.includes('<') && typeStr.includes('>')) {
+	if (typeStr.indexOf('<') !== -1 && typeStr.indexOf('>') !== -1) {
 		// Generic type like List<String>
 		return typeStr;
 	}
 	return typeStr;
+}
+
+/**
+ * Parse parameters string into structured array
+ */
+function parseParameters(paramsStr) {
+	if (!paramsStr || paramsStr.trim() === '') return [];
+
+	const params = [];
+	const paramParts = paramsStr.split(',');
+
+	for (const part of paramParts) {
+		const trimmed = part.trim();
+		if (!trimmed) continue;
+
+		// Format: name : Type or name Type
+		const colonIdx = trimmed.indexOf(':');
+		if (colonIdx !== -1) {
+			params.push({
+				name: trimmed.slice(0, colonIdx).trim(),
+				type: trimmed.slice(colonIdx + 1).trim() || 'unknown',
+			});
+		} else {
+			// Try space separation
+			const spaceIdx = trimmed.indexOf(' ');
+			if (spaceIdx !== -1) {
+				params.push({
+					name: trimmed.slice(0, spaceIdx).trim(),
+					type: trimmed.slice(spaceIdx + 1).trim() || 'unknown',
+				});
+			} else {
+				params.push({
+					name: trimmed,
+					type: 'unknown',
+				});
+			}
+		}
+	}
+
+	return params;
+}
+
+/**
+ * Remove quotes from start and end of string
+ */
+function removeQuotes(str) {
+	if (!str) return str;
+	let result = str.trim();
+	if (result.startsWith('"') && result.endsWith('"')) {
+		result = result.slice(1, -1);
+	}
+	return result;
+}
+
+/**
+ * Arrow definitions for relation parsing (ordered from specific to generic)
+ * Each arrow has: pattern, type, reverse flag
+ */
+const ARROWS = [
+	// Inheritance arrows
+	{ pattern: '--|>', type: 'inheritance', reverse: false },
+	{ pattern: '<|--', type: 'inheritance', reverse: true },
+	// Implementation arrows
+	{ pattern: '..|>', type: 'implementation', reverse: false },
+	{ pattern: '<|..', type: 'implementation', reverse: true },
+	// Composition arrows (diamond is at the "whole" side)
+	// A --* B means A has composition to B (A contains B)
+	// A *-- B means A has composition to B (diamond at A)
+	{ pattern: '--*', type: 'composition', reverse: true },
+	{ pattern: '*--', type: 'composition', reverse: false },
+	// Aggregation arrows (diamond is at the "whole" side)
+	// A --o B means A has aggregation to B (A contains B)
+	// A o-- B means A has aggregation to B (diamond at A)
+	{ pattern: '--o', type: 'aggregation', reverse: true },
+	{ pattern: 'o--', type: 'aggregation', reverse: false },
+	// Dependency arrows
+	{ pattern: '..>', type: 'dependency', reverse: false },
+	{ pattern: '<..', type: 'dependency', reverse: true },
+	// Association arrows
+	{ pattern: '-->', type: 'association', reverse: false },
+	{ pattern: '<--', type: 'association', reverse: true },
+	// Simple lines (must be last, they are substrings of others)
+	{ pattern: '--', type: 'association', reverse: false },
+	{ pattern: '..', type: 'dependency', reverse: false },
+];
+
+/**
+ * Parse a relation line using string functions (no regex)
+ * Returns true if a relation was found and added
+ */
+function parseRelationLine(line, result) {
+	const trimmed = line.trim();
+	if (!trimmed) return false;
+
+	// First, check for multiplicities pattern: A "1" -- "4" B or A "1" -l- "4" B
+	// This is: ClassName "mult" separator "mult" ClassName
+	const firstQuoteIdx = trimmed.indexOf('"');
+	if (firstQuoteIdx !== -1) {
+		const secondQuoteIdx = trimmed.indexOf('"', firstQuoteIdx + 1);
+		if (secondQuoteIdx !== -1) {
+			const thirdQuoteIdx = trimmed.indexOf('"', secondQuoteIdx + 1);
+			if (thirdQuoteIdx !== -1) {
+				const fourthQuoteIdx = trimmed.indexOf('"', thirdQuoteIdx + 1);
+				if (fourthQuoteIdx !== -1) {
+					// We have 4 quotes: A "mult1" separator "mult2" B
+					const from = trimmed.slice(0, firstQuoteIdx).trim();
+					const mult1 = trimmed.slice(firstQuoteIdx + 1, secondQuoteIdx);
+					const mult2 = trimmed.slice(thirdQuoteIdx + 1, fourthQuoteIdx);
+					const rest = trimmed.slice(fourthQuoteIdx + 1).trim();
+
+					// Rest might contain the target class and optionally a label after :
+					let to = rest;
+					let label = null;
+					const colonIdx = rest.indexOf(':');
+					if (colonIdx !== -1) {
+						to = rest.slice(0, colonIdx).trim();
+						label = rest.slice(colonIdx + 1).trim();
+					}
+
+					// Ensure classes exist in result
+					if (from && !result.classes[from]) {
+						result.classes[from] = { name: from, stereotype: null, attributes: [], methods: [] };
+					}
+					if (to && !result.classes[to]) {
+						result.classes[to] = { name: to, stereotype: null, attributes: [], methods: [] };
+					}
+
+					result.relations.push({
+						from: from,
+						to: to,
+						type: 'association',
+						label: label,
+						multiplicityFrom: mult1,
+						multiplicityTo: mult2,
+						reverse: false
+					});
+					return true;
+				}
+			}
+		}
+	}
+
+	// Try each arrow pattern in order
+	for (const arrow of ARROWS) {
+		const idx = trimmed.indexOf(arrow.pattern);
+		if (idx === -1) continue;
+
+		// Make sure we don't match partial arrows (e.g., '--' in '--|>')
+		// Check that this is really this arrow and not part of a longer one
+		let isPartOfLongerArrow = false;
+		for (const otherArrow of ARROWS) {
+			if (otherArrow.pattern.length > arrow.pattern.length &&
+				otherArrow.pattern.indexOf(arrow.pattern) !== -1) {
+				// Check if this longer arrow is present at this position
+				const otherIdx = trimmed.indexOf(otherArrow.pattern);
+				if (otherIdx !== -1 && otherIdx <= idx &&
+					otherIdx + otherArrow.pattern.length > idx) {
+					isPartOfLongerArrow = true;
+					break;
+				}
+			}
+		}
+		if (isPartOfLongerArrow) continue;
+
+		// Split the line on the arrow
+		const leftPart = trimmed.slice(0, idx).trim();
+		const rightPart = trimmed.slice(idx + arrow.pattern.length).trim();
+
+		// Extract label if present (after colon)
+		let rightClass = rightPart;
+		let label = null;
+		const colonIdx = rightPart.indexOf(':');
+		if (colonIdx !== -1) {
+			rightClass = rightPart.slice(0, colonIdx).trim();
+			label = rightPart.slice(colonIdx + 1).trim();
+		}
+
+		// Handle multiplicities in single-sided format: A --> "1" B
+		let multiplicity = null;
+		if (rightClass.startsWith('"')) {
+			const endQuoteIdx = rightClass.indexOf('"', 1);
+			if (endQuoteIdx !== -1) {
+				multiplicity = rightClass.slice(1, endQuoteIdx);
+				rightClass = rightClass.slice(endQuoteIdx + 1).trim();
+			}
+		}
+
+		// Determine from and to based on reverse flag
+		let from = arrow.reverse ? rightClass : leftPart;
+		let to = arrow.reverse ? leftPart : rightClass;
+
+		// Remove any quotes from class names
+		from = removeQuotes(from);
+		to = removeQuotes(to);
+
+		// Skip if we don't have valid class names
+		if (!from || !to) continue;
+
+		// Ensure classes exist in result
+		if (!result.classes[from]) {
+			result.classes[from] = { name: from, stereotype: null, attributes: [], methods: [] };
+		}
+		if (!result.classes[to]) {
+			result.classes[to] = { name: to, stereotype: null, attributes: [], methods: [] };
+		}
+
+		result.relations.push({
+			from: from,
+			to: to,
+			type: arrow.type,
+			label: label,
+			multiplicity: multiplicity,
+			multiplicityFrom: null,
+			multiplicityTo: multiplicity,
+			reverse: arrow.reverse
+		});
+		return true;
+	}
+
+	return false;
+}
+
+/**
+ * Parse class line (class ClassName or class ClassName <<stereotype>>)
+ * Returns class info or null
+ */
+function parseClassLine(line) {
+	const trimmed = line.trim();
+
+	// Must start with 'class '
+	if (!trimmed.startsWith('class ')) return null;
+
+	let rest = trimmed.slice(6).trim(); // Remove 'class '
+
+	// Check for opening brace
+	const hasBrace = rest.endsWith('{');
+	if (hasBrace) {
+		rest = rest.slice(0, -1).trim();
+	}
+
+	// Check for stereotype <<...>>
+	let stereotype = null;
+	const stereotypeStart = rest.indexOf('<<');
+	const stereotypeEnd = rest.indexOf('>>');
+	if (stereotypeStart !== -1 && stereotypeEnd !== -1 && stereotypeEnd > stereotypeStart) {
+		stereotype = rest.slice(stereotypeStart + 2, stereotypeEnd).trim();
+		rest = rest.slice(0, stereotypeStart).trim();
+	}
+
+	// What remains should be the class name
+	const className = rest.trim();
+	if (!className) return null;
+
+	// Validate class name (only word characters)
+	for (let i = 0; i < className.length; i++) {
+		const c = className.charCodeAt(i);
+		const isValid = (c >= 65 && c <= 90) ||  // A-Z
+		                (c >= 97 && c <= 122) || // a-z
+		                (c >= 48 && c <= 57) ||  // 0-9
+		                c === 95;                 // _
+		if (!isValid) return null;
+	}
+
+	return {
+		name: className,
+		stereotype: stereotype,
+		hasBrace: hasBrace
+	};
+}
+
+/**
+ * Parse interface line (interface InterfaceName)
+ */
+function parseInterfaceLine(line) {
+	const trimmed = line.trim();
+
+	if (!trimmed.startsWith('interface ')) return null;
+
+	let rest = trimmed.slice(10).trim(); // Remove 'interface '
+
+	const hasBrace = rest.endsWith('{');
+	if (hasBrace) {
+		rest = rest.slice(0, -1).trim();
+	}
+
+	const interfaceName = rest.trim();
+	if (!interfaceName) return null;
+
+	return {
+		name: interfaceName,
+		stereotype: 'interface',
+		hasBrace: hasBrace
+	};
+}
+
+/**
+ * Parse abstract class line (abstract class ClassName)
+ */
+function parseAbstractClassLine(line) {
+	const trimmed = line.trim();
+
+	if (!trimmed.startsWith('abstract class ')) return null;
+
+	let rest = trimmed.slice(15).trim(); // Remove 'abstract class '
+
+	const hasBrace = rest.endsWith('{');
+	if (hasBrace) {
+		rest = rest.slice(0, -1).trim();
+	}
+
+	const className = rest.trim();
+	if (!className) return null;
+
+	return {
+		name: className,
+		stereotype: 'abstract',
+		hasBrace: hasBrace
+	};
+}
+
+/**
+ * Parse member line (attribute or method)
+ */
+function parseMemberLine(line) {
+	const trimmed = line.trim();
+	if (!trimmed) return null;
+
+	// Check for visibility prefix
+	let visibility = '+'; // default public
+	let rest = trimmed;
+
+	const firstChar = trimmed.charAt(0);
+	if (firstChar === '+' || firstChar === '-' || firstChar === '#' || firstChar === '~') {
+		visibility = firstChar;
+		rest = trimmed.slice(1).trim();
+	}
+
+	// Check if it's a method (contains parentheses)
+	const parenOpen = rest.indexOf('(');
+	const parenClose = rest.indexOf(')');
+
+	if (parenOpen !== -1 && parenClose !== -1 && parenClose > parenOpen) {
+		// It's a method
+		const methodName = rest.slice(0, parenOpen).trim();
+		const paramsStr = rest.slice(parenOpen + 1, parenClose);
+		let returnType = 'void';
+
+		// Check for return type after )
+		const afterParen = rest.slice(parenClose + 1).trim();
+		if (afterParen) {
+			// Could be ': Type' or just 'Type'
+			if (afterParen.startsWith(':')) {
+				returnType = afterParen.slice(1).trim() || 'void';
+			} else {
+				returnType = afterParen || 'void';
+			}
+		}
+
+		return {
+			type: 'method',
+			visibility: visibility,
+			name: methodName,
+			parameters: parseParameters(paramsStr),
+			returnType: returnType
+		};
+	}
+
+	// It's an attribute
+	const colonIdx = rest.indexOf(':');
+	if (colonIdx !== -1) {
+		const attrName = rest.slice(0, colonIdx).trim();
+		const attrType = rest.slice(colonIdx + 1).trim();
+		return {
+			type: 'attribute',
+			visibility: visibility,
+			name: attrName,
+			attrType: attrType || 'unknown'
+		};
+	}
+
+	// No colon, might be "name Type" or just "name" (Larman-style without type)
+	const spaceIdx = rest.indexOf(' ');
+	if (spaceIdx !== -1) {
+		return {
+			type: 'attribute',
+			visibility: visibility,
+			name: rest.slice(0, spaceIdx).trim(),
+			attrType: rest.slice(spaceIdx + 1).trim() || null
+		};
+	}
+
+	// Just a name without type (Larman-style analysis phase attribute)
+	if (rest) {
+		return {
+			type: 'attribute',
+			visibility: visibility,
+			name: rest,
+			attrType: null
+		};
+	}
+
+	return null;
 }
 
 /**
@@ -188,177 +578,77 @@ function parseMermaidClassDiagram(code) {
 			continue;
 		}
 
-		// Class definition with block: class ClassName {
-		const classBlockMatch = trimmed.match(/^class\s+(\w+)\s*\{?\s*$/);
-		if (classBlockMatch) {
-			currentClass = classBlockMatch[1];
-			inClassBlock = trimmed.includes('{');
+		// Try to parse as class definition
+		const classInfo = parseClassLine(trimmed);
+		if (classInfo) {
+			currentClass = classInfo.name;
+			inClassBlock = classInfo.hasBrace;
 			if (!result.classes[currentClass]) {
 				result.classes[currentClass] = {
 					name: currentClass,
-					stereotype: null,
+					stereotype: classInfo.stereotype,
 					attributes: [],
 					methods: [],
 				};
+			} else if (classInfo.stereotype) {
+				result.classes[currentClass].stereotype = classInfo.stereotype;
 			}
 			continue;
 		}
 
-		// Stereotype: <<interface>>, <<abstract>>, <<enumeration>>
-		if (inClassBlock && currentClass) {
-			const stereotypeMatch = trimmed.match(/^<<(\w+)>>$/);
-			if (stereotypeMatch) {
-				result.classes[currentClass].stereotype = stereotypeMatch[1].toLowerCase();
-				continue;
-			}
+		// Stereotype inside class block: <<interface>>, etc.
+		if (inClassBlock && currentClass && trimmed.startsWith('<<') && trimmed.endsWith('>>')) {
+			const stereotype = trimmed.slice(2, -2).toLowerCase();
+			result.classes[currentClass].stereotype = stereotype;
+			continue;
 		}
 
 		// Member inside class block (attribute or method)
 		if (inClassBlock && currentClass) {
-			// Method: +methodName(params) returnType or +methodName(params) : returnType
-			const methodMatch = trimmed.match(/^([+\-#~])?(\w+)\s*\(([^)]*)\)\s*:?\s*(\w+)?$/);
-			if (methodMatch) {
-				const [, visibility, name, params, returnType] = methodMatch;
-				result.classes[currentClass].methods.push({
-					visibility: visibility || '+',
-					name,
-					parameters: parseParameters(params),
-					returnType: returnType || 'void',
-				});
-				continue;
-			}
-
-			// Attribute: +attributeName : Type or -attributeName Type
-			const attrMatch = trimmed.match(/^([+\-#~])?(\w+)\s*:?\s*(.+)?$/);
-			if (attrMatch && !trimmed.includes('(')) {
-				const [, visibility, name, type] = attrMatch;
-				result.classes[currentClass].attributes.push({
-					visibility: visibility || '-',
-					name,
-					type: type ? type.trim() : 'unknown',
-				});
+			const member = parseMemberLine(trimmed);
+			if (member) {
+				if (member.type === 'method') {
+					result.classes[currentClass].methods.push({
+						visibility: member.visibility,
+						name: member.name,
+						parameters: member.parameters,
+						returnType: member.returnType,
+					});
+				} else if (member.type === 'attribute') {
+					result.classes[currentClass].attributes.push({
+						visibility: member.visibility,
+						name: member.name,
+						type: member.attrType,
+					});
+				}
 				continue;
 			}
 		}
 
 		// Note: note for ClassName "text"
-		const noteMatch = trimmed.match(/^note\s+for\s+(\w+)\s+"([^"]+)"$/);
-		if (noteMatch) {
-			result.notes.push({
-				className: noteMatch[1],
-				text: noteMatch[2],
-			});
-			continue;
+		if (trimmed.startsWith('note for ')) {
+			const rest = trimmed.slice(9); // Remove 'note for '
+			const spaceIdx = rest.indexOf(' ');
+			if (spaceIdx !== -1) {
+				const className = rest.slice(0, spaceIdx).trim();
+				let noteText = rest.slice(spaceIdx + 1).trim();
+				// Remove surrounding quotes if present
+				if (noteText.startsWith('"') && noteText.endsWith('"')) {
+					noteText = noteText.slice(1, -1);
+				}
+				result.notes.push({
+					className: className,
+					text: noteText,
+				});
+				continue;
+			}
 		}
 
-		// Relations parsing
-		parseRelation(trimmed, result);
+		// Try to parse as relation
+		parseRelationLine(trimmed, result);
 	}
 
 	return result;
-}
-
-/**
- * Parse parameters string into structured array
- */
-function parseParameters(paramsStr) {
-	if (!paramsStr || paramsStr.trim() === '') return [];
-
-	const params = [];
-	const paramParts = paramsStr.split(',');
-
-	for (const part of paramParts) {
-		const trimmed = part.trim();
-		if (!trimmed) continue;
-
-		// Format: name : Type or name Type
-		const paramMatch = trimmed.match(/^(\w+)\s*:?\s*(.+)?$/);
-		if (paramMatch) {
-			params.push({
-				name: paramMatch[1],
-				type: paramMatch[2] ? paramMatch[2].trim() : 'unknown',
-			});
-		}
-	}
-
-	return params;
-}
-
-/**
- * Parse relation line
- */
-function parseRelation(line, result) {
-	// Mermaid relation patterns:
-	// A --|> B : inheritance
-	// A ..|> B : implementation (realization)
-	// A --> B : association
-	// A --o B : aggregation
-	// A --* B : composition
-	// A ..> B : dependency
-	// With labels: A --> "1" B : label or A "1" --> "*" B : label
-
-	const relationPatterns = [
-		// Implementation: A ..|> B
-		{ regex: /^(\w+)\s*\.\.\|>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation' },
-		// Inheritance: A --|> B
-		{ regex: /^(\w+)\s*--\|>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'inheritance' },
-		// Inheritance (reverse): B <|-- A
-		{ regex: /^(\w+)\s*<\|--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'inheritance', reverse: true },
-		// Implementation (reverse): B <|.. A
-		{ regex: /^(\w+)\s*<\|\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation', reverse: true },
-		// Composition: A --* B or A *-- B
-		{ regex: /^(\w+)\s*--\*\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition' },
-		{ regex: /^(\w+)\s*\*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition', reverse: true },
-		// Aggregation: A --o B or A o-- B
-		{ regex: /^(\w+)\s*--o\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation' },
-		{ regex: /^(\w+)\s*o--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation', reverse: true },
-		// Dependency: A ..> B
-		{ regex: /^(\w+)\s*\.\.>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
-		// Reversed dependency: B <.. A
-		{ regex: /^(\w+)\s*<\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency', reverse: true },
-		// Association with multiplicity: A --> "1" B : label
-		{ regex: /^(\w+)\s*-->\s*"([^"]+)"\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association', hasMultiplicity: true },
-		// Simple association: A --> B : label
-		{ regex: /^(\w+)\s*-->\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
-		// Bidirectional association
-		{ regex: /^(\w+)\s*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
-		// Dotted line (plain)
-		{ regex: /^(\w+)\s*\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
-	];
-
-	for (const pattern of relationPatterns) {
-		const match = line.match(pattern.regex);
-		if (match) {
-			let from, to, label, multiplicity;
-
-			if (pattern.hasMultiplicity) {
-				from = match[1];
-				multiplicity = match[2];
-				to = match[3];
-				label = match[4];
-			} else if (pattern.reverse) {
-				from = match[2];
-				to = match[1];
-				label = match[3];
-			} else {
-				from = match[1];
-				to = match[2];
-				label = match[3];
-			}
-
-			   result.relations.push({
-				   from,
-				   to,
-				   type: pattern.type,
-				   label: label ? label.trim() : null,
-				   multiplicity: multiplicity || null,
-				   reverse: !!pattern.reverse
-			   });
-			return true;
-		}
-	}
-
-	return false;
 }
 
 /**
@@ -381,20 +671,22 @@ function parsePlantUMLClassDiagram(code) {
 		// Skip empty lines, comments, and directives
 		if (!trimmed || trimmed.startsWith('@') || trimmed.startsWith('\'') ||
 			trimmed.startsWith('hide') || trimmed.startsWith('skinparam') ||
-			trimmed.startsWith('rectangle') || trimmed === '}') {
-			// Note: we skip 'rectangle' blocks (used for grouping like Aggregates) but continue parsing their contents
-			if (trimmed === '}') {
-				inClassBlock = false;
-				currentClass = null;
-			}
+			trimmed.startsWith('rectangle')) {
 			continue;
 		}
 
-		// Interface definition: interface InterfaceName
-		const interfaceMatch = trimmed.match(/^interface\s+(\w+)\s*\{?\s*$/);
-		if (interfaceMatch) {
-			currentClass = interfaceMatch[1];
-			inClassBlock = trimmed.includes('{');
+		// End of class block
+		if (trimmed === '}') {
+			inClassBlock = false;
+			currentClass = null;
+			continue;
+		}
+
+		// Interface definition
+		const interfaceInfo = parseInterfaceLine(trimmed);
+		if (interfaceInfo) {
+			currentClass = interfaceInfo.name;
+			inClassBlock = interfaceInfo.hasBrace;
 			result.classes[currentClass] = {
 				name: currentClass,
 				stereotype: 'interface',
@@ -404,11 +696,11 @@ function parsePlantUMLClassDiagram(code) {
 			continue;
 		}
 
-		// Abstract class: abstract class ClassName
-		const abstractMatch = trimmed.match(/^abstract\s+class\s+(\w+)\s*\{?\s*$/);
-		if (abstractMatch) {
-			currentClass = abstractMatch[1];
-			inClassBlock = trimmed.includes('{');
+		// Abstract class definition
+		const abstractInfo = parseAbstractClassLine(trimmed);
+		if (abstractInfo) {
+			currentClass = abstractInfo.name;
+			inClassBlock = abstractInfo.hasBrace;
 			result.classes[currentClass] = {
 				name: currentClass,
 				stereotype: 'abstract',
@@ -418,156 +710,71 @@ function parsePlantUMLClassDiagram(code) {
 			continue;
 		}
 
-		// Regular class: class ClassName or class ClassName <<stereotype>> or class ClassName <<stereotype>> {
-		const classMatch = trimmed.match(/^class\s+(\w+)(?:\s*<<([^>]+)>>)?\s*\{?\s*$/);
-		if (classMatch) {
-			currentClass = classMatch[1];
-			const stereotype = classMatch[2] || null;
-			inClassBlock = trimmed.includes('{');
+		// Regular class definition
+		const classInfo = parseClassLine(trimmed);
+		if (classInfo) {
+			currentClass = classInfo.name;
+			inClassBlock = classInfo.hasBrace;
 			if (!result.classes[currentClass]) {
 				result.classes[currentClass] = {
 					name: currentClass,
-					stereotype: stereotype,
+					stereotype: classInfo.stereotype,
 					attributes: [],
 					methods: [],
 				};
-			} else if (stereotype) {
-				// Update stereotype if class was already declared (e.g., from a relation)
-				result.classes[currentClass].stereotype = stereotype;
+			} else if (classInfo.stereotype) {
+				result.classes[currentClass].stereotype = classInfo.stereotype;
 			}
 			continue;
 		}
 
 		// Member inside class block
 		if (inClassBlock && currentClass) {
-			// Method: +methodName(params) : returnType or + methodName(params) : returnType (with space after visibility)
-			const methodMatch = trimmed.match(/^([+\-#~])?\s*(\w+)\s*\(([^)]*)\)\s*(?::\s*)?(\w+)?$/);
-			if (methodMatch) {
-				const [, visibility, name, params, returnType] = methodMatch;
-				result.classes[currentClass].methods.push({
-					visibility: visibility || '+',
-					name,
-					parameters: parseParameters(params),
-					returnType: returnType || 'void',
-				});
-				continue;
-			}
-
-			// Attribute: +attributeName : Type or + attributeName : Type (with space after visibility)
-			const attrMatch = trimmed.match(/^([+\-#~])?\s*(\w+)\s*:\s*(.+)$/);
-			if (attrMatch) {
-				result.classes[currentClass].attributes.push({
-					visibility: attrMatch[1] || '-',
-					name: attrMatch[2],
-					type: attrMatch[3].trim(),
-				});
+			const member = parseMemberLine(trimmed);
+			if (member) {
+				if (member.type === 'method') {
+					result.classes[currentClass].methods.push({
+						visibility: member.visibility,
+						name: member.name,
+						parameters: member.parameters,
+						returnType: member.returnType,
+					});
+				} else if (member.type === 'attribute') {
+					result.classes[currentClass].attributes.push({
+						visibility: member.visibility,
+						name: member.name,
+						type: member.attrType,
+					});
+				}
 				continue;
 			}
 		}
 
-		// Note: note "text" as N1 or note right of ClassName : text
-		const noteMatch = trimmed.match(/^note\s+(?:right|left|top|bottom)\s+of\s+(\w+)\s*:\s*(.+)$/);
-		if (noteMatch) {
-			result.notes.push({
-				className: noteMatch[1],
-				text: noteMatch[2],
-			});
-			continue;
+		// Note: note right of ClassName : text
+		if (trimmed.startsWith('note ')) {
+			const rest = trimmed.slice(5);
+			// Check for 'right of', 'left of', 'top of', 'bottom of'
+			const ofIdx = rest.indexOf(' of ');
+			if (ofIdx !== -1) {
+				const afterOf = rest.slice(ofIdx + 4);
+				const colonIdx = afterOf.indexOf(':');
+				if (colonIdx !== -1) {
+					const className = afterOf.slice(0, colonIdx).trim();
+					const noteText = afterOf.slice(colonIdx + 1).trim();
+					result.notes.push({
+						className: className,
+						text: noteText,
+					});
+					continue;
+				}
+			}
 		}
 
-		// PlantUML relations
-		parsePlantUMLRelation(trimmed, result);
+		// Try to parse as relation
+		parseRelationLine(trimmed, result);
 	}
 
 	return result;
-}
-
-/**
- * Parse PlantUML relation
- */
-function parsePlantUMLRelation(line, result) {
-	// PlantUML relation patterns:
-	// A --|> B : inheritance
-	// A ..|> B : implementation
-	// A --> B : association
-	// A --o B : aggregation
-	// A --* B : composition
-	// A ..> B : dependency
-	// A "1" -- "*" B : association with multiplicities on both sides
-	// A "1" -l- "4" B : directional association (l=left, r=right, u=up, d=down)
-
-	const patterns = [
-		{ regex: /^(\w+)\s*\.\.\|>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation' },
-		{ regex: /^(\w+)\s*--\|>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'inheritance' },
-		{ regex: /^(\w+)\s*<\|--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'inheritance', reverse: true },
-		{ regex: /^(\w+)\s*<\|\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation', reverse: true },
-		{ regex: /^(\w+)\s*--\*\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition' },
-		{ regex: /^(\w+)\s*\*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition' },
-		{ regex: /^(\w+)\s*--o\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation' },
-		{ regex: /^(\w+)\s*o--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation' },
-		{ regex: /^(\w+)\s*\.\.>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
-		{ regex: /^(\w+)\s*-->\s*"([^"]+)"\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association', hasMultiplicity: true },
-		{ regex: /^(\w+)\s*-->\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
-		// PlantUML with multiplicities on both sides: A "1" -- "*" B or A "1" -l- "4" B
-		{ regex: /^(\w+)\s+"([^"]+)"\s+-[lrud]?-\s+"([^"]+)"\s+(\w+)$/, type: 'association', hasBothMultiplicities: true },
-		{ regex: /^(\w+)\s*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
-	];
-
-	for (const pattern of patterns) {
-		const match = line.match(pattern.regex);
-		if (match) {
-			let from, to, label, multiplicityFrom, multiplicityTo;
-
-			if (pattern.hasBothMultiplicities) {
-				// A "1" -- "*" B format
-				from = match[1];
-				multiplicityFrom = match[2];
-				multiplicityTo = match[3];
-				to = match[4];
-				label = null;
-			} else if (pattern.hasMultiplicity) {
-				from = match[1];
-				// Split multiplicity and label if present, e.g. "1 -minuten" or "1-uren"
-				let multiLabel = match[2];
-				let multiParts = multiLabel.match(/^([\d]+)\s*-\s*(.+)$/);
-				if (multiParts) {
-					multiplicityTo = multiParts[1].trim();
-					label = multiParts[2].trim();
-				} else {
-					// Try without space: "1-uren"
-					multiParts = multiLabel.match(/^([\d]+)-(\w+)$/);
-					if (multiParts) {
-						multiplicityTo = multiParts[1].trim();
-						label = multiParts[2].trim();
-					} else {
-						multiplicityTo = multiLabel.trim();
-						label = match[4];
-					}
-				}
-				to = match[3];
-			} else if (pattern.reverse) {
-				from = match[2];
-				to = match[1];
-				label = match[3];
-			} else {
-				from = match[1];
-				to = match[2];
-				label = match[3];
-			}
-
-			result.relations.push({
-				from,
-				to,
-				type: pattern.type,
-				label: label ? label.trim() : null,
-				multiplicityFrom: multiplicityFrom || null,
-				multiplicityTo: multiplicityTo || null,
-			});
-			return true;
-		}
-	}
-
-	return false;
 }
 
 /**
@@ -581,55 +788,65 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 	const relationCount = parsed.relations.length;
 
 	// Summary
-	parts.push(`${t.classDiagram} ${t.withClasses.replace('{count}', classCount)} ${t.andRelations.replace('{count}', relationCount)}.`);
+	parts.push(t.classDiagram + ' ' + t.withClasses.replace('{count}', classCount) + ' ' + t.andRelations.replace('{count}', relationCount) + '.');
 
 	// Classes section
 	if (classCount > 0) {
 		parts.push('');
-		parts.push(`${t.classes}:`);
+		parts.push(t.classes + ':');
 
-		for (const [className, classData] of Object.entries(parsed.classes)) {
+		for (const className of Object.keys(parsed.classes)) {
+			const classData = parsed.classes[className];
+
 			// Class header with stereotype
 			let classHeader;
 			const stereotypeLower = classData.stereotype ? classData.stereotype.toLowerCase() : null;
 			if (stereotypeLower === 'interface') {
-				classHeader = `${t.interface} ${className}`;
+				classHeader = t.interface + ' ' + className;
 			} else if (stereotypeLower === 'abstract') {
-				classHeader = `${t.abstractClass} ${className}`;
+				classHeader = t.abstractClass + ' ' + className;
 			} else if (stereotypeLower === 'enumeration') {
-				classHeader = `${t.enumeration} ${className}`;
+				classHeader = t.enumeration + ' ' + className;
 			} else if (classData.stereotype) {
-				// Custom stereotype (e.g., Aggregate Root, Entity, Value Object) - preserve original casing
-				classHeader = `${t.class} ${className} ${t.withStereotype} ${classData.stereotype}`;
+				// Custom stereotype (e.g., Aggregate Root, Entity, Value Object)
+				classHeader = t.class + ' ' + className + ' ' + t.withStereotype + ' ' + classData.stereotype;
 			} else {
-				classHeader = `${t.class} ${className}`;
+				classHeader = t.class + ' ' + className;
 			}
 
 			const hasAttributes = classData.attributes.length > 0;
 			const hasMethods = classData.methods.length > 0;
 			const hasMembers = hasAttributes || hasMethods;
+
 			if (hasMembers) {
-				classHeader += ` ${t.with}:`;
+				classHeader += ' ' + t.with + ':';
 			}
 			parts.push(classHeader);
 
 			// Check if class has no members at all
 			if (!hasMembers) {
-				parts.push(`  - ${t.noMethodsAndAttributes}`);
+				parts.push('  - ' + t.noMethodsAndAttributes);
 			} else {
 				// Methods
 				for (const method of classData.methods) {
 					const visibility = parseVisibility(method.visibility, locale);
-					let methodDesc = `  - ${visibility} ${t.method} ${method.name}`;
+					let methodDesc = '  - ' + visibility + ' ' + t.method + ' ' + method.name;
 
 					if (method.parameters.length === 0) {
-						methodDesc += `, ${t.withoutParameters}`;
+						methodDesc += ', ' + t.withoutParameters;
 					} else {
-						const paramDescs = method.parameters.map(p => `${p.name} ${t.ofType} ${p.type}`);
-						methodDesc += `, ${t.withParameters} ${paramDescs.join(', ')}`;
+						const paramDescs = method.parameters.map(function(p) {
+							// Only include type if present and not 'unknown'
+							if (p.type && p.type !== 'unknown') {
+								return p.name + ' ' + t.ofType + ' ' + p.type;
+							} else {
+								return p.name;
+							}
+						});
+						methodDesc += ', ' + t.withParameters + ' ' + paramDescs.join(', ');
 					}
 
-					methodDesc += `, ${t.returnType} ${method.returnType}`;
+					methodDesc += ', ' + t.returnType + ' ' + method.returnType;
 					parts.push(methodDesc);
 				}
 
@@ -637,15 +854,20 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 				for (const attr of classData.attributes) {
 					const visibility = parseVisibility(attr.visibility, locale);
 					const type = parseType(attr.type, locale);
-					parts.push(`  - ${visibility} ${t.attribute} ${attr.name} ${t.ofType} ${type}`);
+					// Only include type if present (Fowler-style), omit for Larman-style
+					if (type) {
+						parts.push('  - ' + visibility + ' ' + t.attribute + ' ' + attr.name + ' ' + t.ofType + ' ' + type);
+					} else {
+						parts.push('  - ' + visibility + ' ' + t.attribute + ' ' + attr.name);
+					}
 				}
 
 				// Explicit messages for missing members when class has some members
 				if (!hasAttributes && hasMethods) {
-					parts.push(`  - ${t.noAttributes}`);
+					parts.push('  - ' + t.noAttributes);
 				}
 				if (!hasMethods && hasAttributes) {
-					parts.push(`  - ${t.noMethods}`);
+					parts.push('  - ' + t.noMethods);
 				}
 			}
 		}
@@ -654,63 +876,65 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 	// Relations section
 	if (relationCount > 0) {
 		parts.push('');
-		parts.push(`${t.relations}:`);
+		parts.push(t.relations + ':');
 
 		for (const rel of parsed.relations) {
 			let relDesc;
 
+			// Helper to build relation with optional name
+			// Format: "A heeft een associatie-relatie met naam 'x' met B" or "A heeft een associatie-relatie met B"
+			function buildRelationDesc(from, relationType, to, label) {
+				if (label) {
+					const namedPart = t.withNamedRelation.replace('{name}', label);
+					return '- ' + from + ' ' + relationType + ' ' + namedPart + ' ' + to;
+				} else {
+					return '- ' + from + ' ' + relationType + ' ' + t.withUnnamedRelation + ' ' + to;
+				}
+			}
+
 			switch (rel.type) {
 				case 'inheritance':
-					relDesc = `- ${rel.from} ${t.inheritance} ${rel.to}`;
-					if (t.relationShort && t.relationShort.inheritance) relDesc += ` ${t.relationShort.inheritance}`;
+					// Inheritance doesn't use the named pattern
+					relDesc = '- ' + rel.from + ' ' + t.inheritance + ' ' + rel.to;
 					break;
 				case 'implementation':
-					relDesc = `- ${rel.from} ${t.implementation} ${rel.to}`;
-					if (t.relationShort && t.relationShort.implementation) relDesc += ` ${t.relationShort.implementation}`;
+					// Implementation doesn't use the named pattern
+					relDesc = '- ' + rel.from + ' ' + t.implementation + ' ' + rel.to;
 					break;
 				case 'association':
-					relDesc = `- ${rel.from} ${t.association} ${rel.to}`;
-					if (t.relationShort && t.relationShort.association) relDesc += ` ${t.relationShort.association}`;
+					relDesc = buildRelationDesc(rel.from, t.association, rel.to, rel.label);
 					break;
 				case 'aggregation':
-					relDesc = `- ${rel.from} ${t.aggregation} ${rel.to}`;
-					if (t.relationShort && t.relationShort.aggregation) relDesc += ` ${t.relationShort.aggregation}`;
+					relDesc = buildRelationDesc(rel.from, t.aggregation, rel.to, rel.label);
 					break;
 				case 'composition':
-					relDesc = `- ${rel.from} ${t.composition} ${rel.to}`;
-					if (t.relationShort && t.relationShort.composition) relDesc += ` ${t.relationShort.composition}`;
+					relDesc = buildRelationDesc(rel.from, t.composition, rel.to, rel.label);
 					break;
-				   case 'dependency':
-					   if (rel.reverse) {
-						   // Dutch: 'heeft een afhankelijkheid vanaf', English: 'has a dependency from'
-						   const depFrom = locale === 'nl' ? 'heeft een afhankelijkheid vanaf' : 'has a dependency from';
-						   relDesc = `- ${rel.from} ${depFrom} ${rel.to}`;
-					   } else {
-						   relDesc = `- ${rel.from} ${t.dependency} ${rel.to}`;
-						   if (t.relationShort && t.relationShort.dependency) relDesc += ` ${t.relationShort.dependency}`;
-					   }
-					   break;
+				case 'dependency':
+					if (rel.reverse) {
+						relDesc = '- ' + rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
+					} else {
+						relDesc = '- ' + rel.from + ' ' + t.dependency + ' ' + rel.to;
+					}
+					break;
 				default:
-					relDesc = `- ${rel.from} -> ${rel.to}`;
+					relDesc = '- ' + rel.from + ' -> ' + rel.to;
 			}
 
-			// Always include both label and multiplicity if present
-			let details = [];
-			if (rel.label) {
-				details.push(`${t.withName} ${rel.label}`);
+			// Add multiplicity if present (label is now part of the main description)
+			const details = [];
+			// Handle multiplicities
+			if (rel.multiplicityFrom && rel.multiplicityTo) {
+				details.push(t.multiplicity + ' ' + rel.multiplicityFrom + ' ' + t.multiplicityTo + ' ' + rel.multiplicityTo);
+			} else if (rel.multiplicityTo) {
+				details.push(t.multiplicity + ' ' + rel.multiplicityTo);
+			} else if (rel.multiplicity) {
+				details.push(t.multiplicity + ' ' + rel.multiplicity);
 			}
-			// Handle multiplicities (both old 'multiplicity' format and new 'multiplicityFrom/To' format)
-			   if (rel.multiplicityFrom && rel.multiplicityTo) {
-				   details.push(`${t.multiplicity} ${rel.multiplicityFrom} ${t.multiplicityTo} ${rel.multiplicityTo}`);
-			   } else if (rel.multiplicityTo) {
-				   details.push(`${t.multiplicity} ${rel.multiplicityTo}`);
-			   } else if (rel.multiplicity) {
-				   details.push(`${t.multiplicity} ${rel.multiplicity}`);
-			   }
 
-			   if (details.length > 0) {
-				   relDesc += ', ' + details.join(', ');
-			   }
+			if (details.length > 0) {
+				relDesc += ', ' + details.join(', ');
+			}
 
 			parts.push(relDesc);
 		}
@@ -719,13 +943,13 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 	// Notes section
 	if (parsed.notes.length > 0) {
 		parts.push('');
-		parts.push(`${t.notes}:`);
+		parts.push(t.notes + ':');
 
 		for (const note of parsed.notes) {
 			const noteHeader = t.noteFor.replace('{class}', note.className);
 			// Clean up escaped newlines in note text
-			const cleanText = note.text.replace(/\\n/g, ' ');
-			parts.push(`- ${noteHeader}: "${cleanText}"`);
+			const cleanText = note.text.split('\\n').join(' ');
+			parts.push('- ' + noteHeader + ': "' + cleanText + '"');
 		}
 	}
 
@@ -737,10 +961,10 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
  */
 function detectDiagramFormat(code) {
 	const lowerCode = code.toLowerCase();
-	if (lowerCode.includes('@startuml') || lowerCode.includes('@enduml')) {
+	if (lowerCode.indexOf('@startuml') !== -1 || lowerCode.indexOf('@enduml') !== -1) {
 		return 'plantuml';
 	}
-	if (lowerCode.includes('classdiagram') || lowerCode.startsWith('classDiagram')) {
+	if (lowerCode.indexOf('classdiagram') !== -1) {
 		return 'mermaid';
 	}
 	// Default to Mermaid if unclear

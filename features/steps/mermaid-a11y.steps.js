@@ -61,6 +61,13 @@ Then('zou de beschrijving moeten bevatten {string}', function(expectedText) {
 	);
 });
 
+Then('zou de beschrijving niet moeten bevatten {string}', function(unexpectedText) {
+	assert.ok(
+		!generatedDescription.includes(unexpectedText),
+		`Verwachtte "${unexpectedText}" NIET in beschrijving, maar vond het wel:\n${generatedDescription}`
+	);
+});
+
 Then('zou de eerste regel moeten zijn:', function(expectedDocString) {
 	const firstLine = (generatedDescription || '').split('\n')[0].trim();
 	const expected = (expectedDocString || '').trim();

@@ -160,6 +160,22 @@ const defaultFallbackA11yText = {
 	en: 'Natural language description not yet available for {diagramType}.',
 };
 
+// Localized UI labels for tabs
+const uiLabels = {
+	nl: {
+		tabSource: 'Bron',
+		tabA11y: 'Natuurlijke taal',
+		summaryText: '{type} broncode voor "{title}"',
+		a11ySummaryText: 'Natuurlijke taal beschrijving voor "{title}"',
+	},
+	en: {
+		tabSource: 'Source',
+		tabA11y: 'Natural language',
+		summaryText: '{type} source for "{title}"',
+		a11ySummaryText: 'Natural language description for "{title}"',
+	},
+};
+
 // Default options
 const defaultOptions = {
 	showSource: true,
@@ -272,9 +288,14 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			const showSourceTab = opts.showSource && !hideSource;
 			const showA11yTab = shouldAttemptA11y && !!a11yDescription;
 
+			// Get localized UI labels based on block locale
+			const ui = uiLabels[blockLocale] || uiLabels.en;
+			const tabSourceLabel = ui.tabSource;
+			const tabA11yLabel = ui.tabA11y;
+
 			if (showSourceTab && showA11yTab) {
 				// Use tabs when both are available
-				const summaryText = opts.summaryText
+				const summaryText = ui.summaryText
 					.replace('{title}', escapeHtml(title))
 					.replace('{type}', escapeHtml(langName));
 
@@ -283,8 +304,8 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 <summary>${summaryText}</summary>
 <div class="${opts.cssClass}-tabs">
 <div class="${opts.cssClass}-tab-buttons">
-<button class="${opts.cssClass}-tab-btn active" data-tab="source">${opts.tabSourceLabel}</button>
-<button class="${opts.cssClass}-tab-btn" data-tab="a11y">${opts.tabA11yLabel}</button>
+<button class="${opts.cssClass}-tab-btn active" data-tab="source">${tabSourceLabel}</button>
+<button class="${opts.cssClass}-tab-btn" data-tab="a11y">${tabA11yLabel}</button>
 </div>
 <div class="${opts.cssClass}-tab-content active" data-tab="source">
 <pre><code>${escapedCode}</code></pre>
@@ -302,7 +323,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			} else {
 				// Use separate details blocks
 				if (showSourceTab) {
-					const summaryText = opts.summaryText
+					const summaryText = ui.summaryText
 						.replace('{title}', escapeHtml(title))
 						.replace('{type}', escapeHtml(langName));
 
@@ -317,7 +338,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 				}
 
 				if (showA11yTab) {
-					const a11ySummaryText = opts.a11ySummaryText
+					const a11ySummaryText = ui.a11ySummaryText
 						.replace('{title}', escapeHtml(title))
 						.replace('{type}', escapeHtml(langName));
 

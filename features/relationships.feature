@@ -75,7 +75,35 @@ Functionaliteit: Klassediagram met relaties
     En zou de beschrijving moeten bevatten "Dog erft over van Animal"
     En zou de beschrijving moeten bevatten "Cat erft over van Animal"
 
-  Scenario: PlantUML klassediagram met multipliciteiten
+  Scenario: PlantUML associatie-relatie zonder naam
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Order {
+      }
+      class Customer {
+      }
+      Order --> Customer
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Order heeft een associatie-relatie met Customer"
+
+  Scenario: PlantUML associatie-relatie met naam
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Order {
+      }
+      class Customer {
+      }
+      Order --> Customer : geplaatstDoor
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Order heeft een associatie-relatie met naam 'geplaatstDoor' met Customer"
+
+  Scenario: PlantUML associatie-relatie met multipliciteiten zonder naam
     Gegeven het volgende PlantUML klassediagram:
       """
       @startuml
@@ -95,8 +123,24 @@ Functionaliteit: Klassediagram met relaties
       """
       Klassendiagram met 3 klasse(n) en 2 relatie(s).
       """
-    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Wheel (is gekoppeld aan), multipliciteit 1 naar 4"
-    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Engine (is gekoppeld aan), multipliciteit 1 naar 1"
+    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Wheel, multipliciteit 1 naar 4"
+    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Engine, multipliciteit 1 naar 1"
+
+  Scenario: PlantUML associatie-relatie met naam en multipliciteit
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class KlokDisplay {
+      }
+      class NummerDisplay {
+      }
+      KlokDisplay "1" --> "1" NummerDisplay : minuten
+      KlokDisplay "1" --> "1" NummerDisplay : uren
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "KlokDisplay heeft een associatie-relatie met naam 'minuten' met NummerDisplay"
+    En zou de beschrijving moeten bevatten "KlokDisplay heeft een associatie-relatie met naam 'uren' met NummerDisplay"
 
   Scenario: PlantUML klassediagram met dependency-relatie in omgekeerde richting
     Gegeven het volgende PlantUML klassediagram:

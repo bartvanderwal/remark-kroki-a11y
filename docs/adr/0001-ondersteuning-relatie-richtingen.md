@@ -1,4 +1,4 @@
-# ADR: Richting van UML-relaties in natuurlijke taal output
+# ADR: Ondersteuning voor verschillende relatie-richtingen in UML-diagrammen
 
 ## Status
 

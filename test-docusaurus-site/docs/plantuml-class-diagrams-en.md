@@ -1,48 +1,91 @@
-# PlantUML Example Scenarios
+# PlantUML Class Diagrams (English)
 
-This file contains various PlantUML diagram scenarios for manual plugin testing in Docusaurus.
+This page tests the English A11y descriptions for class diagrams.
 
-## Simple class diagram
+## Simple class diagram with 1 class
 
-```kroki imgType="plantuml" imgTitle="Simple class diagram"
+```kroki imgType="plantuml" imgTitle="WordList class" lang="en"
 @startuml
-class Foo
+class WordList {
+  -words : String[]
+  +sort() : void
+}
 @enduml
 ```
 
-## Class diagram with three classes
+## Class diagram with 3 classes and relationships
 
-```kroki imgType="plantuml" imgTitle="Three classes"
+```kroki imgType="plantuml" imgTitle="Strategy Pattern" lang="en"
 @startuml
-class Foo
-class Bar
-class Baz
-Foo -- Bar
-Bar -- Baz
+interface SortStrategy {
+  +sort(words: String[]) : void
+}
+
+class WordList {
+  -words : String[]
+  +sort() : void
+}
+
+class MergeSort {
+  +sort(words: String[]) : void
+}
+
+WordList --> SortStrategy : currentStrategy
+MergeSort ..|> SortStrategy
 @enduml
 ```
 
-## Source code only (no diagram, just expandable)
+## Extended class diagram with 5 classes and 4 relationships
 
-```kroki hideDiagram imgType="plantuml" imgTitle="Source only"
+```kroki imgType="plantuml" imgTitle="Extended Strategy Pattern" lang="en"
 @startuml
-class SourceOnly
+class WordList {
+  -words : String[]
+  +sort() : void
+  +setSortStrategy(strategy : SortStrategy) : void
+}
+interface SortStrategy {
+  +sort(words : String[]) : void
+}
+class MergeSort {
+  +sort(words : String[]) : void
+}
+class ShellSort {
+  +sort(words : String[]) : void
+}
+class QuickSort {
+  +sort(words : String[]) : void
+}
+WordList --> "1" SortStrategy : -currentStrategy
+MergeSort ..|> SortStrategy
+ShellSort ..|> SortStrategy
+QuickSort ..|> SortStrategy
+note right of WordList
+public void sort() {
+  currentStrategy.sort(words);
+}
+end note
 @enduml
 ```
 
-## Diagram only (no source code)
+**Screen reader text (English):**
 
-```kroki hideSource imgType="plantuml" imgTitle="Diagram only"
-@startuml
-class DiagramOnly
-@enduml
-```
+Class diagram with 5 classes and 4 relationships.
 
-## Diagram + source code + a11y description/tab
+Classes:
 
-```kroki imgType="plantuml" imgTitle="With description"
-@startuml
-class Description
-note right: This is a test of the a11y description.
-@enduml
-```
+- Class WordList with:
+  - Private attribute words of type String Array
+  - Public method sort, without parameters, return type void
+  - Public method setSortStrategy with parameter strategy of type SortStrategy, return type void
+- Interface SortStrategy with public method sort with parameter words of type String Array, return type void
+- Class MergeSort with public method sort with parameter words of type String Array, return type void
+- Class ShellSort with public method sort with parameter words of type String Array, return type void
+- Class QuickSort with public method sort with parameter words of type String Array, return type void
+Relations:
+- WordList has an association-relationship named 'currentStrategy' with SortStrategy, multiplicity 1
+- MergeSort implements interface SortStrategy
+- ShellSort implements interface SortStrategy
+- QuickSort implements interface SortStrategy
+Notes:
+- At class WordList: "The sort method calls currentStrategy.sort with words as parameter"
