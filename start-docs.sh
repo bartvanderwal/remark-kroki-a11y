@@ -57,7 +57,7 @@ FRONTMATTER
 sed -e 's|(docs/adr/README.md)|(./adr/)|g' \
     -e 's|(docs/adr/|(./adr/|g' \
     -e 's|\[CONTRIBUTING.md\](CONTRIBUTING.md)|[Contributing](./contributing)|g' \
-    "$SCRIPT_DIR/README.md" >> "$DOCS_CONTENT_DIR/index.md"
+    "$SCRIPT_DIR/README.md" >> "$DOCS_CONTENT_DIR/overzicht.md"
 
 # Copy CONTRIBUTING.md with front-matter for Docusaurus
 echo "📄 Copying CONTRIBUTING.md to docs/contributing.md..."
