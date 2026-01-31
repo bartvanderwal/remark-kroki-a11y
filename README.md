@@ -298,7 +298,7 @@ The documentation site will be available at `http://localhost:3000/remark-kroki-
 
 ### Online Documentation
 
-The documentation/example is also available online at: https://aim-ene.github.io/remark-kroki-a11y/
+📖 **Live documentation:** [bartvanderwal.github.io/remark-kroki-a11y](https://bartvanderwal.github.io/remark-kroki-a11y/)
 
 ### Single Source of Truth
 
