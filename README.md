@@ -2,6 +2,8 @@
 
 A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
+![Strategy Pattern class diagram example](docs/img/strategy-pattern-example.svg)
+
 > **Note:** This plugin has only been tested with [Docusaurus](https://docusaurus.io/). It should work with other unified/remark-based systems, but this has not been verified.
 
 ## Meta: Eating Our Own Dog Food

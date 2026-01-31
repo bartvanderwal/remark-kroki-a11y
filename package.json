@@ -5,7 +5,10 @@
   "main": "src/index.js",
   "scripts": {
     "test": "cucumber-js",
-    "test:report": "cucumber-js --format html:test-results/cucumber-report.html"
+    "test:report": "cucumber-js --format html:test-results/cucumber-report.html",
+    "docs:start": "cd test-docusaurus-site && yarn start",
+    "docs:build": "cd test-docusaurus-site && yarn build",
+    "docs:serve": "cd test-docusaurus-site && yarn serve"
   },
   "keywords": [
     "remark",
