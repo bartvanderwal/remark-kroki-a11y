@@ -326,7 +326,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 <pre><code>${escapedCode}</code></pre>
 </div>
 <div class="${opts.cssClass}-tab-content" data-tab="a11y">
-<pre>${escapeHtml(a11yDescription)}</pre>
+${a11yDescription}
 </div>
 </div>
 </details>`;
@@ -362,7 +362,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 						value: `
 <details class="${opts.a11yCssClass}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
-<pre>${escapeHtml(a11yDescription)}</pre>
+<div class="${opts.a11yCssClass}-content">${a11yDescription}</div>
 </details>`
 					});
 				}
