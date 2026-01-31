@@ -57,7 +57,7 @@ module.exports = {
             [require('remark-kroki-plugin'), {
               krokiBase: 'https://kroki.io',
               lang: 'kroki',
-              imgRefDir: '/img/kroki',
+              imgRefDir: '/remark-kroki-a11y/img/kroki',
               imgDir: 'static/img/kroki',
             }],
           ],
