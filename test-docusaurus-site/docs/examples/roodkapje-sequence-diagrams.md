@@ -70,8 +70,10 @@ class Steen {
 Moeder --> Roodkapje : is moeder van
 Roodkapje --> Mandje : draagt
 Oma --> Huis : woont in
-Wolf --> Oma : bezoekt / eet op
-Wolf --> Roodkapje : ontmoet / eet op
+Wolf --> Oma : bezoekt
+Wolf --> Oma : eet op
+Wolf --> Roodkapje : ontmoet
+Wolf --> Roodkapje : eet op
 Jager --> Wolf : opent buik van
 Jager --> "0..*" Steen : stopt in wolf
 

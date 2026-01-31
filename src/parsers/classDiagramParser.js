@@ -671,7 +671,8 @@ function parsePlantUMLClassDiagram(code) {
 		// Skip empty lines, comments, and directives
 		if (!trimmed || trimmed.startsWith('@') || trimmed.startsWith('\'') ||
 			trimmed.startsWith('hide') || trimmed.startsWith('skinparam') ||
-			trimmed.startsWith('rectangle')) {
+			trimmed.startsWith('rectangle') || trimmed.startsWith('title ') ||
+			trimmed.startsWith('!theme')) {
 			continue;
 		}
 
