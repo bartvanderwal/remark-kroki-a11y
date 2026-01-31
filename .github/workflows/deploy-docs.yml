@@ -36,8 +36,8 @@ jobs:
       - name: Install dependencies (root)
         run: yarn install --frozen-lockfile
 
-      - name: Run BDD tests
-        run: yarn test
+      - name: Run BDD tests with HTML report
+        run: yarn test:report
 
       - name: Install dependencies (docs site)
         working-directory: test-docusaurus-site
@@ -156,6 +156,11 @@ jobs:
         run: yarn build
         env:
           NODE_ENV: production
+
+      - name: Copy Cucumber test report to build
+        run: |
+          mkdir -p test-docusaurus-site/build/test-results
+          cp test-results/cucumber-report.html test-docusaurus-site/build/test-results/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

@@ -105,4 +105,5 @@ module.exports = {
 
 - Browse the [Examples](/examples) to see the plugin in action
 - Check the [Architecture](/architecture/plugin-architecture) for technical details
+- View the [BDD Test Report](/test-results/cucumber-report.html) for test coverage
 - Contribute on [GitHub](https://github.com/AIM-ENE/remark-kroki-a11y)
