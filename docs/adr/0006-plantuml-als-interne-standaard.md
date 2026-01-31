@@ -65,11 +65,13 @@ flowchart LR
 Zie ook het C4 Component diagram in de Docusaurus documentatie voor een meer gedetailleerde weergave.
 
 Elke **Adapter**:
+
 - Parseert de broncode van één specifiek formaat
 - Converteert naar de PlantUML-gebaseerde IR
 - Behoudt semantische informatie (klassen, relaties, visibility, etc.)
 
 De **Description Generator**:
+
 - Werkt alleen met de IR
 - Genereert consistente toegankelijke beschrijvingen
 - Hoeft niet te weten welk bronformaat gebruikt is

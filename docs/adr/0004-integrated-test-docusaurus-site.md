@@ -65,7 +65,7 @@ This approach aligns with the **Manual Risk-Based Testing** practice described i
 ## References
 
 - Humble, J., & Farley, D. (2010). *Continuous Delivery: Reliable Software Releases through Build, Test, and Deployment Automation*. Addison-Wesley Professional.
-- InfoQ. (2014). Continuous Delivery Maturity Model. Retrieved from https://www.infoq.com/articles/Continuous-Delivery-Maturity-Model/
+- InfoQ. (2014). Continuous Delivery Maturity Model. Retrieved from <https://www.infoq.com/articles/Continuous-Delivery-Maturity-Model/>
 
 ---
 
