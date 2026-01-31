@@ -62,7 +62,7 @@ flowchart LR
     IR -->|generate| DESC
 ```
 
-*Zie ook: [C4 Component diagram](../test-docusaurus-site/docs/architecture/adapter-pattern.md) voor een meer gedetailleerde weergave.*
+Zie ook het C4 Component diagram in de Docusaurus documentatie voor een meer gedetailleerde weergave.
 
 Elke **Adapter**:
 - Parseert de broncode van één specifiek formaat
