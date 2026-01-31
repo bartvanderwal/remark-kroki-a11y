@@ -183,8 +183,8 @@ class MermaidClassdiagramA11YReader {
 			}
 
 			// Parse attributes and methods
-		const memberMatch = contentLine.match(/^([+\-#~])(\w+)\s*:\s*(.+)$/);
-		const methodMatch = contentLine.match(/^([+\-#~])(\w+)\((.*?)\)\s*(.+)$/);
+			const memberMatch = contentLine.match(/^([+\-#~])(\w+)\s*:\s*(.+)$/);
+			const methodMatch = contentLine.match(/^([+\-#~])(\w+)\((.*?)\)\s*(.+)$/);
 			if (methodMatch) {
 				const [, visibility, methodName, paramsStr, returnType] = methodMatch;
 				const params = this.parseParameters(paramsStr);
@@ -351,11 +351,9 @@ class MermaidClassdiagramA11YReader {
 		const { classes, relationships, notes } = parsed;
 		const t = this.translations.labels;
 
-		let description = [];
+		const description = [];
 
 		// Overview
-		const interfaces = classes.filter(c => c.type === 'interface').length;
-		const regularClasses = classes.length - interfaces;
 		const relationshipsText = relationships.length === 0 
 			? 'geen relaties'
 			: `${relationships.length} ${relationships.length !== 1 ? 'relaties' : 'relatie'}`;

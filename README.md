@@ -334,6 +334,8 @@ This insight applies equally to PlantUML and other diagram-as-code formats - the
 
 Want to help? Or update and run this plugin itself? See [CONTRIBUTING.md](CONTRIBUTING.md) for local development setup and publishing tips.
 
+For quality standards and acceptance criteria, see the [Definition of Done](definition-of-done.md).
+
 ## License
 
 MIT

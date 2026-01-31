@@ -101,7 +101,7 @@ function parseParticipantLine(line) {
  * - Alice-->>Bob: "response"
  * - A->>B: method(param: Type)
  */
-function parseMessageLine(line, participants) {
+function parseMessageLine(line, _participants) {
 	const trimmed = line.trim();
 
 	// Match arrow patterns: ->>, -->, ->, -->>

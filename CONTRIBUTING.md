@@ -2,6 +2,8 @@
 
 Thanks for considering a contribution! This plugin is plain JavaScript (no build step) and is tested primarily in Docusaurus.
 
+For complete quality standards and acceptance criteria, see the [Definition of Done](definition-of-done.md).
+
 ## Prerequisites
 
 - Node.js >= 16
@@ -88,6 +90,42 @@ Update the Docusaurus `remarkPlugins` order so this plugin runs **before** `rema
 - Keep the codebase compatible with Node 16 and CommonJS.
 - Use plain JS, no build tooling required.
 - Prefer small, isolated functions; add inline comments only where non-obvious.
+
+## Definition of Done
+
+Before submitting a PR, ensure your changes meet the following criteria:
+
+### Code Quality
+
+- [ ] **ESLint passes** - No linting errors (`yarn lint` or configured in IDE)
+- [ ] **Markdownlint passes** - Documentation follows markdown best practices
+- [ ] **Syntax valid** - `node -c src/index.js` succeeds without errors
+
+### Build & Runtime
+
+- [ ] **Compiles** - `yarn build` completes without errors
+- [ ] **Runs correctly** - `yarn start` launches without runtime errors
+- [ ] **Package works** - `npm pack` or `yarn pack` succeeds
+
+### Testing
+
+- [ ] **BDD tests pass** - All tests in `yarn test` succeed
+- [ ] **New features have tests** - Added BDD scenarios for new functionality
+- [ ] **No regressions** - Existing tests still pass
+
+### Documentation
+
+- [ ] **Links work** - Docusaurus link checker passes (`onBrokenLinks: 'throw'` is enabled)
+- [ ] **README updated** - New options or features documented
+- [ ] **Changelog updated** - (if applicable)
+
+### Pre-commit Checks
+
+The pre-commit hook (Husky) automatically runs:
+
+1. Check for `package-lock.json` (warning - we use yarn)
+2. Check for `yarn.lock` presence (warning)
+3. **BDD tests** (blocking - must pass to commit)
 
 ## Issues and PRs
 

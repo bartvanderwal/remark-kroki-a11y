@@ -503,7 +503,7 @@ Het onderstaande diagram is een **anti-pattern**. We tonen het hier expliciet om
 
 > "There are two ways of constructing a software design: One way is to make it so simple that there are obviously no deficiencies, and the other way is to make it so complicated that there are no obvious deficiencies."
 
-Een "God Diagram" maken is kiezen voor de tweede optie: zo complex dat je eventuele fouten niet meer ziet. Het beland op de kast, en lezers nemen aan 'Het zal wel kloppen', of als ze wel een fout vinden, denken ze eerder 'dan zal het hele diagram wel niet kloppen', in plaats van de fout te fixen. Voorgaande twee afgumenten zijn natuurlijk voorbeelden van (typical) human fallacy. Daar zouden we aan kunnen werken; maar mijn voorstel is om meteen de 'god diagram' neiging als fallacy aan te merken, en dit niet meer te doen, en zo deze secundaire fallacy te proberen te voorkomen.
+Een "God Diagram" maken is kiezen voor de tweede optie: zo complex dat je eventuele fouten niet meer ziet. Het belandt op de kast, en lezers nemen aan 'Het zal wel kloppen', of als ze wel een fout vinden, denken ze eerder 'dan zal het hele diagram wel niet kloppen', in plaats van de fout te fixen. Voorgaande twee argumenten zijn natuurlijk voorbeelden van (typical) human fallacy. Daar zouden we aan kunnen werken; maar mijn voorstel is om meteen de 'god diagram' neiging als fallacy aan te merken, en dit niet meer te doen, en zo deze secundaire fallacy te proberen te voorkomen.
 
 :::
 

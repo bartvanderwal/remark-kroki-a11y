@@ -900,32 +900,32 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			}
 
 			switch (rel.type) {
-				case 'inheritance':
-					// Inheritance doesn't use the named pattern
-					relDesc = rel.from + ' ' + t.inheritance + ' ' + rel.to;
-					break;
-				case 'implementation':
-					// Implementation doesn't use the named pattern
-					relDesc = rel.from + ' ' + t.implementation + ' ' + rel.to;
-					break;
-				case 'association':
-					relDesc = buildRelationDesc(rel.from, t.association, rel.to, rel.label);
-					break;
-				case 'aggregation':
-					relDesc = buildRelationDesc(rel.from, t.aggregation, rel.to, rel.label);
-					break;
-				case 'composition':
-					relDesc = buildRelationDesc(rel.from, t.composition, rel.to, rel.label);
-					break;
-				case 'dependency':
-					if (rel.reverse) {
-						relDesc = rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
-					} else {
-						relDesc = rel.from + ' ' + t.dependency + ' ' + rel.to;
-					}
-					break;
-				default:
-					relDesc = rel.from + ' -> ' + rel.to;
+			case 'inheritance':
+				// Inheritance doesn't use the named pattern
+				relDesc = rel.from + ' ' + t.inheritance + ' ' + rel.to;
+				break;
+			case 'implementation':
+				// Implementation doesn't use the named pattern
+				relDesc = rel.from + ' ' + t.implementation + ' ' + rel.to;
+				break;
+			case 'association':
+				relDesc = buildRelationDesc(rel.from, t.association, rel.to, rel.label);
+				break;
+			case 'aggregation':
+				relDesc = buildRelationDesc(rel.from, t.aggregation, rel.to, rel.label);
+				break;
+			case 'composition':
+				relDesc = buildRelationDesc(rel.from, t.composition, rel.to, rel.label);
+				break;
+			case 'dependency':
+				if (rel.reverse) {
+					relDesc = rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
+				} else {
+					relDesc = rel.from + ' ' + t.dependency + ' ' + rel.to;
+				}
+				break;
+			default:
+				relDesc = rel.from + ' -> ' + rel.to;
 			}
 
 			// Add multiplicity if present (label is now part of the main description)
