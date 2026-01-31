@@ -32,9 +32,9 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 
 | Diagram Type | PlantUML | Mermaid | Status |
 |--------------|----------|---------|--------|
-| Class diagrams | ✅ Full | ✅ Full | Supported |
+| Class diagrams | ✅ Full | ⚠️ To test | Partial |
 | State diagrams | ✅ Full | ❌ | Partial |
-| Sequence diagrams | ✅ Beta | ✅ Beta | Beta |
+| Sequence diagrams | ⚠️ Beta | ⚠️ Beta | Partial |
 | C4 diagrams | ❌ | N/A | Planned |
 | ER diagrams | ❌ | ❌ | Planned |
 | Activity diagrams | ❌ | ❌ | Future |
