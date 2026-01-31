@@ -19,11 +19,12 @@ For complete quality standards and acceptance criteria, see the [Definition of D
   yarn install
   ```
 
-2. Make changes in `src/` (the entry point is `src/index.js`).
+1. Make changes in `src/` (the entry point is `src/index.js`).
 
-3. Run basic sanity checks:
-  - Ensure `npm pack` or `yarn pack` succeeds.
-  - Optionally run `node -c src/index.js` to catch syntax errors.
+2. Run basic sanity checks:
+
+- Ensure `npm pack` or `yarn pack` succeeds.
+- Optionally run `node -c src/index.js` to catch syntax errors.
 
 ## Running BDD tests
 
@@ -79,11 +80,61 @@ yarn install
 
 Update the Docusaurus `remarkPlugins` order so this plugin runs **before** `remark-kroki-plugin` (see README for the snippet).
 
+## Versioning
+
+This project follows [Semantic Versioning (SemVer)](https://semver.org/):
+
+- **MAJOR** version for incompatible API changes
+- **MINOR** version for new functionality (backwards-compatible)
+- **PATCH** version for backwards-compatible bug fixes
+
+### Conventional Commits
+
+We use [Conventional Commits](https://www.conventionalcommits.org/) for commit messages to enable automatic version determination:
+
+```text
+feat: add support for Mermaid flowcharts      → bumps MINOR
+fix: correct parsing of participant names     → bumps PATCH
+feat!: change default output format           → bumps MAJOR (breaking)
+docs: update README with new examples         → no version bump
+```
+
+Common prefixes:
+
+- `feat:` - New feature (MINOR bump)
+- `fix:` - Bug fix (PATCH bump)
+- `docs:` - Documentation only
+- `refactor:` - Code refactoring without feature changes
+- `test:` - Adding or updating tests
+- `chore:` - Maintenance tasks
+
+Add `!` after the prefix or include `BREAKING CHANGE:` in the footer for breaking changes (MAJOR bump).
+
+### Automated Versioning (Future)
+
+For automated version management, consider
+[semantic-release](https://github.com/semantic-release/semantic-release):
+
+```bash
+npm install --save-dev semantic-release \
+  @semantic-release/changelog @semantic-release/git
+```
+
+This analyzes commits following Conventional Commits and automatically:
+
+- Determines the next version number
+- Generates changelog
+- Publishes to npm
+- Creates GitHub release
+
 ## Publishing (maintainers)
 
-- Bump version in `package.json` following semver.
-- Run `npm pack` to confirm the tarball includes expected files.
-- Publish: `npm publish` (ensure you are logged in to npm with the right scope).
+### Manual Publishing
+
+1. Ensure all tests pass: `yarn test`
+2. Bump version in `package.json` following semver
+3. Run `npm pack` to confirm the tarball includes expected files
+4. Publish: `npm publish` (ensure you are logged in to npm)
 
 ## Coding style
 
