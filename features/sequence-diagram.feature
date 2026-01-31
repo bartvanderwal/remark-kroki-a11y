@@ -52,11 +52,11 @@ Functionaliteit: Sequentiediagram parsing
     En zou de beschrijving moeten bevatten "alice roept bob.zegGroet(bericht: Groet) aan"
     En zou de beschrijving moeten bevatten "bob antwoordt alice: void"
 
-  Scenario: PlantUML KlokDisplay met autonumber en geneste types
+  Scenario: PlantUML KlokDisplay met autonumber, hide footbox en geneste types
     Gegeven het volgende PlantUML sequentiediagram:
       """
       @startuml
-
+      hide footbox
       autonumber
 
       participant "klok:\nKlokDisplay" as klok
@@ -89,3 +89,5 @@ Functionaliteit: Sequentiediagram parsing
     En zou de beschrijving moeten bevatten "klok roept minuten.getDisplayWaarde() aan"
     En zou de beschrijving moeten bevatten "klok roept uren.getDisplayWaarde() aan"
     En zou de beschrijving moeten bevatten "<ol>"
+    En zou de beschrijving niet moeten bevatten "hide"
+    En zou de beschrijving niet moeten bevatten "footbox"

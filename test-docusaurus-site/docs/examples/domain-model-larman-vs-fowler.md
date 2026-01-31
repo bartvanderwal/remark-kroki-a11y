@@ -72,21 +72,25 @@ Martin Fowler describes the **implementation domain model** in "Patterns of Ente
 ```kroki imgType="plantuml" imgTitle="Fowler domain model webshop" lang="en"
 @startuml
 class Order {
+  -id: Long
   -orderDate: LocalDate
   -totalAmount: BigDecimal
 }
 
 class Customer {
+  -id: Long
   -name: String
   -email: String
 }
 
 class Product {
+  -id: Long
   -name: String
   -price: BigDecimal
 }
 
 class Address {
+  -id: Long
   -street: String
   -houseNumber: String
   -postalCode: String
