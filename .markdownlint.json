@@ -1,0 +1,5 @@
+{
+  "defaultSeverity": "warning",
+  "no-bare-urls": false,
+  "line-length": false
+}

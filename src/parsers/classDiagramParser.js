@@ -45,14 +45,22 @@ const i18n = {
 		// Relation types
 		inheritance: 'erft van',
 		implementation: 'implementeert interface',
-		association: 'heeft een associatie naar',
-		aggregation: 'heeft een aggregatie naar',
-		composition: 'heeft een compositie naar',
+		association: 'heeft een associatie-relatie met',
+		aggregation: 'heeft een aggregatie-relatie met',
+		composition: 'heeft een compositie-relatie met',
 		dependency: 'heeft een afhankelijkheid naar',
 		withName: 'met naam',
 		multiplicity: 'multipliciteit',
 		multiplicityTo: 'naar',
 		withStereotype: 'met stereotype',
+		relationShort: {
+			association: '(is gekoppeld aan)',
+			aggregation: '(heeft een)',
+			composition: '(bestaat uit)',
+			inheritance: '(is een)',
+			implementation: '(implementeert)',
+			dependency: '(is afhankelijk van)'
+		},
 		// Empty members
 		noAttributes: 'geen attributen',
 		noMethods: 'geen methoden',
@@ -89,14 +97,22 @@ const i18n = {
 		// Relation types
 		inheritance: 'extends',
 		implementation: 'implements interface',
-		association: 'has an association to',
-		aggregation: 'has an aggregation to',
-		composition: 'has a composition to',
+		association: 'has an association-relationship with',
+		aggregation: 'has an aggregation-relationship with',
+		composition: 'has a composition-relationship with',
 		dependency: 'has a dependency to',
 		withName: 'named',
 		multiplicity: 'multiplicity',
 		multiplicityTo: 'to',
 		withStereotype: 'with stereotype',
+		relationShort: {
+			association: '(is associated with)',
+			aggregation: '(has a)',
+			composition: '(consists of)',
+			inheritance: '(is a)',
+			implementation: '(implements)',
+			dependency: '(depends on)'
+		},
 		// Empty members
 		noAttributes: 'no attributes',
 		noMethods: 'no methods',
@@ -298,6 +314,8 @@ function parseRelation(line, result) {
 		{ regex: /^(\w+)\s*o--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation', reverse: true },
 		// Dependency: A ..> B
 		{ regex: /^(\w+)\s*\.\.>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
+		// Reversed dependency: B <.. A
+		{ regex: /^(\w+)\s*<\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency', reverse: true },
 		// Association with multiplicity: A --> "1" B : label
 		{ regex: /^(\w+)\s*-->\s*"([^"]+)"\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association', hasMultiplicity: true },
 		// Simple association: A --> B : label
@@ -328,13 +346,14 @@ function parseRelation(line, result) {
 				label = match[3];
 			}
 
-			result.relations.push({
-				from,
-				to,
-				type: pattern.type,
-				label: label ? label.trim() : null,
-				multiplicity: multiplicity || null,
-			});
+			   result.relations.push({
+				   from,
+				   to,
+				   type: pattern.type,
+				   label: label ? label.trim() : null,
+				   multiplicity: multiplicity || null,
+				   reverse: !!pattern.reverse
+			   });
 			return true;
 		}
 	}
@@ -483,9 +502,9 @@ function parsePlantUMLRelation(line, result) {
 		{ regex: /^(\w+)\s*<\|--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'inheritance', reverse: true },
 		{ regex: /^(\w+)\s*<\|\.\.\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'implementation', reverse: true },
 		{ regex: /^(\w+)\s*--\*\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition' },
-		{ regex: /^(\w+)\s*\*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition', reverse: true },
+		{ regex: /^(\w+)\s*\*--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'composition' },
 		{ regex: /^(\w+)\s*--o\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation' },
-		{ regex: /^(\w+)\s*o--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation', reverse: true },
+		{ regex: /^(\w+)\s*o--\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'aggregation' },
 		{ regex: /^(\w+)\s*\.\.>\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'dependency' },
 		{ regex: /^(\w+)\s*-->\s*"([^"]+)"\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association', hasMultiplicity: true },
 		{ regex: /^(\w+)\s*-->\s*(\w+)(?:\s*:\s*(.+))?$/, type: 'association' },
@@ -508,9 +527,24 @@ function parsePlantUMLRelation(line, result) {
 				label = null;
 			} else if (pattern.hasMultiplicity) {
 				from = match[1];
-				multiplicityTo = match[2];
+				// Split multiplicity and label if present, e.g. "1 -minuten" or "1-uren"
+				let multiLabel = match[2];
+				let multiParts = multiLabel.match(/^([\d]+)\s*-\s*(.+)$/);
+				if (multiParts) {
+					multiplicityTo = multiParts[1].trim();
+					label = multiParts[2].trim();
+				} else {
+					// Try without space: "1-uren"
+					multiParts = multiLabel.match(/^([\d]+)-(\w+)$/);
+					if (multiParts) {
+						multiplicityTo = multiParts[1].trim();
+						label = multiParts[2].trim();
+					} else {
+						multiplicityTo = multiLabel.trim();
+						label = match[4];
+					}
+				}
 				to = match[3];
-				label = match[4];
 			} else if (pattern.reverse) {
 				from = match[2];
 				to = match[1];
@@ -628,37 +662,55 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			switch (rel.type) {
 				case 'inheritance':
 					relDesc = `- ${rel.from} ${t.inheritance} ${rel.to}`;
+					if (t.relationShort && t.relationShort.inheritance) relDesc += ` ${t.relationShort.inheritance}`;
 					break;
 				case 'implementation':
 					relDesc = `- ${rel.from} ${t.implementation} ${rel.to}`;
+					if (t.relationShort && t.relationShort.implementation) relDesc += ` ${t.relationShort.implementation}`;
 					break;
 				case 'association':
 					relDesc = `- ${rel.from} ${t.association} ${rel.to}`;
+					if (t.relationShort && t.relationShort.association) relDesc += ` ${t.relationShort.association}`;
 					break;
 				case 'aggregation':
 					relDesc = `- ${rel.from} ${t.aggregation} ${rel.to}`;
+					if (t.relationShort && t.relationShort.aggregation) relDesc += ` ${t.relationShort.aggregation}`;
 					break;
 				case 'composition':
 					relDesc = `- ${rel.from} ${t.composition} ${rel.to}`;
+					if (t.relationShort && t.relationShort.composition) relDesc += ` ${t.relationShort.composition}`;
 					break;
-				case 'dependency':
-					relDesc = `- ${rel.from} ${t.dependency} ${rel.to}`;
-					break;
+				   case 'dependency':
+					   if (rel.reverse) {
+						   // Dutch: 'heeft een afhankelijkheid vanaf', English: 'has a dependency from'
+						   const depFrom = locale === 'nl' ? 'heeft een afhankelijkheid vanaf' : 'has a dependency from';
+						   relDesc = `- ${rel.from} ${depFrom} ${rel.to}`;
+					   } else {
+						   relDesc = `- ${rel.from} ${t.dependency} ${rel.to}`;
+						   if (t.relationShort && t.relationShort.dependency) relDesc += ` ${t.relationShort.dependency}`;
+					   }
+					   break;
 				default:
 					relDesc = `- ${rel.from} -> ${rel.to}`;
 			}
 
+			// Always include both label and multiplicity if present
+			let details = [];
 			if (rel.label) {
-				relDesc += `, ${t.withName} ${rel.label}`;
+				details.push(`${t.withName} ${rel.label}`);
 			}
 			// Handle multiplicities (both old 'multiplicity' format and new 'multiplicityFrom/To' format)
-			if (rel.multiplicityFrom && rel.multiplicityTo) {
-				relDesc += `, ${t.multiplicity} ${rel.multiplicityFrom} ${t.multiplicityTo} ${rel.multiplicityTo}`;
-			} else if (rel.multiplicityTo) {
-				relDesc += `, ${t.multiplicity} ${rel.multiplicityTo}`;
-			} else if (rel.multiplicity) {
-				relDesc += `, ${t.multiplicity} ${rel.multiplicity}`;
-			}
+			   if (rel.multiplicityFrom && rel.multiplicityTo) {
+				   details.push(`${t.multiplicity} ${rel.multiplicityFrom} ${t.multiplicityTo} ${rel.multiplicityTo}`);
+			   } else if (rel.multiplicityTo) {
+				   details.push(`${t.multiplicity} ${rel.multiplicityTo}`);
+			   } else if (rel.multiplicity) {
+				   details.push(`${t.multiplicity} ${rel.multiplicity}`);
+			   }
+
+			   if (details.length > 0) {
+				   relDesc += ', ' + details.join(', ');
+			   }
 
 			parts.push(relDesc);
 		}

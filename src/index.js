@@ -242,6 +242,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 				try {
 					const parsed = parsePlantUMLClassDiagram(node.value);
 					a11yDescription = generateClassDescription(parsed, blockLocale);
+                    console.log('DEBUG a11yDescription:', a11yDescription);
 				} catch (e) {
 					console.warn('Failed to parse PlantUML class diagram for a11y:', e.message);
 				}

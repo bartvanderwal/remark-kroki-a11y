@@ -41,5 +41,5 @@ Feature: English class diagram descriptions
       """
       Class diagram with 3 class(es) and 2 relation(s).
       """
-    And the description should contain "Car has an association to Wheel, multiplicity 1 to 4"
-    And the description should contain "Car has an association to Engine, multiplicity 1 to 1"
+    And the description should contain "Car has an association-relationship with Wheel (is associated with), multiplicity 1 to 4"
+    And the description should contain "Car has an association-relationship with Engine (is associated with), multiplicity 1 to 1"

@@ -4,6 +4,51 @@ Functionaliteit: Klassediagram met relaties
   Wil ik overerving en andere relaties tussen klassen kunnen horen
   Zodat ik de klassenstructuur begrijp
 
+  Scenario: PlantUML klassediagram met aggregatie-relatie
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Tractor {
+        + ploegen()
+      }
+      class Wiel {
+      }
+      Tractor o-- Wiel
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Tractor heeft een aggregatie-relatie met Wiel"
+
+  Scenario: PlantUML klassediagram met dependency-relatie (domein)
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Teeltplan {
+        + bepaalZaaiMoment()
+      }
+      class Weersverwachting {
+      }
+      Teeltplan ..> Weersverwachting
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Teeltplan heeft een afhankelijkheid naar Weersverwachting"
+
+  Scenario: PlantUML klassediagram met compositie-relatie
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Huis {
+        + openDeur()
+      }
+      class Kamer {
+      }
+      Huis *-- Kamer
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Huis heeft een compositie-relatie met Kamer"
+
   Scenario: Klassediagram met overerving
     Gegeven het volgende klassediagram:
       """
@@ -50,5 +95,20 @@ Functionaliteit: Klassediagram met relaties
       """
       Klassendiagram met 3 klasse(n) en 2 relatie(s).
       """
-    En zou de beschrijving moeten bevatten "Car heeft een associatie naar Wheel, multipliciteit 1 naar 4"
-    En zou de beschrijving moeten bevatten "Car heeft een associatie naar Engine, multipliciteit 1 naar 1"
+    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Wheel (is gekoppeld aan), multipliciteit 1 naar 4"
+    En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Engine (is gekoppeld aan), multipliciteit 1 naar 1"
+
+  Scenario: PlantUML klassediagram met dependency-relatie in omgekeerde richting
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Teeltplan {
+        + bepaalZaaiMoment()
+      }
+      class Weersverwachting {
+      }
+      Weersverwachting <.. Teeltplan
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Teeltplan heeft een afhankelijkheid vanaf Weersverwachting"

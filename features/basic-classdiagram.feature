@@ -69,6 +69,7 @@ Functionaliteit: Basis klassediagram parsing
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse DataClass"
     Dan zou de beschrijving moeten bevatten "private attribuut name"
+    En zou de beschrijving moeten bevatten "attribuut name van type String"
     En zou de beschrijving moeten bevatten "geen methoden"
 
   Scenario: PlantUML klasse met stereotype
