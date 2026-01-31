@@ -18,8 +18,12 @@
     "graphviz",
     "accessibility",
     "a11y",
+    "accessibility-testing",
     "diagrams",
-    "uml"
+    "diagram-as-code",
+    "diagrams-as-code",
+    "uml",
+    "uml-diagram"
   ],
   "author": "AIM-ENE",
   "license": "MIT",
