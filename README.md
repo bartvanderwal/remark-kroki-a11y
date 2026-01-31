@@ -300,6 +300,16 @@ The documentation site will be available at `http://localhost:3000/remark-kroki-
 
 📖 **Live documentation:** [bartvanderwal.github.io/remark-kroki-a11y](https://bartvanderwal.github.io/remark-kroki-a11y/)
 
+### CI/CD Pipeline
+
+The documentation site is automatically built and deployed to GitHub Pages on every push to `main`. See the [deploy-docs.yml](.github/workflows/deploy-docs.yml) workflow configuration.
+
+The pipeline:
+
+1. Copies hybrid documentation (README, CONTRIBUTING, ADRs) with Docusaurus front-matter
+2. Builds the Docusaurus site with the remark-kroki-a11y plugin
+3. Deploys to GitHub Pages
+
 ### Single Source of Truth
 
 The `README.md` and `CONTRIBUTING.md` files are maintained in the repository root for GitHub visibility. These files are automatically copied to the Docusaurus docs folder by `start-docs.sh` (with added front-matter for Docusaurus).

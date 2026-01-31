@@ -16,11 +16,11 @@ const passThrough = [
 module.exports = {
   title: 'remark-kroki-a11y',
   tagline: 'Accessible diagram descriptions for Kroki diagrams in Docusaurus',
-  url: 'https://aim-ene.github.io',
+  url: 'https://bartvanderwal.github.io',
   baseUrl: '/remark-kroki-a11y/',
   // docs config must be under presets, not at the root
   favicon: 'img/favicon.ico',
-  organizationName: 'AIM-ENE',
+  organizationName: 'bartvanderwal',
   projectName: 'remark-kroki-a11y',
   trailingSlash: false,
   onBrokenLinks: 'throw',
@@ -90,7 +90,7 @@ module.exports = {
           label: 'Examples',
         },
         {
-          href: 'https://github.com/AIM-ENE/remark-kroki-a11y',
+          href: 'https://github.com/bartvanderwal/remark-kroki-a11y',
           label: 'GitHub',
           position: 'right',
         },
@@ -117,11 +117,11 @@ module.exports = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/AIM-ENE/remark-kroki-a11y',
+              href: 'https://github.com/bartvanderwal/remark-kroki-a11y',
             },
             {
               label: 'Issues',
-              href: 'https://github.com/AIM-ENE/remark-kroki-a11y/issues',
+              href: 'https://github.com/bartvanderwal/remark-kroki-a11y/issues',
             },
           ],
         },
@@ -139,7 +139,7 @@ module.exports = {
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} AIM-ENE, Hogeschool Arnhem en Nijmegen. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Bart van der Wal. Built with Docusaurus.`,
     },
   },
 };
