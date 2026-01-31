@@ -54,6 +54,18 @@ Given('the following PlantUML class diagram:', function(diagramSource) {
 	isPlantUML = true;
 });
 
+Given('the following PlantUML sequence diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'sequence';
+	isPlantUML = true;
+});
+
+Given('the following Mermaid sequence diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'sequence';
+	isPlantUML = false;
+});
+
 // Step definitions for diagrams with explicit type (for unsupported diagram tests)
 Given('het volgende PlantUML diagram met type {string}:', function(diagramType, diagramSource) {
 	currentDiagram = diagramSource;
@@ -99,8 +111,12 @@ When('ik een beschrijving genereer', function() {
 });
 
 When('I generate a description in English', function() {
-	// Check if this is an unsupported diagram type
-	if (currentDiagramType) {
+	// Check for sequence diagram
+	if (currentDiagramType === 'sequence') {
+		const parsed = parseMermaidSequenceDiagram(currentDiagram);
+		generatedDescription = generateSequenceDescription(parsed, 'en');
+	} else if (currentDiagramType) {
+		// Other unsupported diagram types
 		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'en');
 	} else {
 		const parsed = parsePlantUMLClassDiagram(currentDiagram);

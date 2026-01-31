@@ -2,6 +2,18 @@
 
 A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
+[![npm version](https://img.shields.io/npm/v/remark-kroki-a11y.svg)](https://www.npmjs.com/package/remark-kroki-a11y)
+[![license](https://img.shields.io/npm/l/remark-kroki-a11y.svg)](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/LICENSE)
+[![Node.js](https://img.shields.io/node/v/remark-kroki-a11y.svg)](https://nodejs.org/)
+
+```bash
+npm install remark-kroki-a11y
+# or
+yarn add remark-kroki-a11y
+```
+
+[View on npm](https://www.npmjs.com/package/remark-kroki-a11y) | [GitHub](https://github.com/bartvanderwal/remark-kroki-a11y)
+
 :::tip Meta
 This documentation site is itself powered by remark-kroki-a11y! Every diagram you see here demonstrates the plugin's accessibility features.
 :::
@@ -19,7 +31,7 @@ This documentation site is itself powered by remark-kroki-a11y! Every diagram yo
 
 Here's a class diagram with automatically generated accessible description:
 
-```kroki imgType="plantuml" imgTitle="Strategy Pattern" lang="nl"
+```kroki imgType="plantuml" imgTitle="Strategy Pattern"
 @startuml
 class Woordenlijst {
   -woorden : String[]
@@ -45,17 +57,7 @@ QuickSort ..|> SorteerStrategie
 @enduml
 ```
 
-Click the "Natuurlijke taal" tab above to see the generated accessible description!
-
 ---
-
-## Installation
-
-```bash
-npm install remark-kroki-a11y
-# or
-yarn add remark-kroki-a11y
-```
 
 ## Usage with Docusaurus
 
@@ -93,7 +95,7 @@ module.exports = {
 |--------------|----------|---------|--------|
 | Class diagrams | ✅ Full | ✅ Full | Supported |
 | State diagrams | ✅ Full | ❌ | Partial |
-| Sequence diagrams | ❌ | ❌ | Planned |
+| Sequence diagrams | ✅ Beta | ✅ Beta | Beta |
 | C4 diagrams | ❌ | N/A | Planned |
 | ER diagrams | ❌ | ❌ | Planned |
 
