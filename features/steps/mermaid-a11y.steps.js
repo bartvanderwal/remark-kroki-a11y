@@ -42,6 +42,12 @@ Given('het volgende PlantUML klassediagram:', function(diagramSource) {
 	isPlantUML = true;
 });
 
+Given('het volgende PlantUML sequentiediagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'sequence';
+	isPlantUML = true;
+});
+
 // English step definitions
 Given('the following PlantUML class diagram:', function(diagramSource) {
 	currentDiagram = diagramSource;

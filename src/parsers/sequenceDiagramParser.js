@@ -20,11 +20,13 @@ const i18n = {
 		withParticipant: 'met {count} deelnemer',
 		participants: 'Deelnemers',
 		interactions: 'Interacties',
+		ofType: 'van het type',
 		instanceOf: 'instantie van',
 		calls: 'roept',
 		methodCall: 'aan',
 		responds: 'antwoordt',
 		and: 'en',
+		receives: 'ontvangt',
 	},
 	en: {
 		sequenceDiagram: 'Sequence diagram',
@@ -32,19 +34,22 @@ const i18n = {
 		withParticipant: 'with {count} participant',
 		participants: 'Participants',
 		interactions: 'Interactions',
+		ofType: 'of type',
 		instanceOf: 'instance of',
 		calls: 'calls',
 		methodCall: '',
 		responds: 'responds to',
 		and: 'and',
+		receives: 'receives',
 	}
 };
 
 /**
  * Parse participant line
  * Formats:
- * - participant Alice
- * - participant alice as alice: Person
+ * - participant Alice                              (simple)
+ * - participant alice as alice: Person             (Mermaid with type)
+ * - participant "klok:\nKlokDisplay" as klok       (PlantUML with display name)
  */
 function parseParticipantLine(line) {
 	const trimmed = line.trim();
@@ -57,7 +62,41 @@ function parseParticipantLine(line) {
 	const isActor = trimmed.startsWith('actor ');
 	const rest = isActor ? trimmed.slice(6).trim() : trimmed.slice(12).trim();
 
-	// Check for alias with type: participant alice as alice: Person
+	// PlantUML format: participant "name:\nType" as alias
+	// e.g., participant "klok:\nKlokDisplay" as klok
+	if (rest.startsWith('"')) {
+		const closeQuote = rest.indexOf('"', 1);
+		if (closeQuote !== -1) {
+			let displayName = rest.slice(1, closeQuote);
+
+			const afterQuote = rest.slice(closeQuote + 1).trim();
+			const asMatch = afterQuote.match(/^as\s+(\w+)/);
+			const alias = asMatch ? asMatch[1] : null;
+
+			// Check for "name:\nType" or "name: Type" pattern
+			const typeMatch = displayName.match(/^([^:]+):\\n(.+)$/) ||
+			                  displayName.match(/^([^:]+):\s*(.+)$/);
+			if (typeMatch) {
+				return {
+					id: alias || typeMatch[1].trim(),
+					alias: typeMatch[1].trim(),
+					type: typeMatch[2].trim(),
+					isActor: isActor
+				};
+			}
+
+			// No type annotation, just display name
+			displayName = displayName.replace(/\\n/g, ' ').trim();
+			return {
+				id: alias || displayName,
+				alias: displayName,
+				type: null,
+				isActor: isActor
+			};
+		}
+	}
+
+	// Check for alias with type: participant alice as alice: Person (Mermaid)
 	const asIndex = rest.indexOf(' as ');
 	if (asIndex !== -1) {
 		const id = rest.slice(0, asIndex).trim();
@@ -97,12 +136,42 @@ function parseParticipantLine(line) {
 /**
  * Parse message line
  * Formats:
- * - Alice->>Bob: hello()
- * - Alice-->>Bob: "response"
- * - A->>B: method(param: Type)
+ * - Alice->>Bob: hello()        (Mermaid)
+ * - Alice-->>Bob: "response"    (Mermaid)
+ * - Alice -> Bob: hello()       (PlantUML)
+ * - [-> Alice: message          (PlantUML: from outside)
  */
 function parseMessageLine(line, _participants) {
 	const trimmed = line.trim();
+
+	// Skip PlantUML control flow keywords
+	if (trimmed.startsWith('opt ') || trimmed.startsWith('alt ') ||
+	    trimmed.startsWith('else') || trimmed === 'end' ||
+	    trimmed.startsWith('loop ') || trimmed.startsWith('break ') ||
+	    trimmed.startsWith('critical ') || trimmed.startsWith('group ')) {
+		return null;
+	}
+
+	// Handle PlantUML "from outside" syntax: [-> target: message
+	if (trimmed.startsWith('[->') || trimmed.startsWith('[-->')) {
+		const isResponse = trimmed.startsWith('[-->');
+		const afterArrow = trimmed.slice(isResponse ? 4 : 3).trim();
+		const colonIndex = afterArrow.indexOf(':');
+		if (colonIndex !== -1) {
+			const to = afterArrow.slice(0, colonIndex).trim();
+			let message = afterArrow.slice(colonIndex + 1).trim();
+			const isMethodCall = message.includes('(') && message.includes(')');
+			return {
+				from: '[extern]',
+				to: to,
+				message: message,
+				type: isResponse ? 'response' : 'call',
+				isMethodCall: isMethodCall,
+				isExternal: true
+			};
+		}
+		return null;
+	}
 
 	// Match arrow patterns: ->>, -->, ->, -->>
 	const arrowPatterns = [
@@ -147,13 +216,14 @@ function parseMessageLine(line, _participants) {
 }
 
 /**
- * Parse Mermaid sequence diagram
+ * Parse Mermaid/PlantUML sequence diagram
  */
 function parseMermaidSequenceDiagram(code) {
 	const lines = code.split('\n');
 	const result = {
 		participants: [],
 		messages: [],
+		hasAutonumber: false,
 	};
 
 	// Keep track of participant order for implicit participants
@@ -162,8 +232,17 @@ function parseMermaidSequenceDiagram(code) {
 	for (const line of lines) {
 		const trimmed = line.trim();
 
-		// Skip empty lines, comments, and directives
-		if (!trimmed || trimmed.startsWith('%%') || trimmed === 'sequenceDiagram') {
+		// Skip empty lines, comments, PlantUML markers, and directives
+		if (!trimmed || trimmed.startsWith('%%') || trimmed === 'sequenceDiagram' ||
+		    trimmed === '@startuml' || trimmed === '@enduml' ||
+		    trimmed.startsWith('skinparam') || trimmed.startsWith('hide ') ||
+		    trimmed.startsWith('left to right') || trimmed.startsWith('title ')) {
+			continue;
+		}
+
+		// Check for autonumber directive
+		if (trimmed === 'autonumber') {
+			result.hasAutonumber = true;
 			continue;
 		}
 
@@ -178,13 +257,13 @@ function parseMermaidSequenceDiagram(code) {
 		// Try to parse as message
 		const message = parseMessageLine(trimmed, participantMap);
 		if (message) {
-			// Add implicit participants if not already defined
-			if (!participantMap.has(message.from)) {
+			// Add implicit participants if not already defined (skip [extern])
+			if (!participantMap.has(message.from) && message.from !== '[extern]') {
 				const implicit = { id: message.from, alias: message.from, type: null, isActor: false };
 				participantMap.set(message.from, implicit);
 				result.participants.push(implicit);
 			}
-			if (!participantMap.has(message.to)) {
+			if (!participantMap.has(message.to) && message.to !== '[extern]') {
 				const implicit = { id: message.to, alias: message.to, type: null, isActor: false };
 				participantMap.set(message.to, implicit);
 				result.participants.push(implicit);
@@ -204,7 +283,7 @@ function formatParticipantName(participant, locale) {
 	const t = i18n[locale] || i18n.nl;
 
 	if (participant.type) {
-		return `${participant.alias} (${t.instanceOf} ${participant.type})`;
+		return `${participant.alias} ${t.ofType} ${participant.type}`;
 	}
 	return participant.alias || participant.id;
 }
@@ -241,6 +320,14 @@ function formatMessage(message, participantMap, locale) {
 
 	const fromName = fromParticipant ? (fromParticipant.alias || fromParticipant.id) : message.from;
 	const toName = toParticipant ? (toParticipant.alias || toParticipant.id) : message.to;
+
+	// External call (from outside the system)
+	if (message.isExternal) {
+		if (message.isMethodCall) {
+			return `${toName} ${t.receives} ${message.message}`;
+		}
+		return `${toName} ${t.receives} ${message.message}()`;
+	}
 
 	if (message.type === 'response') {
 		// Response: "Alice antwoordt Bob: message" or "Alice antwoordt Bob: 'text message'"
@@ -281,13 +368,13 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
 	const participantCount = parsed.participants.length;
 
-	// First line: summary with participant list
+	// First line: summary with participant list (wrapped in <p> for proper HTML)
 	const countText = participantCount === 1
 		? t.withParticipant.replace('{count}', participantCount)
 		: t.withParticipants.replace('{count}', participantCount);
 
 	const participantList = formatParticipantList(parsed.participants, locale);
-	parts.push(`${t.sequenceDiagram} ${countText}: ${participantList}.`);
+	parts.push(`<p>${t.sequenceDiagram} ${countText}: ${participantList}.</p>`);
 
 	// Build participant map for message formatting
 	const participantMap = new Map();
@@ -295,13 +382,28 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 		participantMap.set(p.id, p);
 	}
 
-	// Interactions
+	// Interactions - use HTML lists for proper rendering
 	if (parsed.messages.length > 0) {
-		parts.push('');
-		parts.push(`${t.interactions}:`);
+		parts.push(`<p><strong>${t.interactions}:</strong></p>`);
 
-		for (const message of parsed.messages) {
-			parts.push(`- ${formatMessage(message, participantMap, locale)}`);
+		if (parsed.hasAutonumber) {
+			// Ordered list with explicit numbers for accessibility
+			parts.push('<ol>');
+			let stepNumber = 1;
+			for (const message of parsed.messages) {
+				const formattedMessage = formatMessage(message, participantMap, locale);
+				parts.push(`<li>${stepNumber}. ${formattedMessage}</li>`);
+				stepNumber++;
+			}
+			parts.push('</ol>');
+		} else {
+			// Unordered list
+			parts.push('<ul>');
+			for (const message of parsed.messages) {
+				const formattedMessage = formatMessage(message, participantMap, locale);
+				parts.push(`<li>${formattedMessage}</li>`);
+			}
+			parts.push('</ul>');
 		}
 	}
 

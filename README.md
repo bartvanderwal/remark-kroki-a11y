@@ -3,7 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/remark-kroki-a11y.svg)](https://www.npmjs.com/package/remark-kroki-a11y)
 [![license](https://img.shields.io/npm/l/remark-kroki-a11y.svg)](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/LICENSE)
 [![Node.js](https://img.shields.io/node/v/remark-kroki-a11y.svg)](https://nodejs.org/)
-[![BDD Tests](https://img.shields.io/badge/BDD%20tests-37%20passing-brightgreen)](https://github.com/bartvanderwal/remark-kroki-a11y)
+[![BDD Tests](https://img.shields.io/badge/BDD%20tests-38%20passing-brightgreen)](https://github.com/bartvanderwal/remark-kroki-a11y)
 
 A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
@@ -34,7 +34,7 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 |--------------|----------|---------|--------|
 | Class diagrams | ✅ Full | ✅ Full | Supported |
 | State diagrams | ✅ Full | ❌ | Partial |
-| Sequence diagrams | ❌ | ❌ | Planned |
+| Sequence diagrams | ✅ Beta | ✅ Beta | Beta |
 | C4 diagrams | ❌ | N/A | Planned |
 | ER diagrams | ❌ | ❌ | Planned |
 | Activity diagrams | ❌ | ❌ | Future |

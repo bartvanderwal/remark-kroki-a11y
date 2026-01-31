@@ -45,9 +45,46 @@ Functionaliteit: Sequentiediagram parsing
     Als ik een beschrijving genereer
     Dan zou de eerste regel moeten zijn:
       """
-      Sequentiediagram met 3 deelnemers: alice (instantie van Person), bob (instantie van Person) en server (instantie van GreetingService).
+      Sequentiediagram met 3 deelnemers: alice van het type Person, bob van het type Person en server van het type GreetingService.
       """
     En zou de beschrijving moeten bevatten "alice roept server.createGreeting(name: String, formal: boolean) aan"
     En zou de beschrijving moeten bevatten "server antwoordt alice: Groet"
     En zou de beschrijving moeten bevatten "alice roept bob.zegGroet(bericht: Groet) aan"
     En zou de beschrijving moeten bevatten "bob antwoordt alice: void"
+
+  Scenario: PlantUML KlokDisplay met autonumber en geneste types
+    Gegeven het volgende PlantUML sequentiediagram:
+      """
+      @startuml
+
+      autonumber
+
+      participant "klok:\nKlokDisplay" as klok
+      participant "minuten:\nNummerDisplay" as minuten
+      participant "uren:\nNummerDisplay" as uren
+
+      [-> klok: tikTijd()
+      klok -> minuten: increment()
+      klok -> minuten: waarde = getWaarde()
+
+      opt waarde == 0
+          klok -> uren: increment()
+      end
+
+      klok -> klok: updateDisplay()
+      klok -> minuten: getDisplayWaarde()
+      klok -> uren: getDisplayWaarde()
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de eerste regel moeten zijn:
+      """
+      Sequentiediagram met 3 deelnemers: klok van het type KlokDisplay, minuten van het type NummerDisplay en uren van het type NummerDisplay.
+      """
+    En zou de beschrijving moeten bevatten "1. klok ontvangt tikTijd()"
+    En zou de beschrijving moeten bevatten "2. klok roept minuten.increment() aan"
+    En zou de beschrijving moeten bevatten "3. klok roept minuten.waarde = getWaarde() aan"
+    En zou de beschrijving moeten bevatten "4. klok roept uren.increment() aan"
+    En zou de beschrijving moeten bevatten "5. klok roept klok.updateDisplay() aan"
+    En zou de beschrijving moeten bevatten "6. klok roept minuten.getDisplayWaarde() aan"
+    En zou de beschrijving moeten bevatten "7. klok roept uren.getDisplayWaarde() aan"

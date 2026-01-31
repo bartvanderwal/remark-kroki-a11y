@@ -49,6 +49,51 @@
 const { visit } = require('unist-util-visit');
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
+const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
+
+// Parser registry - maps (imgType, diagramType) to parser functions
+// Each parser entry has: { canParse, parse, generate }
+const parserRegistry = [
+	{
+		name: 'PlantUML State Diagram',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'stateDiagram',
+		parse: parsePlantUMLStateDiagram,
+		generate: generateStateDescription,
+	},
+	{
+		name: 'PlantUML Class Diagram',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'classDiagram',
+		parse: parsePlantUMLClassDiagram,
+		generate: generateClassDescription,
+	},
+	{
+		name: 'Mermaid Class Diagram',
+		canParse: (imgType, _diagramType, content) => imgType === 'mermaid' && content.toLowerCase().includes('classdiagram'),
+		parse: parseMermaidClassDiagram,
+		generate: generateClassDescription,
+	},
+	{
+		name: 'PlantUML Sequence Diagram',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'sequenceDiagram',
+		parse: parseMermaidSequenceDiagram, // PlantUML participant/arrow syntax is similar
+		generate: generateSequenceDescription,
+	},
+];
+
+// Try to generate a11y description using registered parsers
+function tryGenerateA11yDescription(imgType, diagramType, content, locale) {
+	for (const parser of parserRegistry) {
+		if (parser.canParse(imgType, diagramType, content)) {
+			try {
+				const parsed = parser.parse(content);
+				return parser.generate(parsed, locale);
+			} catch (e) {
+				console.warn(`Failed to parse ${parser.name} for a11y:`, e.message);
+			}
+		}
+	}
+	return null;
+}
 
 // Escape HTML special characters to prevent XSS
 function escapeHtml(text) {
@@ -260,33 +305,9 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 				a11yDescription = customDescription;
 			}
 
-			if (shouldAttemptA11y && !a11yDescription && imgType === 'plantuml' && diagramType === 'stateDiagram') {
-				try {
-					const parsed = parsePlantUMLStateDiagram(node.value);
-					a11yDescription = generateStateDescription(parsed, blockLocale);
-				} catch (e) {
-					console.warn('Failed to parse PlantUML state diagram for a11y:', e.message);
-				}
-			}
-
-			// Class diagram parsing (PlantUML)
-			if (shouldAttemptA11y && !a11yDescription && imgType === 'plantuml' && diagramType === 'classDiagram') {
-				try {
-					const parsed = parsePlantUMLClassDiagram(node.value);
-					a11yDescription = generateClassDescription(parsed, blockLocale);
-				} catch (e) {
-					console.warn('Failed to parse PlantUML class diagram for a11y:', e.message);
-				}
-			}
-
-			// Class diagram parsing (Mermaid via Kroki)
-			if (shouldAttemptA11y && !a11yDescription && imgType === 'mermaid' && node.value.toLowerCase().includes('classdiagram')) {
-				try {
-					const parsed = parseMermaidClassDiagram(node.value);
-					a11yDescription = generateClassDescription(parsed, blockLocale);
-				} catch (e) {
-					console.warn('Failed to parse Mermaid class diagram for a11y:', e.message);
-				}
+			// Try registered parsers for a11y description
+			if (shouldAttemptA11y && !a11yDescription) {
+				a11yDescription = tryGenerateA11yDescription(imgType, diagramType, node.value, blockLocale);
 			}
 
 			// Fallback: always show a generic message when no parser output is available
