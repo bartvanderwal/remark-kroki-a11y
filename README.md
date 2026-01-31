@@ -4,6 +4,18 @@ A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible sourc
 
 > **Note:** This plugin has only been tested with [Docusaurus](https://docusaurus.io/). It should work with other unified/remark-based systems, but this has not been verified.
 
+## Meta: Eating Our Own Dog Food
+
+This project has a delightful meta aspect: we build an accessibility plugin for "diagrams-as-code" in Docusaurus, and we use Docusaurus with those same diagrams to document the plugin itself. This is delightful, but also potentially confusing, so here a short elaboraton on this in an attempt to stop any confusion.
+
+**The technical domain:** The plugin operates in the landscape of Markdown, HTML generation, and diagram-as-code syntaxes (PlantUML, Mermaid). We use these same tools to document the plugin's architecture with C4 diagrams, class diagrams, and sequence diagrams.
+
+**The problem domain:** We address accessibility (a11y) for visual diagrams - a challenge driven by both the [continuous documentation](https://www.writethedocs.org/guide/docs-as-code/) movement in software engineering and broader societal/legal requirements like [WCAG](https://www.w3.org/WAI/standards-guidelines/wcag/) and the [European Accessibility Act](https://ec.europa.eu/social/main.jsp?catId=1202).
+
+To see a more concrete example check the Docusaurus page with diagrams and documentation for this plugin itself. We also use that to test/validate our own plugin.
+
+In short: *A plugin that makes software diagrams accessible, and uses diagrams to explain how we do that (and these then test/validate if we are succeeding 😉).*
+
 ## Features
 
 - **Expandable source code** - Adds a collapsible `<details>` block with the diagram source code below each diagram
@@ -23,9 +35,46 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 - GraphViz
 - And many more...
 
-Natural language description generation currently supports:
+### Current A11y Description Support
 
-- PlantUML state diagrams
+| Diagram Type | PlantUML | Mermaid | Status |
+|--------------|----------|---------|--------|
+| Class diagrams | ✅ Full | ✅ Full | Supported |
+| State diagrams | ✅ Full | ❌ | Partial |
+| Sequence diagrams | ❌ | ❌ | Planned |
+| C4 diagrams | ❌ | N/A | Planned |
+| ER diagrams | ❌ | ❌ | Planned |
+| Activity diagrams | ❌ | ❌ | Future |
+| Gantt charts | ❌ | ❌ | Future |
+
+## Roadmap
+
+### Diagram-as-Code Formats
+
+We support multiple diagram-as-text formats through Kroki:
+
+| Format | UML Support | C4 | Other |
+|--------|-------------|-----|-------|
+| **PlantUML** | All 14 UML types | ✅ via C4-PlantUML | Mindmaps, Gantt, etc. |
+| **Mermaid** | Class, Sequence, State, ER | ❌ | Flowchart, Pie, etc. |
+| **GraphViz** | ❌ | ❌ | Directed graphs |
+| **D2** | ❌ | ❌ | General diagrams |
+
+### Future Diagram Types (Student Projects Welcome!)
+
+These diagram types don't have good diagram-as-text standards yet:
+
+- **Domain Stories** ([egon.io](https://egon.io)) - Visual storytelling for domain modeling
+- **User Story Maps** - Story mapping for agile planning
+- **Event Storming** - Domain event visualization
+
+### Architecture
+
+We use PlantUML's data structure as internal representation (IR) with adapters for each input format. See [ADR-0006](docs/adr/0006-plantuml-als-interne-standaard.md) for details.
+
+The official [`@mermaid-js/parser`](https://www.npmjs.com/package/@mermaid-js/parser) npm package provides AST parsing for Mermaid diagrams, enabling conversion to our IR.
+
+For all architecture decisions, see the [Architecture Decision Records (ADRs)](docs/adr/README.md).
 
 ## Installation
 
@@ -207,7 +256,19 @@ Control per-diagram behavior using flags in the code block meta:
 @enduml
 ```
 
+<!-- Override automatic description with custom text -->
+```kroki customDescription="Zie toelichting in tekst voor beschrijving van dit diagram" imgType="plantuml"
+@startuml
+...
+@enduml
+```
+
 ~~~
+
+The `customDescription` attribute is useful when:
+- The diagram type is not yet supported for automatic description generation
+- You want to provide a more context-specific description
+- The automatic description doesn't capture the intended meaning
 
 ## Accessibility
 
@@ -216,6 +277,34 @@ This plugin improves diagram accessibility by:
 1. **Providing source code** - Screen readers can read the diagram syntax (PlantUML, Mermaid, etc.) which describes the structure
 2. **Generating natural language descriptions** - For supported diagram types, creates human-readable text descriptions
 3. **Keyboard navigation** - Uses native `<details>` elements accessible via keyboard
+
+## Documentation Site
+
+This plugin includes a live documentation site built with Docusaurus that besides documenting the plugin also demonstrates all features with working examples.
+
+### Running Locally
+
+```bash
+# From the repository root:
+./start-docs.sh
+
+# Or manually:
+cd test-docusaurus-site
+npm install  # first time only
+npm start
+```
+
+The documentation site will be available at `http://localhost:3000/remark-kroki-a11y/`.
+
+### Online Documentation
+
+The documentation/example is also available online at: https://aim-ene.github.io/remark-kroki-a11y/
+
+### Single Source of Truth
+
+The `README.md` and `CONTRIBUTING.md` files are maintained in the repository root for GitHub visibility. These files are automatically copied to the Docusaurus docs folder by `start-docs.sh` (with added front-matter for Docusaurus).
+
+**Important:** Do NOT add Docusaurus-specific front-matter (the `---` YAML block) to these root files, as they need to render correctly on GitHub. The `start-docs.sh` script adds the necessary front-matter when copying.
 
 ## Contributing
 

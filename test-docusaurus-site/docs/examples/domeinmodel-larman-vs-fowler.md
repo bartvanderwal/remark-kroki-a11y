@@ -15,7 +15,7 @@ Bij het modelleren van een systeem onderscheiden we twee belangrijke fasen:
 
 Craig Larman beschrijft in zijn boek "Applying UML and Patterns" het **conceptuele domeinmodel**. Dit model:
 
-- Gebruikt **natuurlijke taal** voor associatienamen
+- Gebruikt **natuurlijke taal** voor associatienamenBv
 - Is bedoeld voor communicatie met domeinexperts en stakeholders
 - Focust op **begrip van het domein**, niet op code
 - Vermijdt technisch jargon

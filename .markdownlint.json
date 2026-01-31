@@ -1,5 +1,5 @@
 {
-  "defaultSeverity": "warning",
   "no-bare-urls": false,
-  "line-length": false
+  "line-length": false,
+  "no-trailing-punctuation": false
 }

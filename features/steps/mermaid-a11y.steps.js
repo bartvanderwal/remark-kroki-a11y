@@ -3,9 +3,13 @@ const assert = require('assert');
 const MermaidClassdiagramA11YReader = require('../../src/mermaid-classdiagram-a11y');
 const { parsePlantUMLClassDiagram, generateAccessibleDescription } = require('../../src/parsers/classDiagramParser');
 
+const { generateUnsupportedDescription } = require('../../src/parsers/unsupportedDiagramParser');
+
 // Shared state
 let reader;
 let currentDiagram;
+let currentDiagramType;
+let currentCustomDescription;
 let generatedDescription;
 let generatedAriaStructure;
 let isPlantUML = false;
@@ -13,6 +17,8 @@ let isPlantUML = false;
 Before(function() {
 	reader = new MermaidClassdiagramA11YReader({ locale: 'nl' });
 	currentDiagram = null;
+	currentDiagramType = null;
+	currentCustomDescription = null;
 	generatedDescription = null;
 	generatedAriaStructure = null;
 	isPlantUML = false;
@@ -34,8 +40,39 @@ Given('the following PlantUML class diagram:', function(diagramSource) {
 	isPlantUML = true;
 });
 
+// Step definitions for diagrams with explicit type (for unsupported diagram tests)
+Given('het volgende PlantUML diagram met type {string}:', function(diagramType, diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = diagramType;
+	isPlantUML = true;
+});
+
+Given('the following PlantUML diagram with type {string}:', function(diagramType, diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = diagramType;
+	isPlantUML = true;
+});
+
+// Custom description step definitions
+Given('het volgende PlantUML klassediagram met customDescription:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	isPlantUML = true;
+});
+
+Given('de customDescription is {string}', function(customDesc) {
+	currentCustomDescription = customDesc;
+});
+
 When('ik een beschrijving genereer', function() {
-	if (isPlantUML) {
+	// Check if custom description is set - use it directly without parsing
+	if (currentCustomDescription) {
+		generatedDescription = currentCustomDescription;
+		return;
+	}
+	// Check if this is an unsupported diagram type
+	if (currentDiagramType) {
+		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'nl');
+	} else if (isPlantUML) {
 		const parsed = parsePlantUMLClassDiagram(currentDiagram);
 		generatedDescription = generateAccessibleDescription(parsed, 'nl');
 	} else {
@@ -44,8 +81,13 @@ When('ik een beschrijving genereer', function() {
 });
 
 When('I generate a description in English', function() {
-	const parsed = parsePlantUMLClassDiagram(currentDiagram);
-	generatedDescription = generateAccessibleDescription(parsed, 'en');
+	// Check if this is an unsupported diagram type
+	if (currentDiagramType) {
+		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'en');
+	} else {
+		const parsed = parsePlantUMLClassDiagram(currentDiagram);
+		generatedDescription = generateAccessibleDescription(parsed, 'en');
+	}
 });
 
 When('ik ARIA navigatiestructuur genereer', function() {
@@ -69,7 +111,9 @@ Then('zou de beschrijving niet moeten bevatten {string}', function(unexpectedTex
 });
 
 Then('zou de eerste regel moeten zijn:', function(expectedDocString) {
-	const firstLine = (generatedDescription || '').split('\n')[0].trim();
+	let firstLine = (generatedDescription || '').split('\n')[0].trim();
+	// Strip HTML tags for comparison (output is now HTML)
+	firstLine = firstLine.replace(/<[^>]*>/g, '');
 	const expected = (expectedDocString || '').trim();
 	assert.strictEqual(
 		firstLine,
@@ -113,7 +157,9 @@ Then('the description should contain {string}', function(expectedText) {
 });
 
 Then('the first line should be:', function(expectedDocString) {
-	const firstLine = (generatedDescription || '').split('\n')[0].trim();
+	let firstLine = (generatedDescription || '').split('\n')[0].trim();
+	// Strip HTML tags for comparison (output is now HTML)
+	firstLine = firstLine.replace(/<[^>]*>/g, '');
 	const expected = (expectedDocString || '').trim();
 	assert.strictEqual(
 		firstLine,

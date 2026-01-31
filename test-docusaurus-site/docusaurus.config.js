@@ -14,13 +14,15 @@ const passThrough = [
 ];
 
 module.exports = {
-  title: 'remark-kroki-a11y test',
-  url: 'http://localhost',
-  baseUrl: '/',
+  title: 'remark-kroki-a11y',
+  tagline: 'Accessible diagram descriptions for Kroki diagrams in Docusaurus',
+  url: 'https://aim-ene.github.io',
+  baseUrl: '/remark-kroki-a11y/',
   // docs config must be under presets, not at the root
   favicon: 'img/favicon.ico',
-  organizationName: 'test',
-  projectName: 'test-docusaurus-site',
+  organizationName: 'AIM-ENE',
+  projectName: 'remark-kroki-a11y',
+  trailingSlash: false,
   onBrokenLinks: 'throw',
   // Client-side module for tab switching
   clientModules: [
@@ -71,4 +73,73 @@ module.exports = {
       },
     ],
   ],
+  themeConfig: {
+    navbar: {
+      title: 'remark-kroki-a11y',
+      items: [
+        {
+          type: 'doc',
+          docId: 'index',
+          position: 'left',
+          label: 'Docs',
+        },
+        {
+          type: 'doc',
+          docId: 'examples/index',
+          position: 'left',
+          label: 'Examples',
+        },
+        {
+          href: 'https://github.com/AIM-ENE/remark-kroki-a11y',
+          label: 'GitHub',
+          position: 'right',
+        },
+      ],
+    },
+    footer: {
+      style: 'dark',
+      links: [
+        {
+          title: 'Docs',
+          items: [
+            {
+              label: 'Getting Started',
+              to: '/',
+            },
+            {
+              label: 'Examples',
+              to: '/examples',
+            },
+          ],
+        },
+        {
+          title: 'Community',
+          items: [
+            {
+              label: 'GitHub',
+              href: 'https://github.com/AIM-ENE/remark-kroki-a11y',
+            },
+            {
+              label: 'Issues',
+              href: 'https://github.com/AIM-ENE/remark-kroki-a11y/issues',
+            },
+          ],
+        },
+        {
+          title: 'More',
+          items: [
+            {
+              label: 'Kroki.io',
+              href: 'https://kroki.io',
+            },
+            {
+              label: 'Docusaurus',
+              href: 'https://docusaurus.io',
+            },
+          ],
+        },
+      ],
+      copyright: `Copyright © ${new Date().getFullYear()} AIM-ENE, Hogeschool Arnhem en Nijmegen. Built with Docusaurus.`,
+    },
+  },
 };

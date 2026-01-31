@@ -1,21 +1,23 @@
-# remark-kroki-a11y Test Site
+# remark-kroki-a11y
 
-This test site demonstrates the accessibility features of the remark-kroki-a11y plugin.
+A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
-## Quick Examples
+:::tip Meta
+This documentation site is itself powered by remark-kroki-a11y! Every diagram you see here demonstrates the plugin's accessibility features.
+:::
 
-### English Sequence Diagram (Alice & Bob)
+## Features
 
-```kroki imgType="plantuml" imgTitle="Simple sequence diagram" lang="en"
-@startuml
-Alice -> Bob: Hello Bob!
-Bob --> Alice: Hi Alice!
-Alice -> Bob: How are you?
-Bob --> Alice: I'm fine, thanks!
-@enduml
-```
+- **Expandable source code** - Adds a collapsible `<details>` block with the diagram source code below each diagram
+- **Natural language descriptions** - Generates human-readable descriptions for screen readers
+- **Tabs interface** - Uses tabs when source and description are available
+- **Keyboard accessible** - Uses native `<details>` element that works with Enter/Space
+- **Localization** - Supports Dutch (nl) and English (en)
+- **Per-diagram control** - Use `hideSource`, `hideA11y`, or `customDescription` flags
 
-### Nederlands Klassendiagram (Strategy Pattern)
+## Quick Demo
+
+Here's a class diagram with automatically generated accessible description:
 
 ```kroki imgType="plantuml" imgTitle="Strategy Pattern" lang="nl"
 @startuml
@@ -43,16 +45,62 @@ QuickSort ..|> SorteerStrategie
 @enduml
 ```
 
+Click the "Natuurlijke taal" tab above to see the generated accessible description!
+
 ---
 
-## More Test Pages
+## Installation
 
-### English A11y Descriptions
+```bash
+npm install remark-kroki-a11y
+# or
+yarn add remark-kroki-a11y
+```
 
-- [PlantUML Class Diagrams (English)](plantuml-class-diagrams-en) - Test class diagrams with English A11y descriptions
-- [Domain Models: Larman vs Fowler](domain-model-larman-vs-fowler) - Demonstrates analysis-phase vs design-phase domain modeling styles
+## Usage with Docusaurus
 
-### Nederlandse A11y Beschrijvingen
+In your `docusaurus.config.js`:
 
-- [PlantUML Klassendiagrammen (Nederlands)](plantuml-class-diagrams-nl) - Test klassendiagrammen met Nederlandse A11y beschrijvingen
-- [Domeinmodellen: Larman vs Fowler](domeinmodel-larman-vs-fowler) - Demonstreert analyse-fase vs ontwerp-fase domeinmodellen
+```js
+module.exports = {
+  presets: [
+    [
+      'classic',
+      {
+        docs: {
+          remarkPlugins: [
+            // This plugin MUST come BEFORE remark-kroki-plugin
+            [require('remark-kroki-a11y'), {
+              showSource: true,
+              showA11yDescription: true,
+              locale: 'en', // or 'nl'
+            }],
+            [require('remark-kroki-plugin'), {
+              krokiBase: 'https://kroki.io',
+              lang: 'kroki',
+            }],
+          ],
+        },
+      },
+    ],
+  ],
+};
+```
+
+## Supported Diagram Types
+
+| Diagram Type | PlantUML | Mermaid | Status |
+|--------------|----------|---------|--------|
+| Class diagrams | ✅ Full | ✅ Full | Supported |
+| State diagrams | ✅ Full | ❌ | Partial |
+| Sequence diagrams | ❌ | ❌ | Planned |
+| C4 diagrams | ❌ | N/A | Planned |
+| ER diagrams | ❌ | ❌ | Planned |
+
+---
+
+## Next Steps
+
+- Browse the [Examples](/examples) to see the plugin in action
+- Check the [Architecture](/architecture/plugin-architecture) for technical details
+- Contribute on [GitHub](https://github.com/AIM-ENE/remark-kroki-a11y)

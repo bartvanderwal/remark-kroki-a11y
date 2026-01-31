@@ -83,6 +83,13 @@ function extractLocale(meta) {
 	return match ? match[1] : null;
 }
 
+// Extract custom description from meta string (e.g., customDescription="Custom text here")
+function extractCustomDescription(meta) {
+	if (!meta) return null;
+	const match = meta.match(/customDescription="([^"]+)"/);
+	return match ? match[1] : null;
+}
+
 // Detect PlantUML diagram type from content
 function detectPlantUMLDiagramType(content) {
 	const lowerContent = content.toLowerCase();
@@ -214,11 +221,14 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			const hideA11y = node.meta && node.meta.includes('hideA11y');
 			const hideDiagram = node.meta && node.meta.includes('hideDiagram');
 
-			// Clean meta from flags
+			// Clean meta from flags and customDescription attribute
 			if (node.meta) {
+				// Remove customDescription="..." attribute (with quoted value)
+				node.meta = node.meta.replace(/customDescription="[^"]*"/g, '');
+				// Remove simple flags
 				node.meta = node.meta
 					.split(/\s+/)
-					.filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram')
+					.filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== '')
 					.join(' ');
 			}
 
@@ -244,7 +254,13 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			let a11yDescription = null;
 			const shouldAttemptA11y = opts.showA11yDescription && !hideA11y;
 
-			if (shouldAttemptA11y && imgType === 'plantuml' && diagramType === 'stateDiagram') {
+			// Check for custom description override - skip all parsing if set
+			const customDescription = extractCustomDescription(node.meta);
+			if (shouldAttemptA11y && customDescription) {
+				a11yDescription = customDescription;
+			}
+
+			if (shouldAttemptA11y && !a11yDescription && imgType === 'plantuml' && diagramType === 'stateDiagram') {
 				try {
 					const parsed = parsePlantUMLStateDiagram(node.value);
 					a11yDescription = generateStateDescription(parsed, blockLocale);
@@ -258,7 +274,6 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 				try {
 					const parsed = parsePlantUMLClassDiagram(node.value);
 					a11yDescription = generateClassDescription(parsed, blockLocale);
-                    console.log('DEBUG a11yDescription:', a11yDescription);
 				} catch (e) {
 					console.warn('Failed to parse PlantUML class diagram for a11y:', e.message);
 				}

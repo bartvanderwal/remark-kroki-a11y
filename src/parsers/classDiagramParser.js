@@ -779,6 +779,7 @@ function parsePlantUMLClassDiagram(code) {
 
 /**
  * Generate accessible description from parsed class diagram
+ * Returns HTML with proper <ul><li> structure for better screen reader navigation
  */
 function generateAccessibleDescription(parsed, locale = 'nl') {
 	const t = i18n[locale] || i18n.nl;
@@ -788,12 +789,12 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 	const relationCount = parsed.relations.length;
 
 	// Summary
-	parts.push(t.classDiagram + ' ' + t.withClasses.replace('{count}', classCount) + ' ' + t.andRelations.replace('{count}', relationCount) + '.');
+	parts.push('<p>' + t.classDiagram + ' ' + t.withClasses.replace('{count}', classCount) + ' ' + t.andRelations.replace('{count}', relationCount) + '.</p>');
 
 	// Classes section
 	if (classCount > 0) {
-		parts.push('');
-		parts.push(t.classes + ':');
+		parts.push('<p><strong>' + t.classes + ':</strong></p>');
+		parts.push('<ul>');
 
 		for (const className of Object.keys(parsed.classes)) {
 			const classData = parsed.classes[className];
@@ -818,19 +819,19 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			const hasMethods = classData.methods.length > 0;
 			const hasMembers = hasAttributes || hasMethods;
 
-			if (hasMembers) {
-				classHeader += ' ' + t.with + ':';
-			}
-			parts.push(classHeader);
+			parts.push('<li><strong>' + classHeader + '</strong>');
 
 			// Check if class has no members at all
 			if (!hasMembers) {
-				parts.push('  - ' + t.noMethodsAndAttributes);
+				parts.push(' ' + t.noMethodsAndAttributes);
 			} else {
+				parts.push(' ' + t.with + ':');
+				parts.push('<ul>');
+
 				// Methods
 				for (const method of classData.methods) {
 					const visibility = parseVisibility(method.visibility, locale);
-					let methodDesc = '  - ' + visibility + ' ' + t.method + ' ' + method.name;
+					let methodDesc = visibility + ' ' + t.method + ' ' + method.name;
 
 					if (method.parameters.length === 0) {
 						methodDesc += ', ' + t.withoutParameters;
@@ -847,7 +848,7 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 					}
 
 					methodDesc += ', ' + t.returnType + ' ' + method.returnType;
-					parts.push(methodDesc);
+					parts.push('<li>' + methodDesc + '</li>');
 				}
 
 				// Attributes
@@ -856,27 +857,33 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 					const type = parseType(attr.type, locale);
 					// Only include type if present (Fowler-style), omit for Larman-style
 					if (type) {
-						parts.push('  - ' + visibility + ' ' + t.attribute + ' ' + attr.name + ' ' + t.ofType + ' ' + type);
+						parts.push('<li>' + visibility + ' ' + t.attribute + ' ' + attr.name + ' ' + t.ofType + ' ' + type + '</li>');
 					} else {
-						parts.push('  - ' + visibility + ' ' + t.attribute + ' ' + attr.name);
+						parts.push('<li>' + visibility + ' ' + t.attribute + ' ' + attr.name + '</li>');
 					}
 				}
 
 				// Explicit messages for missing members when class has some members
 				if (!hasAttributes && hasMethods) {
-					parts.push('  - ' + t.noAttributes);
+					parts.push('<li>' + t.noAttributes + '</li>');
 				}
 				if (!hasMethods && hasAttributes) {
-					parts.push('  - ' + t.noMethods);
+					parts.push('<li>' + t.noMethods + '</li>');
 				}
+
+				parts.push('</ul>');
 			}
+
+			parts.push('</li>');
 		}
+
+		parts.push('</ul>');
 	}
 
 	// Relations section
 	if (relationCount > 0) {
-		parts.push('');
-		parts.push(t.relations + ':');
+		parts.push('<p><strong>' + t.relations + ':</strong></p>');
+		parts.push('<ul>');
 
 		for (const rel of parsed.relations) {
 			let relDesc;
@@ -886,20 +893,20 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			function buildRelationDesc(from, relationType, to, label) {
 				if (label) {
 					const namedPart = t.withNamedRelation.replace('{name}', label);
-					return '- ' + from + ' ' + relationType + ' ' + namedPart + ' ' + to;
+					return from + ' ' + relationType + ' ' + namedPart + ' ' + to;
 				} else {
-					return '- ' + from + ' ' + relationType + ' ' + t.withUnnamedRelation + ' ' + to;
+					return from + ' ' + relationType + ' ' + t.withUnnamedRelation + ' ' + to;
 				}
 			}
 
 			switch (rel.type) {
 				case 'inheritance':
 					// Inheritance doesn't use the named pattern
-					relDesc = '- ' + rel.from + ' ' + t.inheritance + ' ' + rel.to;
+					relDesc = rel.from + ' ' + t.inheritance + ' ' + rel.to;
 					break;
 				case 'implementation':
 					// Implementation doesn't use the named pattern
-					relDesc = '- ' + rel.from + ' ' + t.implementation + ' ' + rel.to;
+					relDesc = rel.from + ' ' + t.implementation + ' ' + rel.to;
 					break;
 				case 'association':
 					relDesc = buildRelationDesc(rel.from, t.association, rel.to, rel.label);
@@ -912,13 +919,13 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 					break;
 				case 'dependency':
 					if (rel.reverse) {
-						relDesc = '- ' + rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
+						relDesc = rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
 					} else {
-						relDesc = '- ' + rel.from + ' ' + t.dependency + ' ' + rel.to;
+						relDesc = rel.from + ' ' + t.dependency + ' ' + rel.to;
 					}
 					break;
 				default:
-					relDesc = '- ' + rel.from + ' -> ' + rel.to;
+					relDesc = rel.from + ' -> ' + rel.to;
 			}
 
 			// Add multiplicity if present (label is now part of the main description)
@@ -936,21 +943,25 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 				relDesc += ', ' + details.join(', ');
 			}
 
-			parts.push(relDesc);
+			parts.push('<li>' + relDesc + '</li>');
 		}
+
+		parts.push('</ul>');
 	}
 
 	// Notes section
 	if (parsed.notes.length > 0) {
-		parts.push('');
-		parts.push(t.notes + ':');
+		parts.push('<p><strong>' + t.notes + ':</strong></p>');
+		parts.push('<ul>');
 
 		for (const note of parsed.notes) {
 			const noteHeader = t.noteFor.replace('{class}', note.className);
 			// Clean up escaped newlines in note text
 			const cleanText = note.text.split('\\n').join(' ');
-			parts.push('- ' + noteHeader + ': "' + cleanText + '"');
+			parts.push('<li>' + noteHeader + ': "' + cleanText + '"</li>');
 		}
+
+		parts.push('</ul>');
 	}
 
 	return parts.join('\n');

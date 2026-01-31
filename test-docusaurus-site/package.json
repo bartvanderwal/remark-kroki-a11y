@@ -1,11 +1,13 @@
 {
-  "name": "test-docusaurus-site",
+  "name": "remark-kroki-a11y-docs",
   "version": "1.0.0",
   "private": true,
-  "description": "Minimal Docusaurus 3.9 test site for remark-kroki-a11y plugin.",
+  "description": "Documentation site for remark-kroki-a11y plugin - also serves as a live demo.",
   "scripts": {
     "start": "docusaurus start",
     "build": "docusaurus build",
+    "clear": "docusaurus clear",
+    "serve": "docusaurus serve",
     "swizzle": "docusaurus swizzle"
   },
   "dependencies": {

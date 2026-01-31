@@ -23,12 +23,15 @@ See: Nygard, M. (2011). Documenting architecture decisions. Retrieved from https
 
 ## ADR overview
 
-- **0001-relatie-richting-en-bijectiviteit.md**  
-  Make UML relation direction explicit in natural language output for bijectivity.
-- **0002-plugin-architectuur.md**  
-  Choose a plain JavaScript remark plugin as the base, with optional MDX/JSX/React extensions.
-- **0003-project-language.md**  
-  All documentation and ADRs in this repository are in English for open source accessibility.
+| ADR | Title | Status |
+|-----|-------|--------|
+| [0001](0001-ondersteuning-relatie-richtingen.md) | Relation direction and bijectivity | Accepted |
+| [0002](0002-plugin-architectuur.md) | Plugin architecture | Accepted |
+| [0003](0003-project-language.md) | Project language (English) | Accepted |
+| [0004](0004-integrated-test-docusaurus-site.md) | Integrated test Docusaurus site | Accepted |
+| [0005](0005-navigeerbare-a11y-beschrijvingen.md) | Navigable a11y descriptions | Accepted |
+| [0006](0006-plantuml-als-interne-standaard.md) | PlantUML as internal standard | Accepted |
+| [0007](0007-single-source-documentation.md) | Single source of truth for documentation | Accepted |
 
 ---
 
