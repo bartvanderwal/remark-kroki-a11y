@@ -19,7 +19,7 @@ Each ADR contains the following sections:
 1. *Options*: We explicitly add an 'Options' section to list and motivate alternatives considered, for clarity and traceability.
 2. *References*: We use a 'References' section at the end, formatted in APA style as prescribed by HAN guidelines ([HAN APA reference guide](https://factlearning.wordpress.com/wp-content/uploads/2016/02/controlekaart-documenten-ica.pdf)).
 
-See: Nygard, M. (2011). Documenting architecture decisions. Retrieved from <https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html>
+See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html).
 
 ## ADR overview
 
