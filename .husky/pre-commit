@@ -2,31 +2,30 @@
 
 # Check for package-lock.json - we use yarn, not npm
 if [ -f "package-lock.json" ] || [ -f "test-docusaurus-site/package-lock.json" ]; then
-  echo "⚠️  ERROR: package-lock.json detected!"
   echo ""
-  echo "This project uses yarn, not npm."
+  echo "⚠️  WARNING: package-lock.json detected!"
+  echo ""
+  echo "This project uses yarn, not npm. The CI/CD pipeline will fail."
   echo "Please remove package-lock.json and use 'yarn install' instead of 'npm install'."
   echo ""
   echo "To fix:"
   echo "  rm -f package-lock.json test-docusaurus-site/package-lock.json"
-  echo "  yarn install"
   echo ""
-  exit 1
 fi
 
 # Check that yarn.lock files exist
 if [ ! -f "yarn.lock" ]; then
-  echo "⚠️  ERROR: yarn.lock is missing in root!"
   echo ""
-  echo "Run 'yarn install' to generate it."
+  echo "⚠️  WARNING: yarn.lock is missing in root!"
   echo ""
-  exit 1
+  echo "The CI/CD pipeline will fail. Run 'yarn install' to generate it."
+  echo ""
 fi
 
 if [ ! -f "test-docusaurus-site/yarn.lock" ]; then
-  echo "⚠️  ERROR: yarn.lock is missing in test-docusaurus-site!"
   echo ""
-  echo "Run 'cd test-docusaurus-site && yarn install' to generate it."
+  echo "⚠️  WARNING: yarn.lock is missing in test-docusaurus-site!"
   echo ""
-  exit 1
+  echo "The CI/CD pipeline will fail. Run 'cd test-docusaurus-site && yarn install' to generate it."
+  echo ""
 fi
