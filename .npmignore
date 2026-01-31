@@ -1,0 +1,29 @@
+# Test and development files
+test-docusaurus-site/
+test-results/
+features/
+.storybook/
+docusaurus-test/
+
+# Documentation (available on GitHub)
+docs/
+*.md
+!README.md
+
+# Configuration files
+.github/
+.husky/
+.vscode/
+.markdownlint.json
+.markdownlint.jsonc
+eslint.config.js
+cucumber.js
+
+# Build artifacts
+*.tgz
+
+# PlantUML libs (not needed at runtime)
+plantuml-libs/
+
+# Scripts
+start-docs.sh
