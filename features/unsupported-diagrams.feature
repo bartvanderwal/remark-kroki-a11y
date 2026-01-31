@@ -44,17 +44,20 @@ Functionaliteit: Niet-ondersteunde diagramtypes
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "ondersteunt nog geen C4 diagrammen"
 
-  Scenario: Sequentiediagram nog niet ondersteund
-    Gegeven het volgende PlantUML diagram met type "sequence":
+  Scenario: Activity diagram nog niet ondersteund
+    Gegeven het volgende PlantUML diagram met type "activity":
       """
       @startuml
-      autonumber
-      actor Alice
-      participant Bob
-      Alice -> Bob: bestelDrankje("appelsap")
-      Bob --> Alice: betaal(2.00)
+      start
+      :Stap 1;
+      if (Conditie?) then (ja)
+        :Stap 2a;
+      else (nee)
+        :Stap 2b;
+      endif
+      stop
       @enduml
       """
     Als ik een beschrijving genereer
-    Dan zou de beschrijving moeten bevatten "ondersteunt nog geen sequence diagrammen"
+    Dan zou de beschrijving moeten bevatten "ondersteunt nog geen activity diagrammen"
     En zou de beschrijving moeten bevatten "Draag bij aan dit A11Y project"

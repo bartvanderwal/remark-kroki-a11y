@@ -2,6 +2,7 @@ const { Given, When, Then, Before } = require('@cucumber/cucumber');
 const assert = require('assert');
 const MermaidClassdiagramA11YReader = require('../../src/mermaid-classdiagram-a11y');
 const { parsePlantUMLClassDiagram, generateAccessibleDescription } = require('../../src/parsers/classDiagramParser');
+const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('../../src/parsers/sequenceDiagramParser');
 
 const { generateUnsupportedDescription } = require('../../src/parsers/unsupportedDiagramParser');
 
@@ -26,6 +27,13 @@ Before(function() {
 
 Given('het volgende klassediagram:', function(diagramSource) {
 	currentDiagram = diagramSource;
+	isPlantUML = false;
+});
+
+// Mermaid sequence diagram step definition
+Given('het volgende Mermaid sequentiediagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'sequence';
 	isPlantUML = false;
 });
 
@@ -69,8 +77,12 @@ When('ik een beschrijving genereer', function() {
 		generatedDescription = currentCustomDescription;
 		return;
 	}
-	// Check if this is an unsupported diagram type
-	if (currentDiagramType) {
+	// Check for sequence diagram
+	if (currentDiagramType === 'sequence') {
+		const parsed = parseMermaidSequenceDiagram(currentDiagram);
+		generatedDescription = generateSequenceDescription(parsed, 'nl');
+	} else if (currentDiagramType) {
+		// Other unsupported diagram types
 		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'nl');
 	} else if (isPlantUML) {
 		const parsed = parsePlantUMLClassDiagram(currentDiagram);
