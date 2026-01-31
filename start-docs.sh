@@ -30,9 +30,9 @@ echo "📚 Starting remark-kroki-a11y documentation site..."
 echo "   Directory: $DOCS_DIR"
 echo ""
 
-# Copy README.md with front-matter for Docusaurus
-echo "📄 Copying README.md to docs/readme.md..."
-cat > "$DOCS_CONTENT_DIR/readme.md" << 'FRONTMATTER'
+ # Copy README.md with front-matter for Docusaurus
+echo "📄 Copying README.md to docs/index.md..."
+cat > "$DOCS_CONTENT_DIR/index.md" << 'FRONTMATTER'
 ---
 id: readme
 title: README (GitHub)
@@ -57,7 +57,7 @@ FRONTMATTER
 sed -e 's|(docs/adr/README.md)|(./adr/)|g' \
     -e 's|(docs/adr/|(./adr/|g' \
     -e 's|\[CONTRIBUTING.md\](CONTRIBUTING.md)|[Contributing](./contributing)|g' \
-    "$SCRIPT_DIR/README.md" >> "$DOCS_CONTENT_DIR/readme.md"
+    "$SCRIPT_DIR/README.md" >> "$DOCS_CONTENT_DIR/index.md"
 
 # Copy CONTRIBUTING.md with front-matter for Docusaurus
 echo "📄 Copying CONTRIBUTING.md to docs/contributing.md..."
