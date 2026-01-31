@@ -13,3 +13,20 @@ if [ -f "package-lock.json" ] || [ -f "test-docusaurus-site/package-lock.json" ]
   echo ""
   exit 1
 fi
+
+# Check that yarn.lock files exist
+if [ ! -f "yarn.lock" ]; then
+  echo "⚠️  ERROR: yarn.lock is missing in root!"
+  echo ""
+  echo "Run 'yarn install' to generate it."
+  echo ""
+  exit 1
+fi
+
+if [ ! -f "test-docusaurus-site/yarn.lock" ]; then
+  echo "⚠️  ERROR: yarn.lock is missing in test-docusaurus-site!"
+  echo ""
+  echo "Run 'cd test-docusaurus-site && yarn install' to generate it."
+  echo ""
+  exit 1
+fi
