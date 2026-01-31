@@ -159,7 +159,7 @@ function parseMessageLine(line, _participants) {
 		const colonIndex = afterArrow.indexOf(':');
 		if (colonIndex !== -1) {
 			const to = afterArrow.slice(0, colonIndex).trim();
-			let message = afterArrow.slice(colonIndex + 1).trim();
+			const message = afterArrow.slice(colonIndex + 1).trim();
 			const isMethodCall = message.includes('(') && message.includes(')');
 			return {
 				from: '[extern]',
@@ -387,13 +387,11 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 		parts.push(`<p><strong>${t.interactions}:</strong></p>`);
 
 		if (parsed.hasAutonumber) {
-			// Ordered list with explicit numbers for accessibility
+			// Ordered list - screenreaders announce numbers automatically
 			parts.push('<ol>');
-			let stepNumber = 1;
 			for (const message of parsed.messages) {
 				const formattedMessage = formatMessage(message, participantMap, locale);
-				parts.push(`<li>${stepNumber}. ${formattedMessage}</li>`);
-				stepNumber++;
+				parts.push(`<li>${formattedMessage}</li>`);
 			}
 			parts.push('</ol>');
 		} else {
