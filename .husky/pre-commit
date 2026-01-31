@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# Check for package-lock.json - we use yarn, not npm
+if [ -f "package-lock.json" ] || [ -f "test-docusaurus-site/package-lock.json" ]; then
+  echo "⚠️  ERROR: package-lock.json detected!"
+  echo ""
+  echo "This project uses yarn, not npm."
+  echo "Please remove package-lock.json and use 'yarn install' instead of 'npm install'."
+  echo ""
+  echo "To fix:"
+  echo "  rm -f package-lock.json test-docusaurus-site/package-lock.json"
+  echo "  yarn install"
+  echo ""
+  exit 1
+fi

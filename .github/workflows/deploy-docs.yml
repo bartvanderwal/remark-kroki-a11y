@@ -28,14 +28,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'yarn'
+          cache-dependency-path: |
+            yarn.lock
+            test-docusaurus-site/yarn.lock
 
       - name: Install dependencies (root)
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Install dependencies (docs site)
         working-directory: test-docusaurus-site
-        run: npm ci
+        run: yarn install --frozen-lockfile
 
       - name: Copy root docs to Docusaurus (single source of truth)
         run: |
@@ -143,7 +146,7 @@ jobs:
 
       - name: Build documentation site
         working-directory: test-docusaurus-site
-        run: npm run build
+        run: yarn build
         env:
           NODE_ENV: production
 

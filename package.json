@@ -8,7 +8,8 @@
     "test:report": "cucumber-js --format html:test-results/cucumber-report.html",
     "start": "cd test-docusaurus-site && yarn start",
     "build": "cd test-docusaurus-site && yarn build",
-    "serve": "cd test-docusaurus-site && yarn serve"
+    "serve": "cd test-docusaurus-site && yarn serve",
+    "prepare": "husky"
   },
   "keywords": [
     "remark",
@@ -43,6 +44,7 @@
   },
   "devDependencies": {
     "@cucumber/cucumber": "^12.6.0",
+    "husky": "^9.1.7",
     "unist-util-visit": "^5.0.0"
   },
   "engines": {
