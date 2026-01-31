@@ -296,7 +296,7 @@ destroy Wolf
 This diagram shows the resolution:
 
 - **create** keyword shows that Little Red and Grandmother "return"
-- **<<rescued>>** is a stereotype indicating the type of interaction
+- **`<<rescued>>`** is a stereotype indicating the type of interaction
 - The Wolf receives his punishment through a series of actions
 
 ---

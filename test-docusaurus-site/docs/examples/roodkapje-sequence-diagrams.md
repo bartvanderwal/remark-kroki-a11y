@@ -296,7 +296,7 @@ destroy Wolf
 Dit diagram toont de ontknoping:
 
 - **create** keyword toont dat Roodkapje en Oma "terugkomen"
-- **<<bevrijd>>** is een stereotype dat het type interactie aangeeft
+- **`<<bevrijd>>`** is een stereotype dat het type interactie aangeeft
 - De Wolf krijgt zijn straf via een reeks acties
 
 ---
