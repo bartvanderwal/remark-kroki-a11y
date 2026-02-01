@@ -1,6 +1,10 @@
 # Stories in natuurlijke taal vs code in formele programmeertaal
 
-Dit voorbeeld toont hoe je een verhaal in natuurlijke taal (het sprookje van Roodkapje) kunt vertalen naar formele diagrammen. We splitsen het verhaal op in drie delen om een "God Diagram" te voorkomen. Een God diagram is een anti-pattern, net als een 'God class' dat is. Het opsplitsen is een best practice om 'cognitive load' te voorkomen. Om wel ook het overzicht te geven maak je weer een apart diagram, die de onderlinge verbanden aangeeft. Dit is vergelijkbaar met hoe in C4 er ook verschillende zoomniveaus zijn.
+Dit voorbeeld toont hoe je een verhaal in natuurlijke taal (het sprookje van Roodkapje) kunt vertalen naar formele diagrammen; namelijk UML diagrammen. In die zin is het een prima introductie van (enkele) UML diagrammen voor niet technici om een beeld te krijgen, of beginnende technici.
+
+Het gebruik van Roodkapje is wellicht een beetje een gimmick, maar ook een manier om analyse en ontwerp toe te passen op een bekend domein. Ervaren IT-ers komen op een gegeven moment op het niveau dat ze technische complexiteit gaan classificeren als 'accidental complexity', die je altijd moet minimaliseren, en de domein complexiteit als de 'inherent complexity', die je in principe wil maximaliseren door een complex domein te zoeken, waar potentieel nog veel geld valt te verdienen en/of (idealiter) de wereld nog veel te verbeteren valt.
+
+We splitsen het verhaal op in drie delen om een "God Diagram" te voorkomen. Een God diagram is een anti-pattern (net als een ['God object'](https://en.wikipedia.org/wiki/God_object) dat is). Het opsplitsen is een best practice om 'cognitive load' te voorkomen. Om wel ook het overzicht te geven maak je weer een apart diagram, die de onderlinge verbanden aangeeft. Dit is vergelijkbaar met hoe in C4 er ook verschillende zoomniveaus zijn.
 
 ---
 

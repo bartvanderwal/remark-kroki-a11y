@@ -1,6 +1,10 @@
 # Natural Language Stories vs Formal Programming Code
 
-This example demonstrates how to translate a natural language story (the fairy tale of Little Red Riding Hood) into formal diagrams. We split the story into three parts to avoid a "God Diagram". A God diagram is an anti-pattern, just like a 'God class'. Splitting is a best practice to prevent 'cognitive load'. To still provide an overview, we create a separate diagram that shows the relationships between parts. This is similar to how C4 also uses different zoom levels.
+This example demonstrates how to translate a natural language story (the fairy tale of Little Red Riding Hood) into formal diagrams; specifically, UML diagrams. In this way, it provides a good introduction to (some) UML diagrams for non-technical people to get an understanding, or for beginning technical people.
+
+Using Little Red Riding Hood is perhaps somewhat of a gimmick, but also a way to apply analysis and design to a familiar domain. Experienced IT professionals eventually reach a level where they classify technical complexity as 'accidental complexity', which you should always minimize, and domain complexity as 'inherent complexity', which you ideally want to maximize by seeking out complex domains where potentially significant value can be gained and/or (ideally) the world can be improved.
+
+We split the story into three parts to avoid a "God Diagram". A God diagram is an anti-pattern, just like a ['God object'](https://en.wikipedia.org/wiki/God_object). Splitting is a best practice to prevent 'cognitive load'. To still provide an overview, we create a separate diagram that shows the relationships between parts. This is similar to how C4 also uses different zoom levels.
 
 ---
 

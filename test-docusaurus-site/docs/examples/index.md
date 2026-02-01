@@ -16,10 +16,10 @@ This section contains live examples that demonstrate the remark-kroki-a11y plugi
 
 - [Café Ordering Example](/examples/sequence-diagram-example) - Demonstrates `customDescription` for diagrams without automatic parsing
 
-## Diagram Design Patterns
+## Diagrams as Code; an introduction: Red Riding hood as UML
 
-- [Little Red Riding Hood: Stories vs Code](/examples/little-red-riding-hood-sequence-diagrams) - How to split large stories into manageable diagrams (avoid the "God Diagram")
-- [Roodkapje: Stories vs Code](/examples/roodkapje-sequence-diagrams) - Hoe je grote verhalen opsplitst in beheersbare diagrammen (vermijd het "God Diagram")
+- [Little Red Riding Hood: Stories vs Code](/examples/little-red-riding-hood-in-uml-diagrams) - Introduction to UML diagrams in a familiar domain; and a bit about why and how to split large stories into manageable chunks
+- [Roodkapje: Stories vs Code](/examples/roodkapje-als-uml-diagrammen) - Een introductie in UML diagrammen in een bekend domein en iets over hoe je groot verhaal/probleem opsplitst in beheersbare diagrammen
 
 ---
 
