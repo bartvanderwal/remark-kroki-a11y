@@ -83,6 +83,7 @@ Dit toont de flow wanneer een static site generator de website bouwt.
 
 ```kroki imgType="plantuml" imgTitle="Sequence Diagram: Build-time Flow" lang="en" customDescription="Sequence diagram showing the build-time processing flow. When the static site generator builds a page, it processes each diagram code block. For each diagram, the plugin detects the type, parses the source code, generates a natural language description, and creates tabs for source code and description. Finally, remark-kroki-plugin requests the diagram image from Kroki."
 @startuml
+hide footbox
 title Build-time Processing Flow
 
 participant "Static Site\nGenerator" as SSG

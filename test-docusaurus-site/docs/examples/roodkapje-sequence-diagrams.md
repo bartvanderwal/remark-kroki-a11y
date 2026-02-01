@@ -153,6 +153,7 @@ Roodkapje krijgt de opdracht om een mandje naar oma te brengen en ontmoet onderw
 
 ```kroki imgType="plantuml" imgTitle="Fase A: Reis naar oma" lang="nl" customDescription="Sequentiediagram van fase A: Moeder geeft Roodkapje een mandje met opdracht naar oma te gaan. Onderweg ontmoet Roodkapje de Wolf die vraagt waar ze heen gaat. Roodkapje vertelt over oma's huis. De Wolf besluit een kortere weg te nemen."
 @startuml
+hide footbox
 title Fase A: De reis naar oma
 
 autonumber
@@ -197,6 +198,7 @@ De wolf arriveert als eerste, eet oma op, en vermomt zich. Dan arriveert Roodkap
 
 ```kroki imgType="plantuml" imgTitle="Fase B: Bij oma's huis" lang="nl" customDescription="Sequentiediagram van fase B: De Wolf arriveert bij oma's huis en klopt aan. Oma doet open, de Wolf eet haar op. De Wolf vermomt zich als oma en gaat in bed liggen. Roodkapje arriveert en klopt aan. Na de bekende dialoog over grote ogen, oren en mond, eet de Wolf ook Roodkapje op."
 @startuml
+hide footbox
 title Fase B: Bij oma's huis
 
 autonumber
@@ -252,6 +254,7 @@ De jager hoort gesnurk, onderzoekt de situatie en bevrijdt Roodkapje en oma.
 
 ```kroki imgType="plantuml" imgTitle="Fase C: De redding" lang="nl" customDescription="Sequentiediagram van fase C: De Jager hoort hard gesnurk en besluit te onderzoeken. Hij gaat oma's huis binnen, ziet de Wolf met dikke buik. De Jager knipt de buik open en bevrijdt Roodkapje en Oma. Roodkapje haalt stenen die in de buik worden gestopt. De Wolf wordt gestraft."
 @startuml
+hide footbox
 title Fase C: De redding
 
 autonumber
@@ -309,6 +312,7 @@ Als alternatief voor het activity diagram kunnen we ook een high-level sequence 
 
 ```kroki imgType="plantuml" imgTitle="Roodkapje: Overzicht als sequence diagram" lang="nl" customDescription="High-level sequentiediagram dat de drie fasen toont: In fase A ontmoet Roodkapje de Wolf in het bos. In fase B eet de Wolf eerst Oma en dan Roodkapje op. In fase C bevrijdt de Jager beiden en straft de Wolf."
 @startuml
+hide footbox
 title Roodkapje - Hoofdlijnen
 
 participant "Roodkapje" as RK
@@ -385,16 +389,16 @@ We hopen dat dit voorbeeld je laat inzien dat zowel **natuurlijke taal** als **f
 - **Developers** - UML-diagrammen, API-specificaties, code
 - **Compilers en runtimes** - Alleen formele code, geen ambiguïteit toegestaan
 
-### Verdere verdieping
+### Verdere verdieping: A short personal history of Continuous Documentation
 
-Dit inzicht is niet nieuw. Enkele klassieke bronnen:
+Dit inzicht is niet nieuw. Enkele klassieke bronnen, chronologisch geordend:
 
+- Reeves (1992) schreef het baanbrekende artikel dat stelt dat code het échte ontwerp is, niet de diagrammen. Zijn belangrijkste inzicht: source code is NIET het product, maar het plan ( de uit dit "plan" gecompileerde binary code die runt op hardware is het product).
+- Fowler (2003) introduceerde in "UML Distilled" het concept van "UML as sketch" versus "UML as blueprint" - diagrammen als communicatiemiddel, niet als formele specificatie
+- Brown (2011) introduceerde het C4 model als informele benadering voor software architectuur visualisatie, met nadruk op uit- en inzoomen tussen abstractieniveaus. UML wordt omarmd voor Code-diagrammen op laag niveau, maar ook code zelf behoudt recht van bestaan als ontwerp van de uiteindelijke runnende applicatie
 - Patton (2014) beschreef hoe je User Stories gebruikt om verhalen te vertellen in Agile
-- Booch, Rumbaugh & Jacobson (1999) - de "Three Amigos" - ontwikkelden UML als standaardtaal voor software design
-- Reeves (1992) schreef het baanbrekende artikel dat stelt dat code het échte ontwerp is, niet de diagrammen
-- Van der Wal (z.d.) geeft praktische uitleg over domeinmodelleren
-
-Zie de [Bronnen](#bronnen) sectie onderaan voor volledige referenties.
+- Mijn collega Theo Theunissen (2022) onderzocht documentatie in continuous software development. Een van zijn meest opvallende conclusies: developers beschrijven in commit messages vaak te veel WAT ze wijzigen en te weinig WAAROM - een analogie met ADR's als log van beslissingen met rationales
+- Van der Wal (2025) schreef voor de minor DevOps een stuk over domeinmodellen: hoe er verschillende versies zijn in de Analyse- vs. Ontwerp-fase, hoe de double diamond techniek uit Design Thinking deze opsplitsing tussen probleemdomein (analyse) en oplossingsdomein (ontwerp) ook al maakte, en hoe je een groot diagram kunt opdelen in verschillende contexten respectievelijk subdomeinen (context mapping techniek uit Domain Driven Design)
 
 ### De les van Reeves
 
@@ -433,38 +437,21 @@ Het doel van de meeste softwareproducten is de gebruiker gelukkig te maken. Maar
 
 Net als bij Roodkapje: het verhaal eindigt niet bij "en ze leefden nog lang en gelukkig". Oma heeft misschien PTSS, de Wolf heeft familie die wraak wil, en Roodkapje overweegt een carrière als jager. Het échte werk begint pas ná de eerste versie.
 
-### De technische term: Enshittification
+### De rule of three en het hogere waarom
 
-Helaas blijkt "lang en gelukkig" niet altijd de realiteit. Doctorow (2023) introduceerde de (sociaal-)technische term **enshittification** om te beschrijven hoe veel grote social media platforms eerst waarde creëren voor gebruikers, dan voor adverteerders, en uiteindelijk alleen voor zichzelf.
+Het Roodkapje-verhaal bevat een klassiek patroon: de [rule of three](https://en.wikipedia.org/wiki/Rule_of_three_(writing)). "Wat grote ogen heb je!" - "Wat grote oren heb je!" - "Wat een grote mond heb je!" Dit lijkt irrelevant detail, maar is juist de punchline die het verhaal memorabel maakt.
 
-Interessant genoeg toont economisch onderzoek (Dubner, 2024) dat veel gebruikers zouden *betalen* om platforms als Facebook te laten verdwijnen. Het "lang en gelukkig" is een illusie geworden.
+Overigens is onze opsplitsing van het sprookje in drie hoofddelen (A, B, C) vrij arbitrair - het zegt meer over de menselijke neiging tot driedeling dan over een strikte analyse van het verhaal. Maar dat is precies het punt: *elk* willekeurig maar consistent scheidingsmodel draagt al snel bij aan complexiteitsvermindering in systemen en documentatie. Het gaat om het splitsen zelf, niet om de "perfecte" indeling.
 
-### Wat betekent dit voor softwareontwikkeling?
+Op een hoger niveau raakt dit aan waarom we überhaupt verhalen vertellen: mensen zijn sociale wezens die graag verhalen delen en verbinding zoeken. Software kan dit ondersteunen - of uitbuiten. Social media platforms beloven verbinding, maar houden ons met shorts en lieve kattenvideo's afgeleid van een *echt* sociaal leven.
 
-Als je software ontwerpt, vraag jezelf af:
+Doctorow (2023) noemt dit **enshittification**: platforms die eerst waarde creëren voor gebruikers, dan voor adverteerders, en uiteindelijk alleen voor zichzelf. Economisch onderzoek (Dubner, 2024) toont dat veel gebruikers zouden *betalen* om platforms als Facebook te laten verdwijnen.
 
-1. **Voor wie optimaliseer je?** De gebruiker, het bedrijf, of de aandeelhouders?
-2. **Wat is de lange-termijn visie?** Blijft de software waarde leveren, of wordt het een extractie-machine?
-3. **Hoe meet je "gelukkig"?** Engagement metrics zijn niet hetzelfde als gebruikerstevredenheid
-
-Dit raakt direct aan de specificatie-vraag: als je User Stories schrijft vanuit het perspectief van de gebruiker ("Als gebruiker wil ik..."), maar de acceptance criteria optimaliseren voor adverteerders, dan heb je een fundamenteel conflict.
+Voor een verdere uitwerking van dit ethisch perspectief, zie: [Weg van Facebook](https://bartvanderwal.nl/weg-van-facebook/).
 
 ### Het echte einde
 
-Misschien is het eerlijkste einde van ons Roodkapje-verhaal:
-
 *"En ze ontwierpen en documenteerden voort, steeds opnieuw validerend of hun gebruikers nog steeds gelukkig waren - wetende dat 'lang en gelukkig' geen eindtoestand is, maar een continu proces van luisteren, aanpassen en verbeteren."*
-
-Of, in code:
-
-```java
-while (users.areHappy()) {
-    listen(users.getFeedback());
-    adapt(product);
-    validate(users.getHappiness());
-}
-// Als je hier komt, heb je iets fundamenteel mis gedaan
-```
 
 ---
 
@@ -478,21 +465,27 @@ Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over event
 
 ---
 
-## Bronnen
+## A short personal history of Continuous Documentation
 
-Booch, G., Rumbaugh, J., & Jacobson, I. (1999). *The Unified Modeling Language user guide*. Addison-Wesley.
+Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
+
+Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
+
+Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
+
+Brown, S. (2011). *The C4 model for visualising software architecture*. https://c4model.com/
+
+Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+
+Patton, J. (2014). *User story mapping: Discover the whole story, build the right product*. O'Reilly Media.
+
+Theunissen, T. (2022). Evaluation of approaches for documentation in continuous software development. In *Proceedings of the 10th International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2022)*. https://theotheunissen.nl/wp-content/uploads/2022/10/modelsward-2023.pdf
 
 Doctorow, C. (2023, 21 januari). *Tiktok's enshittification*. Pluralistic. https://pluralistic.net/2023/01/21/potemkin-ai/
 
 Dubner, S. J. (Host). (2024, 18 januari). *Are you caught in a social media trap?* [Podcast aflevering]. In *Freakonomics Radio*. Freakonomics, LLC. https://freakonomics.com/podcast/are-you-caught-in-a-social-media-trap/
 
-Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
-
-Patton, J. (2014). *User story mapping: Discover the whole story, build the right product*. O'Reilly Media.
-
-Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
-
-Van der Wal, B. (z.d.). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/week-2/domein-model.html
+Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/week-2/domein-model.html
 
 ---
 
@@ -511,6 +504,7 @@ Een "God Diagram" maken is kiezen voor de tweede optie: zo complex dat je eventu
 
 ```kroki imgType="plantuml" imgTitle="ANTI-PATTERN: God Diagram met alle fasen" lang="nl" customDescription="Dit is een anti-pattern. Een gecombineerd sequentiediagram met ALLE interacties uit fase A, B en C. Het diagram is bewust te groot en onoverzichtelijk om te laten zien waarom je dit niet moet doen. Het bevat meer dan 40 interacties en is vrijwel onleesbaar."
 @startuml
+hide footbox
 title ANTI-PATTERN: Roodkapje - God Diagram\n(Doe dit NIET!)
 
 autonumber

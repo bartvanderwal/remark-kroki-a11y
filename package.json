@@ -11,6 +11,7 @@
     "lint:md": "markdownlint-cli2 '**/*.md' '#node_modules' '#test-docusaurus-site'",
     "lint:fix": "eslint src/ features/ --fix && markdownlint-cli2 --fix '**/*.md' '#node_modules' '#test-docusaurus-site'",
     "start": "cd test-docusaurus-site && yarn start",
+    "stop": "cd test-docusaurus-site && yarn stop",
     "build": "cd test-docusaurus-site && yarn build",
     "serve": "cd test-docusaurus-site && yarn serve",
     "prepare": "husky"

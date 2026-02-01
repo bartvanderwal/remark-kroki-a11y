@@ -5,6 +5,7 @@
   "description": "Documentation site for remark-kroki-a11y plugin - also serves as a live demo.",
   "scripts": {
     "start": "docusaurus start",
+    "stop": "lsof -ti:3000 | xargs kill -9 2>/dev/null || echo 'Geen proces op poort 3000'",
     "build": "docusaurus build",
     "clear": "docusaurus clear",
     "serve": "docusaurus serve",
