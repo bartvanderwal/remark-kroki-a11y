@@ -112,7 +112,9 @@ jobs:
           ---
 
           EOF
-          cat definition-of-done.md >> test-docusaurus-site/docs/definition-of-done.md
+          # Fix feature file links to point to GitHub (they don't exist in Docusaurus)
+          sed -e 's|(features/|(https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/|g' \
+              definition-of-done.md >> test-docusaurus-site/docs/definition-of-done.md
 
           # Copy ADRs with front-matter
           mkdir -p test-docusaurus-site/docs/adr
