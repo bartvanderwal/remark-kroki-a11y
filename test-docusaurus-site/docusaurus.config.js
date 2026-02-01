@@ -55,6 +55,8 @@ module.exports = {
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
           routeBasePath: '/',
+          showLastUpdateTime: true,
+          showLastUpdateAuthor: true,
           remarkPlugins: [
             // Local plugin for expandable source/a11y tabs
             [require('../src/index.js'), {
