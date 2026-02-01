@@ -18,7 +18,7 @@ This section contains live examples that demonstrate the remark-kroki-a11y plugi
 
 ## Diagrams as Code; an introduction: Red Riding hood as UML
 
-- [Little Red Riding Hood: Stories vs Code](/examples/little-red-riding-hood-in-uml-diagrams) - Introduction to UML diagrams in a familiar domain; and a bit about why and how to split large stories into manageable chunks
+- [Little Red Riding Hood: Stories vs Code](/examples/little-red-riding-hood-as-uml-diagrams) - Introduction to UML diagrams in a familiar domain; and a bit about why and how to split large stories into manageable chunks
 - [Roodkapje: Stories vs Code](/examples/roodkapje-als-uml-diagrammen) - Een introductie in UML diagrammen in een bekend domein en iets over hoe je groot verhaal/probleem opsplitst in beheersbare diagrammen
 
 ---
