@@ -38,8 +38,8 @@ module.exports = {
           type: 'category',
           label: 'Design Patterns',
           items: [
-            'examples/little-red-riding-hood-sequence-diagrams',
-            'examples/roodkapje-sequence-diagrams',
+            'examples/little-red-riding-hood-as-uml-diagrams',
+            'examples/roodkapje-als-uml-diagrammen',
           ],
         },
       ],
