@@ -227,6 +227,55 @@ const ARROWS = [
 ];
 
 /**
+ * Check if string looks like a multiplicity (e.g., "1", "0..*", "*", "1..n")
+ */
+function looksLikeMultiplicity(str) {
+	if (!str) return false;
+	const s = str.trim();
+	// Multiplicities contain digits, dots, asterisks, or 'n'
+	for (let i = 0; i < s.length; i++) {
+		const c = s.charAt(i);
+		if (c !== '0' && c !== '1' && c !== '2' && c !== '3' && c !== '4' &&
+		    c !== '5' && c !== '6' && c !== '7' && c !== '8' && c !== '9' &&
+		    c !== '.' && c !== '*' && c !== 'n') {
+			return false;
+		}
+	}
+	return s.length > 0;
+}
+
+/**
+ * Split multiplicity string on \n separator
+ * Returns: { multiplicity: string|null, name: string|null }
+ */
+function splitMultiplicityAndName(multStr) {
+	if (!multStr) return { multiplicity: null, name: null };
+
+	const newlineIdx = multStr.indexOf('\\n');
+	if (newlineIdx === -1) {
+		// No separator - determine if it's a multiplicity or name
+		if (looksLikeMultiplicity(multStr)) {
+			return { multiplicity: multStr.trim(), name: null };
+		} else {
+			return { multiplicity: null, name: multStr.trim() };
+		}
+	}
+
+	// Has newline separator - split and categorize each part
+	const part1 = multStr.slice(0, newlineIdx).trim();
+	const part2 = multStr.slice(newlineIdx + 2).trim();
+
+	if (looksLikeMultiplicity(part1)) {
+		return { multiplicity: part1, name: part2 || null };
+	} else if (looksLikeMultiplicity(part2)) {
+		return { multiplicity: part2, name: part1 || null };
+	} else {
+		// Neither looks like multiplicity - treat both as names, no multiplicity
+		return { multiplicity: null, name: part1 || part2 };
+	}
+}
+
+/**
  * Parse a relation line using string functions (no regex)
  * Returns true if a relation was found and added
  */
@@ -246,9 +295,13 @@ function parseRelationLine(line, result) {
 				if (fourthQuoteIdx !== -1) {
 					// We have 4 quotes: A "mult1" separator "mult2" B
 					const from = trimmed.slice(0, firstQuoteIdx).trim();
-					const mult1 = trimmed.slice(firstQuoteIdx + 1, secondQuoteIdx);
-					const mult2 = trimmed.slice(thirdQuoteIdx + 1, fourthQuoteIdx);
+					const mult1Raw = trimmed.slice(firstQuoteIdx + 1, secondQuoteIdx);
+					const mult2Raw = trimmed.slice(thirdQuoteIdx + 1, fourthQuoteIdx);
 					const rest = trimmed.slice(fourthQuoteIdx + 1).trim();
+
+					// Parse multiplicities - they may contain embedded relation names
+					const parsed1 = splitMultiplicityAndName(mult1Raw);
+					const parsed2 = splitMultiplicityAndName(mult2Raw);
 
 					// Rest might contain the target class and optionally a label after :
 					let to = rest;
@@ -257,6 +310,11 @@ function parseRelationLine(line, result) {
 					if (colonIdx !== -1) {
 						to = rest.slice(0, colonIdx).trim();
 						label = rest.slice(colonIdx + 1).trim();
+					}
+
+					// Prefer label from colon, then from mult2 (target side), then from mult1 (source side)
+					if (!label) {
+						label = parsed2.name || parsed1.name;
 					}
 
 					// Ensure classes exist in result
@@ -272,8 +330,8 @@ function parseRelationLine(line, result) {
 						to: to,
 						type: 'association',
 						label: label,
-						multiplicityFrom: mult1,
-						multiplicityTo: mult2,
+						multiplicityFrom: parsed1.multiplicity,
+						multiplicityTo: parsed2.multiplicity,
 						reverse: false
 					});
 					return true;

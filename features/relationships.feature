@@ -142,6 +142,31 @@ Functionaliteit: Klassediagram met relaties
     Dan zou de beschrijving moeten bevatten "KlokDisplay heeft een associatie-relatie met naam 'minuten' met NummerDisplay"
     En zou de beschrijving moeten bevatten "KlokDisplay heeft een associatie-relatie met naam 'uren' met NummerDisplay"
 
+  Scenario: PlantUML associatie-relatie met naam in multipliciteit quote
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      left to right direction
+      skinparam classAttributeIconSize 0
+      hide circle
+
+      class Werknemer
+
+      class Project
+
+      Project "0..*" ---> "medewerkers\n0..*" Werknemer
+      Project "0..*" ----> "projectleider\n0..1" Werknemer
+
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de eerste regel moeten zijn:
+      """
+      Klassendiagram met 2 klasse(n) en 2 relatie(s).
+      """
+    En zou de beschrijving moeten bevatten "Project heeft een associatie-relatie met naam 'medewerkers' met Werknemer, multipliciteit 0..* naar 0..*"
+    En zou de beschrijving moeten bevatten "Project heeft een associatie-relatie met naam 'projectleider' met Werknemer, multipliciteit 0..* naar 0..1"
+
   Scenario: PlantUML klassediagram met dependency-relatie in omgekeerde richting
     Gegeven het volgende PlantUML klassediagram:
       """
