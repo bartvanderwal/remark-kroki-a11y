@@ -77,26 +77,26 @@ note "Relationships change\nduring the story!" as N1
 
 ### Glossary of entities
 
-The table below describes each entity from the domain model with examples from the fairy tale:
+The table below describes each entity from the domain model:
 
-| Entity | Description | Example |
-|--------|-------------|---------|
-| **LittleRedRidingHood** | The main character, a young girl with a red hood | "Little Red", wears a red hood |
-| **Mother** | Little Red's mother, gives the task | Gives basket with cookies and wine |
-| **Basket** | Container with treats for grandmother | Contains cookies and a bottle of wine |
-| **Wolf** | The antagonist, hungry and cunning | Disguises himself as grandmother |
-| **Grandmother** | Little Red's grandmother, sick | Lives in a house in the forest |
-| **Huntsman** | The hero who rescues | Has scissors to cut open the belly |
-| **House** | Grandmother's house | Located deep in the forest |
-| **Stone** | Punishment for the wolf | Multiple stones fill the wolf's belly |
+| Entity | Description |
+|--------|-------------|
+| **LittleRedRidingHood** | The main character, a young girl with a red hood |
+| **Mother** | Little Red's mother, gives the task |
+| **Basket** | Container with treats for grandmother |
+| **Wolf** | The antagonist, hungry and cunning |
+| **Grandmother** | Little Red's grandmother, sick |
+| **Huntsman** | The hero who rescues |
+| **House** | Grandmother's house |
+| **Stone** | Punishment for the wolf |
 
-### Observations about the domain model
+:::note Domain modeling: abstraction and inheritance
+In this beginner-friendly model, we show all entities at the same level of abstraction. In a more refined model, we would notice that **LittleRedRidingHood** and **Grandmother** are actually both instances of a shared superclass **Person**. Similarly, **Wolf** and possibly **Huntsman** are living beings with certain properties. This illustrates an important lesson in domain modeling: you can group entities under more abstract concepts.
 
-- **Attributes** describe the state of characters (Wolf has `hunger`, `disguise`)
-- **Relationships** are dynamic: they appear and disappear during the story
-- The **note** warns that this is a snapshot - the story changes the relationships
+For this story, we intentionally chose a *flat* structure because the narrative is more about **who interacts with whom** rather than their taxonomic classification. The detailed Fowler-style version in [Appendix A](#appendix-a-detailed-domain-model-fowler-style) goes deeper into this aspect.
 
-This domain model is our "source code" of the fairy tale world. The sequence diagrams below show how these objects interact over time. For a more detailed model with data types and methods (Fowler-style), see [Appendix A](#appendix-a-detailed-domain-model-fowler-style).
+**Note about concrete examples:** In a production environment, the Glossary would include concrete examples, such as `LittleRedRidingHood { name: "Little Red", hasRedHood: true }` or `Basket { cookies: 12, wine: 1 }`. This helps developers and domain experts understand the data format and possible values. For this educational example, we've omitted these details to focus on the relationships between entities.
+:::
 
 ---
 

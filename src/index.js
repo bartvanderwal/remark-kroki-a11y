@@ -111,6 +111,19 @@ function escapeHtml(text) {
 		.replace(/"/g, '&quot;');
 }
 
+// Extract plain text content from HTML, stripping tags
+function extractTextContent(html) {
+	// Remove HTML tags and decode entities
+	return html
+		.replace(/<[^>]*>/g, '') // Remove all HTML tags
+		.replace(/&lt;/g, '<')   // Decode entities
+		.replace(/&gt;/g, '>')
+		.replace(/&quot;/g, '"')
+		.replace(/&amp;/g, '&')
+		.replace(/\s+/g, ' ')    // Normalize whitespace
+		.trim();
+}
+
 // Extract diagram type from meta string (e.g., imgType="plantuml" -> "plantuml")
 function extractDiagramType(meta) {
 	if (!meta) return null;
@@ -309,7 +322,8 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			// Check for custom description override - skip all parsing if set
 			const customDescription = extractCustomDescription(node.meta);
 			if (shouldAttemptA11y && customDescription) {
-				a11yDescription = customDescription;
+				// Wrap plain text in <p> tag for visual display
+				a11yDescription = `<p>${escapeHtml(customDescription)}</p>`;
 			}
 
 			// Try registered parsers for a11y description
@@ -344,19 +358,22 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 
 				// Generate unique IDs for ARIA relationships
 				const tabId = `diagram-tabs-${index}`;
+			
+			// Extract plain text from a11y description for aria-label
+			const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
 
-				const tabsHtml = `
-<details class="${opts.cssClass}"${openAttr}>
+			const tabsHtml = `
+<details class="${opts.cssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${summaryText}</summary>
 <div class="${opts.cssClass}-tabs">
 <div class="${opts.cssClass}-tab-buttons" role="tablist">
 <button class="${opts.cssClass}-tab-btn active" data-tab="source" role="tab" aria-selected="true" id="${tabId}-tab-source" aria-controls="${tabId}-panel-source">${tabSourceLabel}</button>
 <button class="${opts.cssClass}-tab-btn" data-tab="a11y" role="tab" aria-selected="false" id="${tabId}-tab-a11y" aria-controls="${tabId}-panel-a11y">${tabA11yLabel}</button>
 </div>
-<section class="${opts.cssClass}-tab-content active" data-tab="source" role="tabpanel" tabindex="0" id="${tabId}-panel-source" aria-labelledby="${tabId}-tab-source">
+<section class="${opts.cssClass}-tab-content active" data-tab="source" role="tabpanel" tabindex="0" id="${tabId}-panel-source" aria-label="${tabSourceLabel}">
 <pre><code>${escapedCode}</code></pre>
 </section>
-<section class="${opts.cssClass}-tab-content" data-tab="a11y" role="tabpanel" tabindex="0" id="${tabId}-panel-a11y" aria-labelledby="${tabId}-tab-a11y" lang="${blockLocale}">
+<section class="${opts.cssClass}-tab-content" data-tab="a11y" role="tabpanel" tabindex="0" id="${tabId}-panel-a11y" aria-label="${a11yLabelText}">
 ${a11yDescription}
 </section>
 </div>
@@ -387,13 +404,16 @@ ${a11yDescription}
 					const a11ySummaryText = ui.a11ySummaryText
 						.replace('{title}', escapeHtml(title))
 						.replace('{type}', escapeHtml(langName));
+				
+				// Extract plain text from a11y description for aria-label
+				const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
 
-					nodesToInsert.push({
-						type: 'html',
-						value: `
-<details class="${opts.a11yCssClass}"${openAttr}>
+				nodesToInsert.push({
+					type: 'html',
+					value: `
+<details class="${opts.a11yCssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
-<div class="${opts.a11yCssClass}-content" lang="${blockLocale}">${a11yDescription}</div>
+<div class="${opts.a11yCssClass}-content" aria-label="${a11yLabelText}">${a11yDescription}</div>
 </details>`
 					});
 				}

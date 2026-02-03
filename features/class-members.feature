@@ -19,9 +19,9 @@ Functionaliteit: Klassen met alleen attributen of methoden
       """
       Klassendiagram met 1 klasse en geen relaties.
       """
-    En zou de beschrijving moeten bevatten "publiek attribuut name van type String"
-    En zou de beschrijving moeten bevatten "publiek attribuut age van type int"
-    En zou de beschrijving moeten bevatten "protected attribuut email van type String"
+    En zou de beschrijving moeten bevatten "publiek attribuut 'name' van type String"
+    En zou de beschrijving moeten bevatten "publiek attribuut 'age' van type int"
+    En zou de beschrijving moeten bevatten "protected attribuut 'email' van type String"
 
   Scenario: Klasse met alleen methoden
     Gegeven het volgende klassediagram:
@@ -38,9 +38,8 @@ Functionaliteit: Klassen met alleen attributen of methoden
       """
       Klassendiagram met 1 klasse en geen relaties.
       """
-    En zou de beschrijving moeten bevatten "publieke methode add"
-    En zou de beschrijving moeten bevatten "parameter a van type int"
-    En zou de beschrijving moeten bevatten "private methode validate"
+    En zou de beschrijving moeten bevatten "publieke methode 'add', parameter 'a' van type int"
+    En zou de beschrijving moeten bevatten "private methode 'validate'"
 
   # Larman-stijl: Analysefase domeinmodel zonder types
 
@@ -56,8 +55,8 @@ Functionaliteit: Klassen met alleen attributen of methoden
       """
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse Bestelling"
-    En zou de beschrijving moeten bevatten "attribuut besteldatum"
-    En zou de beschrijving moeten bevatten "attribuut totaalbedrag"
+    En zou de beschrijving moeten bevatten "attribuut 'besteldatum'"
+    En zou de beschrijving moeten bevatten "attribuut 'totaalbedrag'"
     En zou de beschrijving niet moeten bevatten "unknown"
 
   Scenario: PlantUML klasse met methoden zonder parameters en return types (Larman-stijl)
@@ -71,8 +70,8 @@ Functionaliteit: Klassen met alleen attributen of methoden
       @enduml
       """
     Als ik een beschrijving genereer
-    Dan zou de beschrijving moeten bevatten "publieke methode plaatsen"
-    Dan zou de beschrijving moeten bevatten "publieke methode annuleren"
+    Dan zou de beschrijving moeten bevatten "publieke methode 'plaatsen'"
+    Dan zou de beschrijving moeten bevatten "publieke methode 'annuleren'"
     En zou de beschrijving moeten bevatten "zonder parameters"
 
   # Fowler-stijl: Ontwerpfase domeinmodel met types
@@ -89,8 +88,8 @@ Functionaliteit: Klassen met alleen attributen of methoden
       """
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse Bestelling"
-    Dan zou de beschrijving moeten bevatten "private attribuut besteldatum van type LocalDate"
-    Dan zou de beschrijving moeten bevatten "private attribuut totaalbedrag van type BigDecimal"
+    Dan zou de beschrijving moeten bevatten "private attribuut 'besteldatum' van type LocalDate"
+    Dan zou de beschrijving moeten bevatten "private attribuut 'totaalbedrag' van type BigDecimal"
 
   Scenario: PlantUML methode met parameters met types (Fowler-stijl)
     Gegeven het volgende PlantUML klassediagram:
@@ -103,7 +102,7 @@ Functionaliteit: Klassen met alleen attributen of methoden
       @enduml
       """
     Als ik een beschrijving genereer
-    Dan zou de beschrijving moeten bevatten "publieke methode add"
-    Dan zou de beschrijving moeten bevatten "a van type int"
+    Dan zou de beschrijving moeten bevatten "publieke methode 'add', met parameter(s) 'a' van type int, 'b' van type int, return type int"
+    Dan zou de beschrijving moeten bevatten "'a' van type int"
     Dan zou de beschrijving moeten bevatten "return type int"
-    Dan zou de beschrijving moeten bevatten "private methode validate"
+    Dan zou de beschrijving moeten bevatten "private methode 'validate'"

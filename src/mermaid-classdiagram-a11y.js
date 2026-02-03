@@ -402,7 +402,7 @@ class MermaidClassdiagramA11YReader {
 		cls.attributes.forEach(attr => {
 			const visibilityNL = this.translateVisibilityForAttribute(attr.visibility);
 			details.push(
-				`${visibilityNL} ${t.attribute} ${attr.name} ${t.withType} ${attr.type}`
+				`${visibilityNL} ${t.attribute} '${attr.name}' ${t.withType} ${attr.type}`
 			);
 		});
 
@@ -412,11 +412,11 @@ class MermaidClassdiagramA11YReader {
 			const params = method.parameters.length === 0
 				? t.withoutParameters
 				: method.parameters
-					.map(p => `${t.parameter} ${p.name}${p.type ? ` ${t.withType} ${p.type}` : ''}`)
+					.map(p => `${t.parameter} '${p.name}'${p.type ? ` ${t.withType} ${p.type}` : ''}`)
 					.join(', ');
 
 			details.push(
-				`${visibilityNL} ${t.method} ${method.name}, ${params}, ${t.returnType} ${method.returnType}`
+				`${visibilityNL} ${t.method} '${method.name}', ${params}, ${t.returnType} ${method.returnType}`
 			);
 		});
 

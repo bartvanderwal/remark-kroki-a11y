@@ -80,16 +80,24 @@ note "Relaties veranderen\ntijdens het verhaal!" as N1
 
 ### Glossary: De entiteiten van het sprookje
 
-| Entiteit | Omschrijving | Voorbeelden |
-|----------|--------------|-------------|
-| **Roodkapje** | Het meisje met het rode kapje, hoofdpersoon | "het lieve meisje", "kleindochter" |
-| **Moeder** | De moeder van Roodkapje die haar op pad stuurt | "de bezorgde moeder" |
-| **Oma** | De grootmoeder die ziek in bed ligt | "grootmoeder", "de zieke oma" |
-| **Wolf** | De antagonist die Oma en Roodkapje opeet | "de boze wolf", "het beest" |
-| **Jager** | De held die Roodkapje en Oma redt | "de jager", "de houtvester" |
-| **Mandje** | Container met eten voor Oma | "mandje met koekjes en wijn" |
-| **Huis** | De woning van Oma, diep in het bos | "het huisje", "oma's huis" |
-| **Steen** | Objecten waarmee de Wolf wordt gestraft | "zware stenen", "keien" |
+| Entiteit | Omschrijving |
+|----------|-----|
+| **Roodkapje** | Het meisje met het rode kapje, hoofdpersoon |
+| **Moeder** | De moeder van Roodkapje die haar op pad stuurt |
+| **Oma** | De grootmoeder die ziek in bed ligt |
+| **Wolf** | De antagonist die Oma en Roodkapje opeet |
+| **Jager** | De held die Roodkapje en Oma redt |
+| **Mandje** | Container met eten voor Oma |
+| **Huis** | De woning van Oma, diep in het bos |
+| **Steen** | Objecten waarmee de Wolf wordt gestraft |
+
+:::note Domeinmodellering: abstractie en overerving
+In dit beginnersvriendelijke model tonen we alle entiteiten op hetzelfde abstractieniveau. In een meer verfijnd model zouden we opmerken dat **Roodkapje** en **Oma** eigenlijk beide instanties van een gemeenschappelijke superklasse **Mens** (of **Person**) zouden kunnen zijn. Hetzelfde geldt voor **Wolf** en mogelijk **Jager** - beide zijn levende wezens met bepaalde eigenschappen. Dit illustreert een belangrijke les in domeinmodellering: je kunt entiteiten groeperen onder abstractere concepten.
+
+In dit geval hebben we bewust voor een *flat* structuur gekozen omdat het verhaal meer gaat over **wie interacteert met wie** dan over hun taxonomische classificatie. De gedetailleerde Fowler-stijl versie in [Bijlage A](#bijlage-a-gedetailleerd-domeinmodel-fowler-stijl) gaat hier dieper op in.
+
+**Opmerking over voorbeelden:** In een productieomgeving zou de Glossary concrete voorbeelden bevatten, zoals `Roodkapje { naam: "Little Red", heeftRoodKapje: true }`. Dit helpt ontwikkelaars en domeinexperts om het data format en mogelijke waarden te begrijpen. Voor dit educatieve voorbeeld hebben we die weggelaten om de focus op de relaties tussen entiteiten te houden.
+:::
 
 ### Larman vs. Fowler: twee stijlen van domeinmodelleren
 
@@ -644,29 +652,18 @@ Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over event
 
 ## A short personal history of Continuous Documentation
 
-Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
-
-Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
-
-Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
-
-Brandolini, A. (2009, 25 november). Strategic Domain Driven Design with Context Mapping. *InfoQ*. https://www.infoq.com/articles/ddd-contextmapping/
-
-Brown, S. (2011). *The C4 model for visualising software architecture*. https://c4model.com/
-
-Brown, S. (2019). *The lost art of software design* [Video]. YouTube. https://www.youtube.com/watch?v=gNj8I4uSTgc
-
-Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
-
-Patton, J. (2014). *User story mapping: Discover the whole story, build the right product*. O'Reilly Media.
-
-Theunissen, T. (2022). Evaluation of approaches for documentation in continuous software development. In *Proceedings of the 10th International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2022)*. https://theotheunissen.nl/wp-content/uploads/2022/10/modelsward-2023.pdf
-
-Doctorow, C. (2023, 21 januari). *Tiktok's enshittification*. Pluralistic. https://pluralistic.net/2023/01/21/potemkin-ai/
-
-Dubner, S. J. (Host). (2024, 18 januari). *Are you caught in a social media trap?* [Podcast aflevering]. In *Freakonomics Radio*. Freakonomics, LLC. https://freakonomics.com/podcast/are-you-caught-in-a-social-media-trap/
-
-Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/week-2/domein-model.html
+- Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
+- Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
+- Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
+- Brandolini, A. (2009, 25 november). Strategic Domain Driven Design with Context Mapping. *InfoQ*. https://www.infoq.com/articles/ddd-contextmapping/
+- Brown, S. (2011). *The C4 model for visualising software architecture*. https://c4model.com/
+- Brown, S. (2019). *The lost art of software design* [Video]. YouTube. https://www.youtube.com/watch?v=gNj8I4uSTgc
+- Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- Patton, J. (2014). *User story mapping: Discover the whole story, build the right product*. O'Reilly Media.
+- Theunissen, T. (2022). Evaluation of approaches for documentation in continuous software development. In *Proceedings of the 10th International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2022)*. https://theotheunissen.nl/wp-content/uploads/2022/10/modelsward-2023.pdf
+- Doctorow, C. (2023, 21 januari). *Tiktok's enshittification*. Pluralistic. https://pluralistic.net/2023/01/21/potemkin-ai/
+- Dubner, S. J. (Host). (2024, 18 januari). *Are you caught in a social media trap?* [Podcast aflevering]. In *Freakonomics Radio*. Freakonomics, LLC. https://freakonomics.com/podcast/are-you-caught-in-a-social-media-trap/
+- Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/week-2/domein-model.html
 
 ---
 

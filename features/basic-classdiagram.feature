@@ -19,8 +19,8 @@ Functionaliteit: Basis klassediagram parsing
       Klassendiagram met 1 klasse en geen relaties.
       """
     En zou de beschrijving moeten bevatten "Klasse Woordenlijst"
-    En zou de beschrijving moeten bevatten "private attribuut woorden van type String[]"
-    En zou de beschrijving moeten bevatten "publieke methode sorteer, zonder parameters, return type void"
+    En zou de beschrijving moeten bevatten "private attribuut 'woorden' van type String[]"
+    En zou de beschrijving moeten bevatten "publieke methode 'sorteer', zonder parameters, return type void"
 
   Scenario: Klasse zonder attributen en methoden
     Gegeven het volgende klassediagram:
@@ -54,7 +54,7 @@ Functionaliteit: Basis klassediagram parsing
       """
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse Service"
-    En zou de beschrijving moeten bevatten "publieke methode doSomething"
+    En zou de beschrijving moeten bevatten "publieke methode 'doSomething'"
     En zou de beschrijving moeten bevatten "geen attributen"
 
   Scenario: PlantUML klasse met alleen attributen vermeldt geen methoden
@@ -68,8 +68,8 @@ Functionaliteit: Basis klassediagram parsing
       """
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Klasse DataClass"
-    Dan zou de beschrijving moeten bevatten "private attribuut name"
-    En zou de beschrijving moeten bevatten "attribuut name van type String"
+    Dan zou de beschrijving moeten bevatten "private attribuut 'name'"
+    En zou de beschrijving moeten bevatten "attribuut 'name' van type String"
     En zou de beschrijving moeten bevatten "geen methoden"
 
   Scenario: PlantUML klasse met stereotype

@@ -890,7 +890,7 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 				// Methods
 				for (const method of classData.methods) {
 					const visibility = parseVisibility(method.visibility, locale);
-					let methodDesc = visibility + ' ' + t.method + ' ' + method.name;
+					let methodDesc = visibility + ' ' + t.method + ' \'' + method.name + '\'';
 
 					if (method.parameters.length === 0) {
 						methodDesc += ', ' + t.withoutParameters;
@@ -898,9 +898,9 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 						const paramDescs = method.parameters.map(function(p) {
 							// Only include type if present and not 'unknown'
 							if (p.type && p.type !== 'unknown') {
-								return p.name + ' ' + t.ofType + ' ' + p.type;
+								return '\'' + p.name + '\' ' + t.ofType + ' ' + p.type;
 							} else {
-								return p.name;
+								return '\'' + p.name + '\'';
 							}
 						});
 						methodDesc += ', ' + t.withParameters + ' ' + paramDescs.join(', ');
@@ -916,9 +916,9 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 					const type = parseType(attr.type, locale);
 					// Only include type if present (Fowler-style), omit for Larman-style
 					if (type) {
-						parts.push('<li>' + visibility + ' ' + t.attribute + ' ' + attr.name + ' ' + t.ofType + ' ' + type + '</li>');
+						parts.push('<li>' + visibility + ' ' + t.attribute + ' \'' + attr.name + '\' ' + t.ofType + ' ' + type + '</li>');
 					} else {
-						parts.push('<li>' + visibility + ' ' + t.attribute + ' ' + attr.name + '</li>');
+						parts.push('<li>' + visibility + ' ' + t.attribute + ' \'' + attr.name + '\'' + '</li>');
 					}
 				}
 
