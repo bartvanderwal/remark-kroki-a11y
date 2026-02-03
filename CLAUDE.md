@@ -67,3 +67,14 @@ npm publish                        # Publish to npm
 ```
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development setup.
+
+## Writing Style Guidelines
+
+### Leeswijzer (Reading Guide)
+
+When writing a "leeswijzer" (reading guide) in documentation:
+
+- Write it as flowing prose at the end of the introduction, not as a separate section
+- Do NOT use a heading like "## Leeswijzer"
+- Do NOT use tables or bullet lists - a leeswijzer is a textual variant of a table of contents
+- Keep it brief: 2-3 sentences that guide the reader through the structure of the document

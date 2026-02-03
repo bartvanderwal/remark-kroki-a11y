@@ -7,3 +7,6 @@ package-lock.json
 
 # Generated test reports (CI regenerates these)
 test-results/
+
+*storybook.log
+storybook-static

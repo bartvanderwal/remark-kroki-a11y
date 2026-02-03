@@ -25,9 +25,13 @@ export function onRouteDidUpdate() {
 			button.addEventListener('click', () => {
 				const tabId = button.dataset.tab;
 
-				// Update button states
-				buttons.forEach((btn) => btn.classList.remove('active'));
+				// Update button states and ARIA attributes
+				buttons.forEach((btn) => {
+					btn.classList.remove('active');
+					btn.setAttribute('aria-selected', 'false');
+				});
 				button.classList.add('active');
+				button.setAttribute('aria-selected', 'true');
 
 				// Update content visibility
 				contents.forEach((content) => {

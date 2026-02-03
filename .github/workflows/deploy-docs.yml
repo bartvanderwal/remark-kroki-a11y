@@ -180,10 +180,18 @@ jobs:
         env:
           NODE_ENV: production
 
+      - name: Build Storybook
+        run: yarn build:storybook
+
       - name: Copy Cucumber test report to build
         run: |
           mkdir -p test-docusaurus-site/build/test-results
           cp test-results/cucumber-report.html test-docusaurus-site/build/test-results/
+
+      - name: Copy Storybook to build
+        run: |
+          mkdir -p test-docusaurus-site/build/storybook
+          cp -r storybook-static/* test-docusaurus-site/build/storybook/
 
       - name: Setup Pages
         uses: actions/configure-pages@v4

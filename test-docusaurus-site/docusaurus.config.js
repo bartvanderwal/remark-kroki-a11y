@@ -32,12 +32,16 @@ module.exports = {
     hooks: {
       onBrokenMarkdownLinks: 'warn',
     },
+    // Enable Mermaid for client-side rendering (separate from Kroki-Mermaid)
+    mermaid: true,
   },
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
   },
   themes: [
+    // Theme for client-side Mermaid rendering
+    '@docusaurus/theme-mermaid',
     [
       require.resolve('@easyops-cn/docusaurus-search-local'),
       {
@@ -58,7 +62,15 @@ module.exports = {
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
           remarkPlugins: [
-            // Local plugin for expandable source/a11y tabs
+            // Mermaid A11y plugin for native ```mermaid blocks (client-side rendered)
+            // MUST come BEFORE theme-mermaid processes the blocks
+            [require('../src/mermaid-a11y'), {
+              locale: 'en',
+              generateA11yDescription: true,
+              summaryText: 'Mermaid source for "{title}"',
+              a11ySummaryText: 'Accessible description for "{title}"',
+            }],
+            // Kroki A11y plugin for ```kroki blocks (server-side rendered)
             [require('../src/index.js'), {
               showSource: true,
               showA11yDescription: true,
@@ -92,7 +104,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          docId: 'index',
+          docId: 'readme',
           position: 'left',
           label: 'Docs',
         },

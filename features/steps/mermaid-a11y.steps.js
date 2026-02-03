@@ -3,6 +3,7 @@ const assert = require('assert');
 const MermaidClassdiagramA11YReader = require('../../src/mermaid-classdiagram-a11y');
 const { parsePlantUMLClassDiagram, generateAccessibleDescription } = require('../../src/parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('../../src/parsers/sequenceDiagramParser');
+const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('../../src/parsers/activityDiagramParser');
 
 const { generateUnsupportedDescription } = require('../../src/parsers/unsupportedDiagramParser');
 
@@ -66,6 +67,12 @@ Given('the following Mermaid sequence diagram:', function(diagramSource) {
 	isPlantUML = false;
 });
 
+Given('the following PlantUML activity diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'activity';
+	isPlantUML = true;
+});
+
 // Step definitions for diagrams with explicit type (for unsupported diagram tests)
 Given('het volgende PlantUML diagram met type {string}:', function(diagramType, diagramSource) {
 	currentDiagram = diagramSource;
@@ -99,6 +106,10 @@ When('ik een beschrijving genereer', function() {
 	if (currentDiagramType === 'sequence') {
 		const parsed = parseMermaidSequenceDiagram(currentDiagram);
 		generatedDescription = generateSequenceDescription(parsed, 'nl');
+	} else if (currentDiagramType === 'activity') {
+		// Activity diagram
+		const parsed = parsePlantUMLActivityDiagram(currentDiagram);
+		generatedDescription = generateActivityDescription(parsed, 'nl');
 	} else if (currentDiagramType) {
 		// Other unsupported diagram types
 		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'nl');
@@ -115,6 +126,10 @@ When('I generate a description in English', function() {
 	if (currentDiagramType === 'sequence') {
 		const parsed = parseMermaidSequenceDiagram(currentDiagram);
 		generatedDescription = generateSequenceDescription(parsed, 'en');
+	} else if (currentDiagramType === 'activity') {
+		// Activity diagram
+		const parsed = parsePlantUMLActivityDiagram(currentDiagram);
+		generatedDescription = generateActivityDescription(parsed, 'en');
 	} else if (currentDiagramType) {
 		// Other unsupported diagram types
 		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'en');

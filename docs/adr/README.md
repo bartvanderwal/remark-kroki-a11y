@@ -32,7 +32,8 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0005](0005-navigeerbare-a11y-beschrijvingen.md) | Navigable a11y descriptions | Accepted |
 | [0006](0006-plantuml-als-interne-standaard.md) | PlantUML as internal standard | Accepted |
 | [0007](0007-single-source-documentation.md) | Single source of truth for documentation | Accepted |
+| [0008](0008-test-strategie-storybook-playwright.md) | Test strategie met Storybook en Playwright | Accepted |
 
 ---
 
-*Last update*: 2026-01-31
+*Last update*: 2026-02-02

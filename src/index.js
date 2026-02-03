@@ -50,6 +50,7 @@ const { visit } = require('unist-util-visit');
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
+const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('./parsers/activityDiagramParser');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
 // Each parser entry has: { canParse, parse, generate }
@@ -77,6 +78,12 @@ const parserRegistry = [
 		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'sequenceDiagram',
 		parse: parseMermaidSequenceDiagram, // PlantUML participant/arrow syntax is similar
 		generate: generateSequenceDescription,
+	},
+	{
+		name: 'PlantUML Activity Diagram',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'activity',
+		parse: parsePlantUMLActivityDiagram,
+		generate: generateActivityDescription,
 	},
 ];
 
@@ -216,13 +223,13 @@ const defaultFallbackA11yText = {
 const uiLabels = {
 	nl: {
 		tabSource: 'Bron',
-		tabA11y: 'Natuurlijke taal',
+		tabA11y: 'In natuurlijke taal',
 		summaryText: '{type} broncode voor "{title}"',
-		a11ySummaryText: 'Natuurlijke taal beschrijving voor "{title}"',
+		a11ySummaryText: 'Beschrijving in natuurlijke taal voor "{title}"',
 	},
 	en: {
 		tabSource: 'Source',
-		tabA11y: 'Natural language',
+		tabA11y: 'In natural language',
 		summaryText: '{type} source for "{title}"',
 		a11ySummaryText: 'Natural language description for "{title}"',
 	},
@@ -335,20 +342,23 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 					.replace('{title}', escapeHtml(title))
 					.replace('{type}', escapeHtml(langName));
 
+				// Generate unique IDs for ARIA relationships
+				const tabId = `diagram-tabs-${index}`;
+
 				const tabsHtml = `
 <details class="${opts.cssClass}"${openAttr}>
 <summary>${summaryText}</summary>
 <div class="${opts.cssClass}-tabs">
-<div class="${opts.cssClass}-tab-buttons">
-<button class="${opts.cssClass}-tab-btn active" data-tab="source">${tabSourceLabel}</button>
-<button class="${opts.cssClass}-tab-btn" data-tab="a11y">${tabA11yLabel}</button>
+<div class="${opts.cssClass}-tab-buttons" role="tablist">
+<button class="${opts.cssClass}-tab-btn active" data-tab="source" role="tab" aria-selected="true" id="${tabId}-tab-source" aria-controls="${tabId}-panel-source">${tabSourceLabel}</button>
+<button class="${opts.cssClass}-tab-btn" data-tab="a11y" role="tab" aria-selected="false" id="${tabId}-tab-a11y" aria-controls="${tabId}-panel-a11y">${tabA11yLabel}</button>
 </div>
-<div class="${opts.cssClass}-tab-content active" data-tab="source">
+<section class="${opts.cssClass}-tab-content active" data-tab="source" role="tabpanel" tabindex="0" id="${tabId}-panel-source" aria-labelledby="${tabId}-tab-source">
 <pre><code>${escapedCode}</code></pre>
-</div>
-<div class="${opts.cssClass}-tab-content" data-tab="a11y">
+</section>
+<section class="${opts.cssClass}-tab-content" data-tab="a11y" role="tabpanel" tabindex="0" id="${tabId}-panel-a11y" aria-labelledby="${tabId}-tab-a11y" lang="${blockLocale}">
 ${a11yDescription}
-</div>
+</section>
 </div>
 </details>`;
 
@@ -383,7 +393,7 @@ ${a11yDescription}
 						value: `
 <details class="${opts.a11yCssClass}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
-<div class="${opts.a11yCssClass}-content">${a11yDescription}</div>
+<div class="${opts.a11yCssClass}-content" lang="${blockLocale}">${a11yDescription}</div>
 </details>`
 					});
 				}

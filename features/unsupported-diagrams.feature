@@ -44,20 +44,3 @@ Functionaliteit: Niet-ondersteunde diagramtypes
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "ondersteunt nog geen C4 diagrammen"
 
-  Scenario: Activity diagram nog niet ondersteund
-    Gegeven het volgende PlantUML diagram met type "activity":
-      """
-      @startuml
-      start
-      :Stap 1;
-      if (Conditie?) then (ja)
-        :Stap 2a;
-      else (nee)
-        :Stap 2b;
-      endif
-      stop
-      @enduml
-      """
-    Als ik een beschrijving genereer
-    Dan zou de beschrijving moeten bevatten "ondersteunt nog geen activity diagrammen"
-    En zou de beschrijving moeten bevatten "Draag bij aan dit A11Y project"

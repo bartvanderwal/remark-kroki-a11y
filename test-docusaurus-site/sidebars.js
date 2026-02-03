@@ -1,52 +1,44 @@
 module.exports = {
   docs: [
-    'index',
     'readme',
-    'contributing',
     {
       type: 'category',
-      label: 'Examples',
-      link: {
-        type: 'doc',
-        id: 'examples/index',
-      },
+      label: 'Contributing',
       items: [
-        {
-          type: 'category',
-          label: 'Class Diagrams',
-          items: [
-            'examples/plantuml-class-diagrams-en',
-            'examples/plantuml-class-diagrams-nl',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Domain Models',
-          items: [
-            'examples/domain-model-larman-vs-fowler',
-            'examples/domeinmodel-larman-vs-fowler',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Sequence Diagrams',
-          items: [
-            'examples/sequence-diagram-example',
-          ],
-        },
-        {
-          type: 'category',
-          label: 'Design Patterns',
-          items: [
-            'examples/little-red-riding-hood-as-uml-diagrams',
-            'examples/roodkapje-als-uml-diagrammen',
-          ],
-        },
+        'contributing',
+        'definition-of-done',
       ],
     },
     {
       type: 'category',
-      label: 'Architecture',
+      label: 'Introduction to UML',
+      items: [
+        'examples/little-red-riding-hood-as-uml-diagrams',
+        'examples/roodkapje-in-uml-diagrammen',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'PlantUML',
+      items: [
+        'examples/plantuml-class-diagrams-en',
+        'examples/plantuml-class-diagrams-nl',
+        'examples/domain-model-larman-vs-fowler',
+        'examples/domeinmodel-larman-vs-fowler',
+        'examples/sequence-diagram-example',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Mermaid',
+      items: [
+        'examples/mermaid-class-diagrams',
+        'examples/mermaid-theme-comparison',
+      ],
+    },
+    {
+      type: 'category',
+      label: 'Software Guidebook',
       items: [
         'architecture/plugin-architecture',
       ],

@@ -35,9 +35,9 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 | Class diagrams | ✅ Full | ⚠️ To test | Partial |
 | State diagrams | ✅ Full | ❌ | Partial |
 | Sequence diagrams | ⚠️ Beta | ⚠️ Beta | Partial |
+| Activity diagrams | ⚠️ Beta | ❌ | Partial |
 | C4 diagrams | ❌ | N/A | Planned |
 | ER diagrams | ❌ | ❌ | Planned |
-| Activity diagrams | ❌ | ❌ | Future |
 | Gantt charts | ❌ | ❌ | Future |
 
 ## Roadmap
@@ -50,8 +50,6 @@ We support multiple diagram-as-text formats through Kroki:
 |--------|-------------|-----|-------|
 | **PlantUML** | All 14 UML types | ✅ via C4-PlantUML | Mindmaps, Gantt, etc. |
 | **Mermaid** | Class, Sequence, State, ER | ❌ | Flowchart, Pie, etc. |
-| **GraphViz** | ❌ | ❌ | Directed graphs |
-| **D2** | ❌ | ❌ | General diagrams |
 
 ### Future Diagram Types (Student Projects Welcome!)
 
@@ -296,7 +294,7 @@ The documentation site will be available at `http://localhost:3000/remark-kroki-
 
 ### CI/CD Pipeline
 
-The documentation site is automatically built and deployed to GitHub Pages on every push to `main`. See the [deploy-docs.yml](.github/workflows/deploy-docs.yml) workflow configuration.
+The documentation site is automatically built and deployed to GitHub Pages on every push to `main`.
 
 The pipeline:
 

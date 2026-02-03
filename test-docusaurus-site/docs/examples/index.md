@@ -2,10 +2,22 @@
 
 This section contains live examples that demonstrate the remark-kroki-a11y plugin in action. Each page shows diagrams with their automatically generated accessible descriptions.
 
+## UML Introduction: Red Riding Hood as UML diagrams
+
+- [Red Riding Hood as UML diagrams](/examples/little-red-riding-hood-as-uml-diagrams) - A gentle introduction to (some) UML diagrams
+- [Roodkapje in UML diagrammen](/examples/roodkapje-in-uml-diagrammen) - Een toegankelijke introductie in (enkele) UML diagrammen
+
 ## Class Diagrams
+
+### PlantUML
 
 - [PlantUML Class Diagrams (English)](/examples/plantuml-class-diagrams-en) - Test class diagrams with English A11y descriptions
 - [PlantUML Klassendiagrammen (Nederlands)](/examples/plantuml-class-diagrams-nl) - Test klassendiagrammen met Nederlandse A11y beschrijvingen
+
+### Mermaid
+
+- [Mermaid Class Diagrams](/examples/mermaid-class-diagrams) - Test Mermaid class diagrams via Kroki with A11y descriptions
+- [Mermaid: Kroki vs Theme](/examples/mermaid-theme-comparison) - Compare server-side (Kroki) vs client-side (@docusaurus/theme-mermaid) rendering
 
 ## Domain Models
 
@@ -15,11 +27,6 @@ This section contains live examples that demonstrate the remark-kroki-a11y plugi
 ## Sequence Diagrams
 
 - [Café Ordering Example](/examples/sequence-diagram-example) - Demonstrates `customDescription` for diagrams without automatic parsing
-
-## Diagrams as Code; an introduction: Red Riding hood as UML
-
-- [Little Red Riding Hood: Stories vs Code](/examples/little-red-riding-hood-as-uml-diagrams) - Introduction to UML diagrams in a familiar domain; and a bit about why and how to split large stories into manageable chunks
-- [Roodkapje: Stories vs Code](/examples/roodkapje-als-uml-diagrammen) - Een introductie in UML diagrammen in een bekend domein en iets over hoe je groot verhaal/probleem opsplitst in beheersbare diagrammen
 
 ---
 

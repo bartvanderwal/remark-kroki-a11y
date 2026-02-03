@@ -1,99 +1,101 @@
-# Stories in natuurlijke taal vs code in formele programmeertaal
+# Roodkapje in UML diagrammen
+
+## Een zachte landing en introductie in UML diagrammen*
+
+<img src={require('./roodkapje-in-het-bos-dalle.png').default} alt="Roodkapje in het bos" width="600" />
+
+*Figuur 1: Roodkapje in het bos (afbeelding gegenereerd met ChatGPT/DALL-E, OpenAI, 2025).*
+
+---
 
 Dit voorbeeld toont hoe je een verhaal in natuurlijke taal (het sprookje van Roodkapje) kunt vertalen naar formele diagrammen; namelijk UML diagrammen. In die zin is het een prima introductie van (enkele) UML diagrammen voor niet technici om een beeld te krijgen, of beginnende technici.
 
-Het gebruik van Roodkapje is wellicht een beetje een gimmick, maar ook een manier om analyse en ontwerp toe te passen op een bekend domein. Ervaren IT-ers komen op een gegeven moment op het niveau dat ze technische complexiteit gaan classificeren als 'accidental complexity', die je altijd moet minimaliseren, en de domein complexiteit als de 'inherent complexity', die je in principe wil maximaliseren door een complex domein te zoeken, waar potentieel nog veel geld valt te verdienen en/of (idealiter) de wereld nog veel te verbeteren valt.
-
 We splitsen het verhaal op in drie delen om een "God Diagram" te voorkomen. Een God diagram is een anti-pattern (net als een ['God object'](https://en.wikipedia.org/wiki/God_object) dat is). Het opsplitsen is een best practice om 'cognitive load' te voorkomen. Om wel ook het overzicht te geven maak je weer een apart diagram, die de onderlinge verbanden aangeeft. Dit is vergelijkbaar met hoe in C4 er ook verschillende zoomniveaus zijn.
+
+In dit artikel gebruiken we voor de drie fasen van het verhaal een toenemend detailniveau: fase A gebruikt berichten als natuurlijke taal, fase B schakelt over naar methode-aanroepen, en fase C voegt daar loops en een Factory pattern aan toe. Dit is een didactische keuze om verschillende notaties te demonstreren in één artikel. In de praktijk van softwareontwikkeling werk je anders: je houdt alle delen op hetzelfde detailniveau, en voegt aan *alle* delen tegelijk meer detail toe naarmate je vordert in de Software Development Life Cycle. Tijdens de analyse modelleer je alle fasen met berichten, tijdens het ontwerp alle fasen met methoden, enzovoort.
 
 ---
 
 ## Er was eens...
 
-Voordat we het verhaal in sequentiediagrammen vertellen, definiëren we eerst de "wereld" van het sprookje in een klassediagram. Dit is vergelijkbaar met hoe je in software eerst je domeinmodel opstelt voordat je de use cases uitwerkt.
+Voordat we het verhaal in sequentiediagrammen vertellen, definiëren we eerst de "wereld" van het sprookje in een domeinmodel. Dit is vergelijkbaar met hoe je in software eerst je domeinmodel opstelt voordat je de use cases uitwerkt.
 
-```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel" lang="nl" customDescription="Klassendiagram met alle karakters en objecten uit het Roodkapje-verhaal. Roodkapje heeft een mandje met koekjes en wijn. De Wolf heeft methodes om te vermommen en op te eten. Oma woont in een huis in het bos. De Jager heeft een schaar en kan de buik openknippen en vullen met stenen."
+We gebruiken hier een domeinmodel in de stijl van Larman: focus op de entiteiten (concepten) en hun attributen, zonder methodes en zonder expliciete types. Bij twijfel of iets een primitief attribuut is of een eigen entiteit verdient, kies je voor een aparte entiteit. Business-activiteiten (zoals "eet op") mogen als relatie worden weergegeven.
+
+```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Larman-stijl)" lang="nl" customDescription="Eenvoudig domeinmodel met de hoofdentiteiten uit het Roodkapje-verhaal: Roodkapje, Moeder, Oma, Wolf, Jager, Mandje, Huis en Steen. Alleen attributen, geen methodes. Relaties tonen wie wat doet met wie."
 @startuml
 !theme plain
 title Er was eens... het domeinmodel van Roodkapje
 
 class Roodkapje {
-  -naam: String = "Roodkapje"
-  -heeftKapje: boolean = true
-  +vertrek()
-  +klop()
-  +vraag(tekst: String)
-  +haalStenen(): Steen[]
+  naam
+  heeftRoodKapje
 }
 
 class Moeder {
-  -naam: String
-  +geefMandje(inhoud: Object[]): Mandje
-  +geefOpdracht(tekst: String)
-}
-
-class Mandje {
-  -koekjes: Koekje[]
-  -wijn: Fles
-}
-
-class Wolf {
-  -honger: boolean = true
-  -vermomming: String = null
-  +vraag(tekst: String): String
-  +bedenktPlan()
-  +neem(route: Route, bestemming: Locatie)
-  +vermom(als: Persoon)
-  +eetOp(slachtoffer: Persoon)
-  +gaInBed()
+  naam
 }
 
 class Oma {
-  -naam: String
-  -ziek: boolean = true
-  +openDeur()
+  naam
+  ziek
+}
+
+class Wolf {
+  honger
+  vermomming
 }
 
 class Jager {
-  -schaar: Schaar
-  +hoort(geluid: String)
-  +besluit(actie: String)
-  +knipBuikOpen(wolf: Wolf)
-  +naai(buik: String)
+  naam
+}
+
+class Mandje {
+  inhoud
 }
 
 class Huis {
-  -locatie: String = "diep in het bos"
-  -heeftBed: boolean = true
+  locatie
 }
 
 class Steen {
-  -gewicht: int
+  gewicht
 }
 
 Moeder --> Roodkapje : is moeder van
+Moeder --> Mandje : geeft
 Roodkapje --> Mandje : draagt
+Roodkapje --> Oma : bezoekt
 Oma --> Huis : woont in
-Wolf --> Oma : bezoekt
 Wolf --> Oma : eet op
-Wolf --> Roodkapje : ontmoet
 Wolf --> Roodkapje : eet op
 Jager --> Wolf : opent buik van
-Jager --> "0..*" Steen : stopt in wolf
+Jager --> Steen : verzamelt
+Wolf --> "0..*" Steen : krijgt in buik
 
-note "De relaties veranderen\ntijdens het verhaal!" as N1
+note "Relaties veranderen\ntijdens het verhaal!" as N1
 
 @enduml
 ```
 
-### Observaties bij het domeinmodel
+### Glossary: De entiteiten van het sprookje
 
-- **Attributen** beschrijven de staat van karakters (Wolf heeft `honger: boolean`)
-- **Methodes** beschrijven wat karakters kunnen doen (`eetOp(slachtoffer)`)
-- **Relaties** zijn dynamisch: ze ontstaan en verdwijnen tijdens het verhaal
-- De **note** waarschuwt dat dit een snapshot is - het verhaal verandert de relaties
+| Entiteit | Omschrijving | Voorbeelden |
+|----------|--------------|-------------|
+| **Roodkapje** | Het meisje met het rode kapje, hoofdpersoon | "het lieve meisje", "kleindochter" |
+| **Moeder** | De moeder van Roodkapje die haar op pad stuurt | "de bezorgde moeder" |
+| **Oma** | De grootmoeder die ziek in bed ligt | "grootmoeder", "de zieke oma" |
+| **Wolf** | De antagonist die Oma en Roodkapje opeet | "de boze wolf", "het beest" |
+| **Jager** | De held die Roodkapje en Oma redt | "de jager", "de houtvester" |
+| **Mandje** | Container met eten voor Oma | "mandje met koekjes en wijn" |
+| **Huis** | De woning van Oma, diep in het bos | "het huisje", "oma's huis" |
+| **Steen** | Objecten waarmee de Wolf wordt gestraft | "zware stenen", "keien" |
 
-Dit domeinmodel is onze "broncode" van de sprookjeswereld. De sequentiediagrammen hieronder tonen hoe deze objecten met elkaar interacteren in de tijd.
+### Larman vs. Fowler: twee stijlen van domeinmodelleren
+
+Dit eenvoudige model volgt de **Larman-stijl**: alleen entiteiten en attributen, geschikt voor de analysefase en communicatie met domeinexperts. In [Bijlage A](#bijlage-a-gedetailleerd-domeinmodel-fowler-stijl) vind je hetzelfde model in de **Fowler-stijl**: met methodes, types en meer technisch detail, geschikt voor de ontwerpfase.
+
+De keuze tussen beide stijlen hangt af van je doelgroep en de fase in de Software Development Life Cycle. Voor validatie met een domeinexpert (zoals de verteller van het sprookje) is Larman-stijl leesbaarder. Voor een developer die de code gaat schrijven is Fowler-stijl informatiever.
 
 ---
 
@@ -169,30 +171,42 @@ participant "Oma" as Oma
 
 == Vertrek ==
 
-Moeder -> RK: geefMandje(koekjes, wijn)
+Moeder -> RK: "Hier lieverd, neem dit mandje\nmet koekjes en wijn"
 Moeder -> RK: "Breng dit naar oma,\nen blijf op het pad!"
-RK -> RK: vertrek()
+RK -> RK: "Ik ga op weg"
 
 == Ontmoeting in het bos ==
 
 Wolf -> RK: "Goedendag, waar ga je heen?"
-RK --> Wolf: "Naar oma's huis\nin het bos"
-Wolf -> Wolf: bedenktPlan()
-note right: Wolf besluit\nkortere weg te nemen
-
-Wolf -> Wolf: neem(kortsteRoute, omasHuis)
+RK --> Wolf: "Naar oma's huis,\ndiep in het bos"
+Wolf -> Wolf: "Hmm, ik neem\nde korte weg..."
 
 @enduml
 ```
 
-### Toelichting bij fase A
+### Toelichting bij fase A: Message Passing
 
-In dit diagram zien we de setup van het verhaal:
+In dit diagram gebruiken we bewust **strings als berichten** in plaats van methode-aanroepen. Dit sluit aan bij hoe Alan Kay, de bedenker van objectgeoriënteerd programmeren, OO oorspronkelijk bedoelde: objecten die *berichten* naar elkaar sturen, niet objecten die elkaars *methoden* aanroepen.
 
-- **Moeder** initialiseert het verhaal door Roodkapje een opdracht te geven
-- **Roodkapje** ontvangt het mandje (parameter: koekjes en wijn)
-- **Wolf** verzamelt informatie en maakt een plan
-- De `neem(kortsteRoute, omasHuis)` is een self-call: de Wolf besluit zelf
+#### Van message passing naar event-driven architectuur
+
+Dit "message passing" paradigma zie je terug in moderne **event-driven microservices**. Vergelijk:
+
+| Aanpak | Voorbeeld | Koppeling |
+|--------|-----------|-----------|
+| **Message/Event** | `"Klant heeft bestelling afgerond"` | Loose coupling |
+| **Methode/RPC** | `emailService.verstuurBevestiging(klantId, bestelling)` | Tight coupling |
+
+Bij de event-aanpak stuurt de bestelservice alleen een bericht. Een andere service (bijv. `EmailBevestigingService`) luistert en besluit *zelf* wat te doen. Bij de RPC-aanpak roept de bestelservice direct een methode aan op de emailservice.
+
+#### Waarom maakt dit uit?
+
+Stel de mailserver is offline:
+
+- **Event-driven**: Een message broker (zoals RabbitMQ of Kafka) bewaart het bericht. Zodra de mailserver weer online is, worden alle wachtende mails alsnog verstuurd. De bestelling gaat gewoon door.
+- **RPC**: De bestelservice blokkeert. De gebruiker krijgt "Mail werkt even niet, probeer later opnieuw" - terwijl ze gewoon wilden bestellen.
+
+In de volgende fase schakelen we over naar **methode-aanroepen**, want dat is waar message passing in de praktijk van OO op neerkomt. Maar het is goed om te beseffen dat de *intentie* van OO dichter bij het eerste ligt.
 
 ---
 
@@ -214,8 +228,8 @@ participant "Roodkapje" as RK
 == Wolf arriveert eerst ==
 
 Wolf -> Oma: klop()
-Oma --> Wolf: "Wie is daar?"
-Wolf -> Oma: "Roodkapje met koekjes"
+Oma --> Wolf: vraagWieDaarIs()
+Wolf -> Oma: antwoord("Roodkapje")
 Oma -> Oma: openDeur()
 Wolf -> Oma: eetOp()
 destroy Oma
@@ -227,13 +241,13 @@ Wolf -> Wolf: gaInBed()
 == Roodkapje arriveert ==
 
 RK -> Wolf: klop()
-Wolf --> RK: "Kom binnen, lieverd"
-RK -> Wolf: "Oma, wat heb je\ngrote ogen!"
-Wolf --> RK: "Om je beter\nte zien"
-RK -> Wolf: "Oma, wat heb je\ngrote oren!"
-Wolf --> RK: "Om je beter\nte horen"
-RK -> Wolf: "Oma, wat heb je\neen grote mond!"
-Wolf --> RK: "Om je beter\nop te eten!"
+Wolf --> RK: nodigBinnen()
+RK -> Wolf: vraagOverOgen()
+Wolf --> RK: geefAntwoord("zien")
+RK -> Wolf: vraagOverOren()
+Wolf --> RK: geefAntwoord("horen")
+RK -> Wolf: vraagOverMond()
+Wolf --> RK: geefAntwoord("opeten!")
 
 Wolf -> RK: eetOp()
 destroy RK
@@ -242,13 +256,65 @@ note right: Roodkapje is opgegeten
 @enduml
 ```
 
-### Toelichting bij fase B
+### Toelichting bij fase B: Van berichten naar methoden
 
-Dit diagram toont de climax van het verhaal:
+In dit diagram schakelen we over naar **methode-aanroepen**. Vergelijk met fase A:
 
-- **destroy** keyword toont dat een actor "verdwijnt" (opgegeten)
-- De dialoog met de grote ogen/oren/mond is een herhalend patroon
+| Fase A (berichten) | Fase B (methoden) |
+|--------------------|-------------------|
+| `"Goedendag, waar ga je heen?"` | `vraagWieDaarIs()` |
+| `"Naar oma's huis"` | `antwoord("Roodkapje")` |
+
+Beide notaties zijn valide UML. De keuze hangt af van je doel:
+
+- **Berichten** (strings): Goed voor communicatie met domeinexperts, leest als een verhaal
+- **Methoden**: Goed voor developers, toont de technische interface
+
+In de praktijk van OO-programmeren *is* een methode-aanroep een bericht. Wanneer je `wolf.eetOp(oma)` schrijft, stuur je het bericht "eetOp" naar het object `wolf` met `oma` als parameter. Het object besluit zelf hoe het reageert - dat is **encapsulation**.
+
+#### De bekende dialoog als herhalend patroon
+
+De "grote ogen/oren/mond" dialoog toont een interessant patroon:
+
+```plantuml
+RK -> Wolf: vraagOverX()
+Wolf --> RK: geefAntwoord(doel)
+```
+
+Dit is een **request-response** patroon dat drie keer herhaald wordt. In code zou je dit kunnen generaliseren:
+
+```java
+String[] lichaamsdelen = {"ogen", "oren", "mond"};
+String[] doelen = {"zien", "horen", "opeten!"};
+
+for (int i = 0; i < lichaamsdelen.length; i++) {
+    roodkapje.vraagOver(lichaamsdelen[i]);
+    wolf.geefAntwoord(doelen[i]);
+}
+```
+
+Andere UML-keywords in dit diagram:
+
+- **destroy** toont dat een actor "verdwijnt" (opgegeten)
 - **Self-calls** (`vermom`, `gaInBed`) tonen interne acties van de Wolf
+
+#### Bewust niet refactoren: leesbaar vs. generiek
+
+Je zou de drie `vraagOverOgen()`, `vraagOverOren()`, `vraagOverMond()` methoden kunnen refactoren naar één generieke functie:
+
+```java
+void vraagOver(Lichaamsdeel ld)
+```
+
+En Roodkapje zou een `zie(Lichaamsdeel): Grootte` methode kunnen krijgen. Dan zou je zelfs een `OrenFactory` en `TandenFactory` kunnen bedenken, en via dependency injection verschillende groottes oren en tanden toewijzen aan een `Aggregate` mond van de Wolf respectievelijk Oma. Op basis daarvan had Roodkapje wellicht wat proactiever kunnen reageren in plaats van opgegeten te worden.
+
+:::tip Wanneer wel, wanneer niet refactoren?
+Dit is een klassiek spanningsveld in software design. Een generieke oplossing is flexibeler, maar minder leesbaar voor domeinexperts. De "rule of three" suggereert: refactor pas als je *drie* keer dezelfde code hebt. Hier hebben we precies drie vragen - op de grens dus.
+
+Voor een sprookje (en voor communicatie met stakeholders) is de expliciete notatie leesbaarder. Voor een technisch ontwerp zou je wellicht wel generaliseren.
+:::
+
+In fase C gaan we juist de andere kant op: we voegen *meer* detail toe, inclusief een nieuwe klasse die niet in het oorspronkelijke domeinmodel stond.
 
 ---
 
@@ -256,7 +322,7 @@ Dit diagram toont de climax van het verhaal:
 
 De jager hoort gesnurk, onderzoekt de situatie en bevrijdt Roodkapje en oma.
 
-```kroki imgType="plantuml" imgTitle="Fase C: De redding" lang="nl" customDescription="Sequentiediagram van fase C: De Jager hoort hard gesnurk en besluit te onderzoeken. Hij gaat oma's huis binnen, ziet de Wolf met dikke buik. De Jager knipt de buik open en bevrijdt Roodkapje en Oma. Roodkapje haalt stenen die in de buik worden gestopt. De Wolf wordt gestraft."
+```kroki imgType="plantuml" imgTitle="Fase C: De redding" lang="nl" customDescription="Sequentiediagram van fase C: De Jager hoort hard gesnurk en besluit te onderzoeken. Hij gaat oma's huis binnen, ziet de Wolf met dikke buik. De Jager knipt de buik open en bevrijdt Roodkapje en Oma. Via een StenenFactory worden stenen verzameld in een loop totdat de Jager niet meer kan dragen. De stenen worden in de Wolf gestopt."
 @startuml
 hide footbox
 title Fase C: De redding
@@ -267,6 +333,7 @@ actor "Jager" as Jager
 participant "Wolf" as Wolf
 participant "Roodkapje" as RK
 participant "Oma" as Oma
+participant "StenenFactory" as SF
 
 == Ontdekking ==
 
@@ -285,14 +352,30 @@ Wolf --> RK: <<bevrijd>>
 create Oma
 Wolf --> Oma: <<bevrijd>>
 
-RK --> Jager: "Dank u wel!"
-Oma --> Jager: "Dank u wel!"
+RK --> Jager: bedank()
+Oma --> Jager: bedank()
 
-== Straf ==
+== Straf: Stenen verzamelen ==
 
-RK -> RK: haal(stenen)
-RK -> Wolf: vulBuik(stenen)
+create SF
+Jager -> SF: new StenenFactory(bos)
+
+loop totdat Jager.kanNietMeerDragen()
+    Jager -> SF: zoekSteen()
+    SF --> Jager: steen
+    Jager -> Jager: pakOp(steen)
+end
+
+== Straf: Wolf vullen ==
+
+Jager -> Wolf: openBuik()
+loop voor elke steen in verzameling
+    Jager -> Wolf: stopSteenInBuik(steen)
+end
 Jager -> Wolf: naai(buikDicht)
+
+destroy SF
+
 Wolf -> Wolf: probeertTeVluchten()
 Wolf -> Wolf: valt(omEnSterft)
 destroy Wolf
@@ -300,13 +383,59 @@ destroy Wolf
 @enduml
 ```
 
-### Toelichting bij fase C
+### Toelichting bij fase C: Meer detail en nieuwe klassen
 
-Dit diagram toont de ontknoping:
+In dit diagram gaan we de andere kant op dan in fase B: we voegen *meer* detail toe. Dit illustreert een belangrijk punt over modelleren.
 
-- **create** keyword toont dat Roodkapje en Oma "terugkomen"
-- **`<<bevrijd>>`** is een stereotype dat het type interactie aangeeft
-- De Wolf krijgt zijn straf via een reeks acties
+#### De StenenFactory: een klasse die niet in het domeinmodel stond
+
+De `StenenFactory` is een nieuwe participant die niet in ons oorspronkelijke domeinmodel voorkomt. Dit is realistisch: tijdens het uitwerken van use cases ontdek je vaak dat je extra klassen nodig hebt.
+
+In Domain-Driven Design zou je dit een **Domain Service** kunnen noemen - een klasse die gedrag modelleert dat niet natuurlijk bij één entity hoort. Het "zoeken van stenen in het bos" hoort niet bij de Jager, niet bij de Wolf, maar is een apart concept.
+
+#### De loop-constructie in UML
+
+PlantUML ondersteunt een `loop` constructie:
+
+```plantuml
+loop totdat conditie
+    ... acties ...
+end
+```
+
+Dit is equivalent aan een `while` loop in code:
+
+```java
+while (!jager.kanNietMeerDragen()) {
+    Steen steen = stenenFactory.zoekSteen();
+    jager.pakOp(steen);
+}
+```
+
+#### Twee loops, twee doelen
+
+We gebruiken twee loops:
+
+1. **Verzamelen**: `loop totdat Jager.kanNietMeerDragen()` - een while-loop met conditie
+2. **Vullen**: `loop voor elke steen in verzameling` - een foreach-loop
+
+Dit toont dat je verschillende loop-types kunt modelleren in UML.
+
+#### Factory pattern
+
+De `StenenFactory` illustreert het **Factory pattern**: een object dat verantwoordelijk is voor het creëren van andere objecten. De Jager hoeft niet te weten *hoe* stenen gevonden worden, alleen dat de factory ze levert.
+
+```java
+// De Jager is ontkoppeld van de details van stenen zoeken
+StenenFactory factory = new StenenFactory(bos);
+Steen steen = factory.zoekSteen();
+```
+
+Andere UML-keywords in dit diagram:
+
+- **create** toont dat Roodkapje en Oma "terugkomen", en dat de StenenFactory wordt geïnstantieerd
+- **destroy** verwijdert de StenenFactory (niet meer nodig) en de Wolf (einde verhaal)
+- **loop** toont herhalende acties met een conditie
 
 ---
 
@@ -393,16 +522,60 @@ We hopen dat dit voorbeeld je laat inzien dat zowel **natuurlijke taal** als **f
 - **Developers** - UML-diagrammen, API-specificaties, code
 - **Compilers en runtimes** - Alleen formele code, geen ambiguïteit toegestaan
 
+### Van informeel naar formeel: UML relatietypen
+
+In dit artikel gebruiken we bewust **informele UML** - eenvoudige lijnen zonder de volledige notatie. Dit sluit aan bij Martin Fowler's concept van "UML as a sketch" (Fowler, 2003): diagrammen als communicatiemiddel, niet als formele blauwdruk. Simon Brown (2019) doet in zijn presentatie "The Lost Art of Software Architecture" zelfs laatdunkend over de klassieke UML-vraag: "Bestaat een auto nog als je de wielen eraf haalt?" - een verwijzing naar het onderscheid tussen aggregatie en compositie.
+
+Toch is het goed om de **formele UML-relatietypen** te kennen. In het onderwijs Software & Robotics willen we dit als einddoel stellen, onder het motto: *"Je kunt de teugels altijd nog laten vieren."* Wie de formele notatie kent, kan bewust kiezen voor informeel.
+
+#### De vier belangrijkste relatietypen
+
+| Relatie | Symbool | Betekenis | Voorbeeld |
+|---------|---------|-----------|-----------|
+| **Associatie** | `──────` | "is dependent on" / "uses" | `Wolf ── Roodkapje` |
+| **Aggregatie** | `◇─────` | "has a" / "contains" (zwak) | `Mandje ◇── Koekje` |
+| **Compositie** | `◆─────` | "consists of" (sterk) | `Auto ◆── Motor` |
+| **Implementatie** | `◁·····` | "implements" / "realizes" | `MergeSort ◁·· SorteerStrategie` |
+| **Generalisatie** | `◁─────` | "is a" / "extends" | `Wolf ◁── Dier` |
+
+#### Het verschil tussen aggregatie en compositie
+
+- **Aggregatie** (open diamant ◇): Het deel kan *onafhankelijk* bestaan van het geheel. Een koekje kan ook buiten het mandje bestaan.
+- **Compositie** (dichte diamant ◆): Het deel kan *niet* bestaan zonder het geheel. Een motor bestaat niet los van een auto (in de context van dat domein).
+
+:::tip Brown's advies: gebruik een legenda
+Simon Brown adviseert om **altijd een legenda** bij je diagrammen te zetten. Het verschil tussen een open en dichte diamant vergeet je snel, en tijdens overleg met opdrachtgevers of domeinexperts wil je geen tijd verspillen aan notatie-discussies. Een simpele legenda voorkomt verwarring.
+:::
+
+#### Wanneer formeel, wanneer informeel?
+
+| Context | Aanbeveling |
+|---------|-------------|
+| **Analysefase** met domeinexperts | Informeel - focus op begrip, niet op notatie |
+| **Ontwerpfase** voor developers | Formeel waar het ertoe doet (eigenaarschap, lifecycle) |
+| **Code review / documentatie** | Informeel met legenda - snel te begrijpen |
+| **Genereren vanuit code** | Formeel - tools kunnen dit automatisch |
+
+Het is ook goed om een **versie zonder implementatiedetails** te maken voor validatie met domeinexperts die minder van ICT weten. De vraag of een mandje "eigenaar" is van koekjes is voor een bakker irrelevant - maar voor een developer die garbage collection moet begrijpen wel.
+
 ### Verdere verdieping: A short personal history of Continuous Documentation
 
 Dit inzicht is niet nieuw. Enkele klassieke bronnen, chronologisch geordend:
+
+![Drie fasen van documentatie: Knowledge Acquisition, Building en Transfer](documentation-phases-theunissen.png)
+
+*Figuur 1: Drie fasen van documentatie: Knowledge Acquisition, Building en Transfer (Theunissen, 2022, Figure 8.1).*
 
 - Reeves (1992) schreef het baanbrekende artikel dat stelt dat code het échte ontwerp is, niet de diagrammen. Zijn belangrijkste inzicht: source code is NIET het product, maar het plan ( de uit dit "plan" gecompileerde binary code die runt op hardware is het product).
 - Fowler (2003) introduceerde in "UML Distilled" het concept van "UML as sketch" versus "UML as blueprint" - diagrammen als communicatiemiddel, niet als formele specificatie
 - Brown (2011) introduceerde het C4 model als informele benadering voor software architectuur visualisatie, met nadruk op uit- en inzoomen tussen abstractieniveaus. UML wordt omarmd voor Code-diagrammen op laag niveau, maar ook code zelf behoudt recht van bestaan als ontwerp van de uiteindelijke runnende applicatie
 - Patton (2014) beschreef hoe je User Stories gebruikt om verhalen te vertellen in Agile
 - Mijn collega Theo Theunissen (2022) onderzocht documentatie in continuous software development. Een van zijn meest opvallende conclusies: developers beschrijven in commit messages vaak te veel WAT ze wijzigen en te weinig WAAROM - een analogie met ADR's als log van beslissingen met rationales
-- Van der Wal (2025) schreef voor de minor DevOps een stuk over domeinmodellen: hoe er verschillende versies zijn in de Analyse- vs. Ontwerp-fase, hoe de double diamond techniek uit Design Thinking deze opsplitsing tussen probleemdomein (analyse) en oplossingsdomein (ontwerp) ook al maakte, en hoe je een groot diagram kunt opdelen in verschillende contexten respectievelijk subdomeinen (context mapping techniek uit Domain Driven Design)
+- Van der Wal (2025) schreef voor de minor DevOps een stuk over domeinmodellen: hoe er verschillende versies zijn in de Analyse- vs. Ontwerp-fase, hoe de double diamond techniek uit Design Thinking deze opsplitsing tussen probleemdomein (analyse) en oplossingsdomein (ontwerp) ook al maakte, en hoe je een groot diagram kunt opdelen in verschillende contexten (probleemdomein) respectievelijk subdomeinen (oplossingsdomein) (e.g. de Context mapping pattern uit Domain Driven Design)
+
+![Context Mapping voorbeeld met upstream en downstream bounded contexts](context-mapping-brandolini.png)
+
+*Figuur 2: Context Mapping toont relaties tussen bounded contexts in Domain-Driven Design (Brandolini, 2009, Figure 14).*
 
 ### De les van Reeves
 
@@ -477,7 +650,11 @@ Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.
 
 Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
 
+Brandolini, A. (2009, 25 november). Strategic Domain Driven Design with Context Mapping. *InfoQ*. https://www.infoq.com/articles/ddd-contextmapping/
+
 Brown, S. (2011). *The C4 model for visualising software architecture*. https://c4model.com/
+
+Brown, S. (2019). *The lost art of software design* [Video]. YouTube. https://www.youtube.com/watch?v=gNj8I4uSTgc
 
 Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
 
@@ -495,7 +672,98 @@ Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/w
 
 ## Bijlagen
 
-### Bijlage A: Het "God Diagram" (anti-pattern)
+### Bijlage A: Gedetailleerd domeinmodel (Fowler-stijl)
+
+In de hoofdtekst gebruikten we een eenvoudig domeinmodel in Larman-stijl. Hieronder hetzelfde model in **Fowler-stijl**: met methodes, expliciete types en meer technisch detail. Dit is geschikt voor de ontwerpfase en communicatie met developers.
+
+```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Fowler-stijl)" lang="nl" customDescription="Gedetailleerd klassendiagram met alle karakters en objecten uit het Roodkapje-verhaal. Bevat methodes met parameters en return types. Roodkapje heeft vertrek(), klop() en vraag() methodes. De Wolf heeft methodes om te vermommen en op te eten. De Jager kan de buik openknippen en dichtNaaien."
+@startuml
+!theme plain
+title Domeinmodel van Roodkapje (Fowler-stijl)
+
+class Roodkapje {
+  -naam: String = "Roodkapje"
+  -heeftKapje: boolean = true
+  +vertrek()
+  +klop()
+  +vraag(tekst: String)
+  +haalStenen(): Steen[]
+}
+
+class Moeder {
+  -naam: String
+  +geefMandje(inhoud: Object[]): Mandje
+  +geefOpdracht(tekst: String)
+}
+
+class Mandje {
+  -koekjes: Koekje[]
+  -wijn: Fles
+}
+
+class Wolf {
+  -honger: boolean = true
+  -vermomming: String = null
+  +vraag(tekst: String): String
+  +bedenktPlan()
+  +neem(route: Route, bestemming: Locatie)
+  +vermom(als: Persoon)
+  +eetOp(slachtoffer: Persoon)
+  +gaInBed()
+}
+
+class Oma {
+  -naam: String
+  -ziek: boolean = true
+  +openDeur()
+}
+
+class Jager {
+  -schaar: Schaar
+  +hoort(geluid: String)
+  +besluit(actie: String)
+  +knipBuikOpen(wolf: Wolf)
+  +naai(buik: String)
+}
+
+class Huis {
+  -locatie: String = "diep in het bos"
+  -heeftBed: boolean = true
+}
+
+class Steen {
+  -gewicht: int
+}
+
+Moeder --> Roodkapje : is moeder van
+Roodkapje --> Mandje : draagt
+Oma --> Huis : woont in
+Wolf --> Oma : bezoekt
+Wolf --> Oma : eet op
+Wolf --> Roodkapje : ontmoet
+Wolf --> Roodkapje : eet op
+Jager --> Wolf : opent buik van
+Jager --> "0..*" Steen : stopt in wolf
+
+note "De relaties veranderen\ntijdens het verhaal!" as N1
+
+@enduml
+```
+
+#### Verschil met Larman-stijl
+
+| Aspect | Larman-stijl | Fowler-stijl |
+|--------|--------------|--------------|
+| **Attributen** | Alleen naam | Naam + type + default waarde |
+| **Methodes** | Geen | Volledig met parameters en return types |
+| **Doel** | Analysefase, domeinexperts | Ontwerpfase, developers |
+| **Leesbaar voor** | Iedereen | Technisch publiek |
+
+De Fowler-stijl is informatiever maar ook complexer. Kies de stijl die past bij je doelgroep en de fase van je project.
+
+---
+
+### Bijlage B: Het "God Diagram" (anti-pattern)
 
 :::danger Anti-pattern
 Het onderstaande diagram is een **anti-pattern**. We tonen het hier expliciet om te demonstreren waarom je dit NIET moet doen. Dit is het diagram-equivalent van de tweede situatie die Hoare (1980) beschrijft:

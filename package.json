@@ -1,6 +1,6 @@
 {
   "name": "remark-kroki-a11y",
-  "version": "0.3.4",
+  "version": "0.4.0",
   "description": "Remark plugin for Docusaurus that adds accessible source code details and natural language descriptions to Kroki diagrams (PlantUML, Mermaid, C4, GraphViz, etc.)",
   "main": "src/index.js",
   "scripts": {
@@ -12,9 +12,15 @@
     "lint:fix": "eslint src/ features/ --fix && markdownlint-cli2 --fix '**/*.md' '#node_modules' '#test-docusaurus-site'",
     "start": "cd test-docusaurus-site && yarn start",
     "stop": "cd test-docusaurus-site && yarn stop",
-    "build": "cd test-docusaurus-site && yarn build",
+    "build": "./copy-docs.sh && cd test-docusaurus-site && yarn build && cd .. && yarn build:storybook",
+    "build:docs": "cd test-docusaurus-site && yarn build",
+    "build:storybook": "storybook build",
     "serve": "cd test-docusaurus-site && yarn serve",
-    "prepare": "husky"
+    "serve:storybook": "npx serve storybook-static -p 6007",
+    "prepare": "husky",
+    "storybook": "storybook dev -p 6006",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "keywords": [
     "remark",
@@ -48,11 +54,25 @@
     "unist-util-visit": "^4.0.0 || ^5.0.0"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.0.0",
     "@cucumber/cucumber": "^12.6.0",
+    "@playwright/test": "^1.58.1",
+    "@storybook/addon-a11y": "^10.2.3",
+    "@storybook/addon-actions": "^9.0.8",
+    "@storybook/addon-docs": "^10.2.3",
+    "@storybook/addon-interactions": "^8.6.14",
+    "@storybook/addon-vitest": "^10.2.3",
+    "@storybook/html-vite": "^10.2.3",
+    "@vitest/browser-playwright": "^4.0.18",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^9.39.2",
+    "eslint-plugin-storybook": "^10.2.3",
     "husky": "^9.1.7",
     "markdownlint-cli2": "^0.20.0",
-    "unist-util-visit": "^5.0.0"
+    "playwright": "^1.58.1",
+    "storybook": "^10.2.3",
+    "unist-util-visit": "^5.0.0",
+    "vitest": "^4.0.18"
   },
   "engines": {
     "node": ">=16.0.0"

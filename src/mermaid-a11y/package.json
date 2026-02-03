@@ -1,0 +1,19 @@
+{
+	"name": "remark-mermaid-with-expandable-source",
+	"version": "1.0.0",
+	"description": "Remark plugin that adds expandable source code blocks to native Mermaid diagrams in Docusaurus",
+	"main": "index.js",
+	"keywords": [
+		"remark",
+		"remark-plugin",
+		"mermaid",
+		"docusaurus",
+		"diagram",
+		"accessibility"
+	],
+	"author": "AIM-ENE",
+	"license": "MIT",
+	"peerDependencies": {
+		"unist-util-visit": "^4.0.0 || ^5.0.0"
+	}
+}
