@@ -4,7 +4,7 @@
 
 <img src={require('./roodkapje-in-het-bos-dalle.png').default} alt="Little Red Riding Hood in the forest" width="600" />
 
-*Figure 0: Little Red Riding Hood in the forest (image generated with ChatGPT/DALL-E, OpenAI, 2025).*
+*Figure 0: Little Red Riding Hood in the forest (image generated with ChatGPT based on [original artwork](https://www.deviantart.com/individualdesign/art/Little-Red-Riding-Hood-Wallpaper-558946615) by IndividualDesign, DeviantArt, 2025).*
 
 ---
 

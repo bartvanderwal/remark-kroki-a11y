@@ -4,7 +4,7 @@
 
 <img src={require('./roodkapje-in-het-bos-dalle.png').default} alt="Roodkapje in het bos" width="600" />
 
-*Figuur 1: Roodkapje in het bos (afbeelding gegenereerd met ChatGPT/DALL-E, OpenAI, 2025).*
+*Figuur 1: Roodkapje in het bos (afbeelding gegenereerd met ChatGPT op basis van [origineel kunstwerk](https://www.deviantart.com/individualdesign/art/Little-Red-Riding-Hood-Wallpaper-558946615) door IndividualDesign, DeviantArt, 2025).*
 
 ---
 
@@ -630,9 +630,7 @@ Overigens is onze opsplitsing van het sprookje in drie hoofddelen (A, B, C) vrij
 
 Op een hoger niveau raakt dit aan waarom we überhaupt verhalen vertellen: mensen zijn sociale wezens die graag verhalen delen en verbinding zoeken. Software kan dit ondersteunen - of uitbuiten. Social media platforms beloven verbinding, maar houden ons met shorts en lieve kattenvideo's afgeleid van een *echt* sociaal leven.
 
-Doctorow (2023) noemt dit **enshittification**: platforms die eerst waarde creëren voor gebruikers, dan voor adverteerders, en uiteindelijk alleen voor zichzelf. Economisch onderzoek (Dubner, 2024) toont dat veel gebruikers zouden *betalen* om platforms als Facebook te laten verdwijnen.
-
-Voor een verdere uitwerking van dit ethisch perspectief, zie: [Weg van Facebook](https://bartvanderwal.nl/weg-van-facebook/).
+Doctorow (2023) noemt dit **enshittification**: platforms die eerst waarde creëren voor gebruikers, dan voor adverteerders, en uiteindelijk alleen voor zichzelf. Economisch onderzoek (Dubner, 2024) toont dat veel gebruikers zouden *betalen* om platforms als Facebook te laten verdwijnen. Meer beschouwing op dit ethisch perspectief, in mijn persoonlijke blog: [Weg van Facebook](https://bartvanderwal.nl/weg-van-facebook/).
 
 ### Het echte einde
 
@@ -650,7 +648,7 @@ Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over event
 
 ---
 
-## A short personal history of Continuous Documentation
+## Bronnen
 
 - Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
 - Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
@@ -663,7 +661,7 @@ Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over event
 - Theunissen, T. (2022). Evaluation of approaches for documentation in continuous software development. In *Proceedings of the 10th International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2022)*. https://theotheunissen.nl/wp-content/uploads/2022/10/modelsward-2023.pdf
 - Doctorow, C. (2023, 21 januari). *Tiktok's enshittification*. Pluralistic. https://pluralistic.net/2023/01/21/potemkin-ai/
 - Dubner, S. J. (Host). (2024, 18 januari). *Are you caught in a social media trap?* [Podcast aflevering]. In *Freakonomics Radio*. Freakonomics, LLC. https://freakonomics.com/podcast/are-you-caught-in-a-social-media-trap/
-- Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/week-2/domein-model.html
+- Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/blok-2/domein-model.html
 
 ---
 
