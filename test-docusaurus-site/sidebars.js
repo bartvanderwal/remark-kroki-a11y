@@ -1,6 +1,6 @@
 module.exports = {
   docs: [
-    'readme',
+    'readme-github',
     {
       type: 'category',
       label: 'Contributing',

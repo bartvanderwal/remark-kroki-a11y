@@ -47,7 +47,7 @@ echo ""
 echo "📄 Copying README.md to docs/index.md..."
 cat > "$DOCS_CONTENT_DIR/index.md" << 'FRONTMATTER'
 ---
-id: readme
+id: readme-github
 title: README (GitHub)
 sidebar_label: README
 description: The main README file from the GitHub repository

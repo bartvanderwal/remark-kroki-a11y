@@ -104,7 +104,7 @@ module.exports = {
       items: [
         {
           type: 'doc',
-          docId: 'readme',
+          docId: 'readme-github',
           position: 'left',
           label: 'Docs',
         },
