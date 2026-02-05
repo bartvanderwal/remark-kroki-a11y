@@ -81,7 +81,7 @@ const parserRegistry = [
 	},
 	{
 		name: 'PlantUML Activity Diagram',
-		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'activity',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'activityDiagram',
 		parse: parsePlantUMLActivityDiagram,
 		generate: generateActivityDescription,
 	},
@@ -181,8 +181,8 @@ const diagramTypeNames = {
 	nl: {
 		stateDiagram: 'toestandsdiagrammen',
 		classDiagram: 'klassendiagrammen',
-		sequenceDiagram: 'sequentiediagrammen',
-		activityDiagram: 'activiteitendiagrammen',
+		sequenceDiagram: 'sequentie-diagrammen',
+		activityDiagram: 'activity diagrammen',
 		erDiagram: 'ER-diagrammen',
 		componentDiagram: 'componentdiagrammen',
 		usecaseDiagram: 'use case diagrammen',
