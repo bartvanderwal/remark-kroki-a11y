@@ -21,18 +21,46 @@ module.exports = {
       type: 'category',
       label: 'PlantUML',
       items: [
-        'examples/plantuml-class-diagrams-en',
-        'examples/plantuml-class-diagrams-nl',
-        'examples/domain-model-larman-vs-fowler',
-        'examples/domeinmodel-larman-vs-fowler',
-        'examples/sequence-diagram-example',
+        {
+          type: 'category',
+          label: 'Class Diagrams',
+          items: [
+            'examples/plantuml-class-diagrams-en',
+            'examples/plantuml-class-diagrams-nl',
+            'examples/domain-model-larman-vs-fowler',
+            'examples/domeinmodel-larman-vs-fowler',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Sequence Diagrams',
+          items: [
+            'examples/sequence-diagram-example-en',
+            'examples/sequence-diagram-example',
+          ],
+        },
+        {
+          type: 'category',
+          label: 'Activity Diagrams',
+          items: [
+            'examples/plantuml-activity-diagrams-en',
+            'examples/plantuml-activity-diagrams-nl',
+          ],
+        },
       ],
     },
     {
       type: 'category',
       label: 'Mermaid',
       items: [
-        'examples/mermaid-class-diagrams',
+        {
+          type: 'category',
+          label: 'Class Diagrams',
+          items: [
+            'examples/mermaid-class-diagrams',
+            'examples/mermaid-class-diagrams-nl',
+          ],
+        },
         'examples/mermaid-theme-comparison',
       ],
     },

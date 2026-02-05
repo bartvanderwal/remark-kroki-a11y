@@ -1,4 +1,8 @@
-# PlantUML Klassendiagrammen (Nederlands)
+---
+sidebar_label: Klassendiagrammen (Nederlands)
+---
+
+# PlantUML Klassendiagrammen
 
 Deze pagina test de Nederlandse A11y beschrijvingen voor klassendiagrammen.
 

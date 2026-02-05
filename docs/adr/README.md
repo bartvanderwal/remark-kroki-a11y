@@ -33,7 +33,9 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0006](0006-plantuml-als-interne-standaard.md) | PlantUML as internal standard | Accepted |
 | [0007](0007-single-source-documentation.md) | Single source of truth for documentation | Accepted |
 | [0008](0008-test-strategie-storybook-playwright.md) | Test strategie met Storybook en Playwright | Accepted |
+| [0009](0009-activity-diagram-step-numbering.md) | No automatic step numbering in activity diagram descriptions | Accepted |
+| [0010](0010-screenreader-prosody-and-visual-hierarchy.md) | Screenreader prosody and visual hierarchy | Pending |
 
 ---
 
-*Last update*: 2026-02-02
+*Last update*: 2026-02-05

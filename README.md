@@ -286,7 +286,7 @@ npm install  # first time only
 npm start
 ```
 
-The documentation site will be available at `http://localhost:3000/remark-kroki-a11y/`.
+The documentation site will be available at `http://localhost:3001/remark-kroki-a11y/`.
 
 ### Online Documentation
 

@@ -15,7 +15,7 @@ export default defineConfig({
 	workers: process.env.CI ? 1 : undefined,
 	reporter: 'html',
 	use: {
-		baseURL: 'http://localhost:3000',
+		baseURL: 'http://localhost:3001',
 		trace: 'on-first-retry',
 	},
 	timeout: 60000, // 60 seconds per test (Docusaurus can be slow)
@@ -36,9 +36,9 @@ export default defineConfig({
 	],
 	// Automatically start the Docusaurus dev server before running tests
 	webServer: {
-		command: 'npx docusaurus start --no-open --port 3000',
+		command: 'npx docusaurus start --no-open --port 3001',
 		cwd: './test-docusaurus-site',
-		url: 'http://localhost:3000',
+		url: 'http://localhost:3001',
 		reuseExistingServer: !process.env.CI,
 		timeout: 120000, // 2 minutes for Docusaurus to start
 		stdout: 'pipe', // Don't show server output unless debugging

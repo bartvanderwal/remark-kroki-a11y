@@ -27,9 +27,9 @@ Feature: English activity diagram descriptions
       Activity diagram with 2 activities and 1 decision point.
       """
     And the description should contain "Start"
-    And the description should contain "Step 1. Decision: Graphviz installed?"
-    And the description should contain "Yes: process all diagrams"
-    And the description should contain "No: process only sequence and activity diagrams"
+    And the description should contain "Decision: Graphviz installed?"
+    And the description should contain "Yes: Step. process all diagrams"
+    And the description should contain "No: Step. process only sequence and activity diagrams"
     And the description should contain "Stop"
 
   Scenario: Activity diagram with partitions (Little Red Riding Hood overview - English)
@@ -71,20 +71,23 @@ Feature: English activity diagram descriptions
       Activity diagram with 3 partitions and 11 activities.
       """
     And the description should contain "Start"
-    And the description should contain "Step 1. Mother gives order"
-    And the description should contain "Partition A: Journey to grandmother"
-    And the description should contain "Step A1. Little Red Riding Hood departs"
-    And the description should contain "Step A2. Meeting with wolf"
-    And the description should contain "Step A3. Wolf runs ahead"
-    And the description should contain "Partition B: At grandmother's house"
-    And the description should contain "Step B1. Wolf eats grandmother"
-    And the description should contain "Step B2. Wolf disguises itself"
-    And the description should contain "Step B3. Little Red Riding Hood arrives"
-    And the description should contain "Step B4. Wolf eats Little Red Riding Hood"
-    And the description should contain "Partition C: The rescue"
-    And the description should contain "Step C1. Hunter arrives"
-    And the description should contain "Step C2. Hunter saves grandmother and Little Red Riding Hood"
-    And the description should contain "Step C3. Wolf is punished"
+    And the description should contain "Step. Mother gives order"
+    And the description should contain "Partition A: Journey to grandmother, consisting of:"
+    And the description should contain "Step. Little Red Riding Hood departs"
+    And the description should contain "Step. Meeting with wolf"
+    And the description should contain "Step. Wolf runs ahead"
+    And the description should contain "End partition A."
+    And the description should contain "Partition B: At grandmother's house, consisting of:"
+    And the description should contain "Step. Wolf eats grandmother"
+    And the description should contain "Step. Wolf disguises itself"
+    And the description should contain "Step. Little Red Riding Hood arrives"
+    And the description should contain "Step. Wolf eats Little Red Riding Hood"
+    And the description should contain "End partition B."
+    And the description should contain "Partition C: The rescue, consisting of:"
+    And the description should contain "Step. Hunter arrives"
+    And the description should contain "Step. Hunter saves grandmother and Little Red Riding Hood"
+    And the description should contain "Step. Wolf is punished"
+    And the description should contain "End partition C."
     And the description should contain "Stop"
 
   Scenario: Activity diagram with while loop (English)
@@ -101,9 +104,10 @@ Feature: English activity diagram descriptions
       """
     When I generate a description in English
     Then the description should contain "Start"
-    And the description should contain "Step 1. Repeat while data available? (yes):"
-    And the description should contain "Step 1.1. read data"
-    And the description should contain "Step 1.2. process data"
+    And the description should contain "Repeat while data available? (yes), consisting of:"
+    And the description should contain "Step. read data"
+    And the description should contain "Step. process data"
+    And the description should contain "End repeat."
     And the description should contain "Stop"
 
   Scenario: Activity diagram with fork/join (parallel activities - English)
@@ -123,9 +127,48 @@ Feature: English activity diagram descriptions
       """
     When I generate a description in English
     Then the description should contain "Start"
-    And the description should contain "Step 1. Prepare"
-    And the description should contain "Step 2. Parallel execution:"
-    And the description should contain "Step 2.1. Task A"
-    And the description should contain "Step 2.2. Task B"
-    And the description should contain "Step 3. Finalize"
+    And the description should contain "Step. Prepare"
+    And the description should contain "Parallel execution 1, consisting of:"
+    And the description should contain "Branch 1:"
+    And the description should contain "Step. Task A"
+    And the description should contain "Branch 2:"
+    And the description should contain "Step. Task B"
+    And the description should contain "End parallel execution 1."
+    And the description should contain "Step. Finalize"
+    And the description should contain "Stop"
+
+  Scenario: Nested parallel execution with multiple items per branch (English)
+    Given the following PlantUML activity diagram:
+      """
+      @startuml
+      start
+      fork
+        :Task A1;
+        :Task A2;
+      fork again
+        :Task B1;
+        fork
+          :Task B2a;
+        fork again
+          :Task B2b;
+        end fork
+        :Task B3;
+      end fork
+      stop
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "Start"
+    And the description should contain "Parallel execution 1, consisting of:"
+    And the description should contain "Branch 1:"
+    And the description should contain "Step. Task A1"
+    And the description should contain "Step. Task A2"
+    And the description should contain "Branch 2:"
+    And the description should contain "Step. Task B1"
+    And the description should contain "Parallel execution 2, consisting of:"
+    And the description should contain "Step. Task B2a"
+    And the description should contain "Step. Task B2b"
+    And the description should contain "End parallel execution 2."
+    And the description should contain "Step. Task B3"
+    And the description should contain "End parallel execution 1."
     And the description should contain "Stop"

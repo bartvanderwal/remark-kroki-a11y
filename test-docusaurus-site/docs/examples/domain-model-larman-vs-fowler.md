@@ -1,3 +1,7 @@
+---
+sidebar_label: "Domain Models: Larman vs Fowler"
+---
+
 # Domain Models: Larman vs Fowler
 
 This page provides several PlantUML diagrams as a test for the `remark-kroki-a11y` plugin, while also explaining the difference between two approaches to domain modeling and how this affects naming conventions for associations in class diagrams during the Analysis and Design phases of the Software Delivery lifecycle. The main distinction is the level of detail - less in analysis and more in design - as well as adherence to programming language conventions in naming.

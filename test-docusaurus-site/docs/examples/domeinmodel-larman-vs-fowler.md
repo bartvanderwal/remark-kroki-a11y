@@ -1,3 +1,7 @@
+---
+sidebar_label: "Domeinmodellen: Larman vs Fowler (Nederlands)"
+---
+
 # Domeinmodellen: Larman vs Fowler
 
 Deze pagina geeft een aantal plantuml diagrammen als test voor de `remark-kroki-a11y` plugin, en gebruikt de gelegnehid ook om direct het verschil uit tussen twee benaderingen van domeinmodellering uit te leggen. En hoe dit invloed heeft op de naamgeving van associaties in klassendiagrammen. In de Analyse fase en de Ontwerp fase van de Software Delivery lifecycle. Het hoofd onderscheid is de mate van detail , analyse minder en bij ontwerpen meer. En ook het aansluiten bij conventies in een programmeertaal in naamgeving.

@@ -1,11 +1,12 @@
+---
+sidebar_label: Red Riding Hood as UML diagrams
+---
+
 # Red Riding Hood as UML diagrams
 
-*A gentle introduction to (some) UML diagrams*
-
-![alt text](image.png)
 <img src={require('./roodkapje-in-het-bos-dalle.png').default} alt="Little Red Riding Hood in the forest" width="600" />
 
-*Figure 0: Little Red Riding Hood in the forest (image generated with ChatGPT/DALL-E, OpenAI, 2025).*
+Little Red Riding Hood in the forest (image generated with ChatGPT/DALL-E, OpenAI, 2025).*
 
 ---
 
@@ -543,18 +544,30 @@ Although I (Bart) am ultimately responsible for the content, feedback on any err
 
 For software developers who want to see a more formal domain model, we show below the Fowler-style version: with data types, visibility modifiers, and methods.
 
-```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Detailed Domain Model (Fowler-style)" lang="en" customDescription="Detailed class diagram with all characters and objects from the Little Red Riding Hood story. This version includes data types (String, boolean, int) and methods. Red has a basket with cookies and wine. The Wolf has methods to disguise and eat. Grandmother lives in a house in the forest. The Huntsman has scissors and can cut open the belly and fill it with stones."
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Detailed Domain Model (Fowler-style)" lang="en" customDescription="Detailed class diagram with inheritance. LittleRedRidingHood, Grandmother, and Huntsman inherit from abstract class FairyTaleCharacter, which has an association with Weapon. This means any character can wield a weapon - not just the Huntsman. The Wolf is a separate class. This modernized model passes the Bechdel test: female characters can have agency and weapons too."
 @startuml
 !theme plain
 title Once upon a time... the domain model of Little Red Riding Hood (Fowler-style)
 
-class LittleRedRidingHood {
-  -name: String = "Little Red"
+abstract class FairyTaleCharacter {
+  -name: String
+  +speak(text: String)
+  +act()
+}
+
+class Weapon {
+  -name: String
+  -damage: int
+  +use(target: FairyTaleCharacter)
+}
+
+class LittleRedRidingHood extends FairyTaleCharacter {
   -hasHood: boolean = true
   +depart()
   +knock()
   +ask(text: String)
   +fetchStones(): Stone[]
+  +defend()
 }
 
 class Mother {
@@ -575,18 +588,16 @@ class Wolf {
   +devisePlan()
   +take(route: Route, destination: Location)
   +disguise(as: Person)
-  +eatUp(victim: Person)
+  +eatUp(victim: FairyTaleCharacter)
   +getIntoBed()
 }
 
-class Grandmother {
-  -name: String
+class Grandmother extends FairyTaleCharacter {
   -sick: boolean = true
   +openDoor()
 }
 
-class Huntsman {
-  -scissors: Scissors
+class Huntsman extends FairyTaleCharacter {
   +hears(sound: String)
   +decides(action: String)
   +cutBellyOpen(wolf: Wolf)
@@ -602,6 +613,8 @@ class Stone {
   -weight: int
 }
 
+FairyTaleCharacter "0..1" --> "0..*" Weapon : wields
+
 Mother --> LittleRedRidingHood : is mother of
 LittleRedRidingHood --> Basket : carries
 Grandmother --> House : lives in
@@ -610,10 +623,22 @@ Wolf --> LittleRedRidingHood : meets / eats
 Huntsman --> Wolf : opens belly of
 Huntsman --> "0..*" Stone : puts in wolf
 
-note "Relationships change\nduring the story!" as N1
+note as N1
+  Any FairyTaleCharacter can wield a Weapon.
+  Little Red could have defended herself!
+  (Passes the Bechdel test)
+end note
 
 @enduml
 ```
+
+:::tip The Bechdel Test and software modeling
+This modernized domain model illustrates an important point: **design choices reflect values**. By giving all `FairyTaleCharacter` instances access to `Weapon`, we model a world where Little Red and Grandmother have agency - they *could* defend themselves.
+
+The [Bechdel test](https://en.wikipedia.org/wiki/Bechdel_test) asks whether a story features at least two women who talk to each other about something other than a man. Our original model implicitly failed this: Grandmother only exists to be eaten, Little Red only to be rescued by a man.
+
+In software terms: **your domain model encodes assumptions**. If your e-commerce model has `Customer` and `Admin` where only `Admin` can issue refunds, you've encoded a power structure. Question your models!
+:::
 
 #### Differences between Larman and Fowler style
 

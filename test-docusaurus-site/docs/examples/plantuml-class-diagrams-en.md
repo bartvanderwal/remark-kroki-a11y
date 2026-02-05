@@ -1,4 +1,8 @@
-# PlantUML Class Diagrams (English)
+---
+sidebar_label: Class Diagrams
+---
+
+# PlantUML Class Diagrams
 
 This page tests the English A11y descriptions for class diagrams.
 

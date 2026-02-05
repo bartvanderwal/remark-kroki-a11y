@@ -16,7 +16,7 @@ A Remark plugin that adds accessible source code details and natural language de
 npm start                          # Dev server (fast, NO link validation)
 npm run start:strict               # Dev server WITH link validation (recommended)
 npm run build                      # Production build with full validation
-npm run stop                       # Kill process on port 3000
+npm run stop                       # Kill process on port 3001
 ```
 
 ## Dev/Prod Parity (12-Factor Principle X)

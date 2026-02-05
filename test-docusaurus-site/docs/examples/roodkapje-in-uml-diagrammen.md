@@ -1,3 +1,7 @@
+---
+sidebar_label: Roodkapje in UML diagrammen (Nederlands)
+---
+
 # Roodkapje in UML diagrammen
 
 ## Een zachte landing en introductie in UML diagrammen*

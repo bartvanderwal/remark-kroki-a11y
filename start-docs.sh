@@ -5,7 +5,7 @@
 # 1. Runs copy-docs.sh to copy README, CONTRIBUTING, and ADRs to the docs folder
 # 2. Starts the Docusaurus development server
 #
-# The docs are available at http://localhost:3000/remark-kroki-a11y/
+# The docs are available at http://localhost:3001/remark-kroki-a11y/
 #
 # Prerequisites:
 #   - Node.js (v18 or higher recommended)
@@ -38,7 +38,7 @@ fi
 cd "$DOCS_DIR"
 
 echo "🚀 Starting Docusaurus development server..."
-echo "   Open http://localhost:3000/remark-kroki-a11y/ in your browser"
+echo "   Open http://localhost:3001/remark-kroki-a11y/ in your browser"
 echo ""
 
 npm start

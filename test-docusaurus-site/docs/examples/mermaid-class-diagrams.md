@@ -1,7 +1,7 @@
 ---
 id: mermaid-class-diagrams
 title: Mermaid Class Diagrams
-sidebar_label: Mermaid Class Diagrams
+sidebar_label: Class Diagrams
 description: Test Mermaid class diagrams with automatic A11y descriptions via Kroki
 ---
 

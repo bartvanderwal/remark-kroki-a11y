@@ -1,7 +1,7 @@
 ---
 id: mermaid-theme-comparison
 title: "Mermaid: Kroki vs Theme"
-sidebar_label: "Mermaid: Kroki vs Theme"
+sidebar_label: "Kroki vs Theme comparison"
 description: Comparison of Mermaid rendering via Kroki (server-side) vs @docusaurus/theme-mermaid (client-side)
 ---
 

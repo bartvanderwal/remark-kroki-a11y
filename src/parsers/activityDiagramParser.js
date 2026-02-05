@@ -2,15 +2,16 @@
  * Activity Diagram Parser (PlantUML)
  *
  * Parses PlantUML activity diagram syntax and generates structured accessible descriptions.
+ * Uses begin/end markers instead of numbering so screen reader users can track nesting.
  *
  * Output format example:
  * "Activiteitendiagram met 2 activiteiten en 1 beslispunt.
  * Stroom:
- * Stap 1. Start
- * Stap 2. Beslissing: Graphviz installed?
+ * Start
+ * Beslissing: Graphviz installed?
  *    - Ja: process all diagrams
  *    - Nee: process only sequence and activity diagrams
- * Stap 3. Stop"
+ * Stop"
  */
 
 // Localization strings
@@ -23,7 +24,7 @@ const i18n = {
 		andDecisionPoint: 'en {count} beslispunt',
 		withPartitions: 'met {count} partities',
 		withPartition: 'met {count} partitie',
-		flow: 'Stroom',
+		flow: 'Flow',
 		step: 'Stap',
 		start: 'Start',
 		stop: 'Stop',
@@ -32,8 +33,14 @@ const i18n = {
 		yes: 'Ja',
 		no: 'Nee',
 		partition: 'Partitie',
+		endPartition: 'Einde partitie',
 		repeatWhile: 'Herhaal zolang',
+		repeatDoWhile: 'Herhaal zolang',
+		endRepeat: 'Einde herhaling',
 		parallelExecution: 'Parallelle uitvoering',
+		endParallelExecution: 'Einde parallelle uitvoering',
+		branch: 'Tak',
+		consistingOf: 'bestaande uit',
 	},
 	en: {
 		activityDiagram: 'Activity diagram',
@@ -52,8 +59,14 @@ const i18n = {
 		yes: 'Yes',
 		no: 'No',
 		partition: 'Partition',
+		endPartition: 'End partition',
 		repeatWhile: 'Repeat while',
+		repeatDoWhile: 'Repeat while',
+		endRepeat: 'End repeat',
 		parallelExecution: 'Parallel execution',
+		endParallelExecution: 'End parallel execution',
+		branch: 'Branch',
+		consistingOf: 'consisting of',
 	}
 };
 
@@ -75,9 +88,10 @@ function parsePlantUMLActivityDiagram(content) {
 	let whileCondition = null;
 	let whileConditionValue = null;
 	let whileElements = [];
-	let insideFork = false;
-	let forkBranches = [];
-	let currentForkBranch = [];
+	// Stack-based fork handling to support nested forks
+	let forkStack = [];  // Each entry: { branches: [...], currentBranch: [...] }
+	let insideRepeat = false;
+	let repeatElements = [];
 	let multiLineActivity = null;
 
 	for (let i = 0; i < lines.length; i++) {
@@ -92,37 +106,32 @@ function parsePlantUMLActivityDiagram(content) {
 			continue;
 		}
 
-		// Start node
-		if (trimmed === 'start') {
-			const element = { type: 'start' };
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else if (insideFork) {
-				currentForkBranch.push(element);
+		// Helper: push element into the correct context
+		function pushElement(element) {
+			if (forkStack.length > 0) {
+				forkStack[forkStack.length - 1].currentBranch.push(element);
+			} else if (insideRepeat) {
+				repeatElements.push(element);
 			} else if (insideWhile) {
 				whileElements.push(element);
 			} else if (insideIf) {
 				ifBranches[currentBranch].push(element);
+			} else if (currentPartition) {
+				partitionElements.push(element);
 			} else {
 				elements.push(element);
 			}
+		}
+
+		// Start node
+		if (trimmed === 'start') {
+			pushElement({ type: 'start' });
 			continue;
 		}
 
 		// Stop/end node
 		if (trimmed === 'stop' || trimmed === 'end') {
-			const element = { type: trimmed };
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else if (insideFork) {
-				currentForkBranch.push(element);
-			} else if (insideWhile) {
-				whileElements.push(element);
-			} else if (insideIf) {
-				ifBranches[currentBranch].push(element);
-			} else {
-				elements.push(element);
-			}
+			pushElement({ type: trimmed });
 			continue;
 		}
 
@@ -165,85 +174,122 @@ function parsePlantUMLActivityDiagram(content) {
 
 		// End if: endif
 		if (trimmed === 'endif' && insideIf) {
-			const element = {
-				type: 'decision',
-				condition: ifCondition,
-				yesBranch: ifBranches.yes,
-				noBranch: ifBranches.no
-			};
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else {
-				elements.push(element);
-			}
+			const closedCondition = ifCondition;
+			const closedBranches = ifBranches;
 			insideIf = false;
 			ifCondition = null;
 			ifBranches = { yes: [], no: [] };
 			currentBranch = null;
+			pushElement({
+				type: 'decision',
+				condition: closedCondition,
+				yesBranch: closedBranches.yes,
+				noBranch: closedBranches.no
+			});
 			continue;
 		}
 
-		// While loop: while (condition?) is (yes)
-		const whileMatch = trimmed.match(/^while\s*\(([^)]+)\)\s*is\s*\(([^)]+)\)$/);
+		// While loop: while (condition?) is (value)
+		// Also support: while () is (value) — empty condition
+		const whileMatch = trimmed.match(/^while\s*\(([^)]*)\)\s*is\s*\(([^)]+)\)$/);
 		if (whileMatch) {
 			insideWhile = true;
-			whileCondition = whileMatch[1];
+			whileCondition = whileMatch[1] || null;
 			whileConditionValue = whileMatch[2];
 			whileElements = [];
 			continue;
 		}
 
-		// End while: endwhile (no)
+		// End while: endwhile (text)
 		const endWhileMatch = trimmed.match(/^endwhile\s*\(([^)]+)\)$/);
 		if (endWhileMatch && insideWhile) {
-			const element = {
-				type: 'while',
-				condition: whileCondition,
-				conditionValue: whileConditionValue,
-				elements: whileElements
-			};
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else {
-				elements.push(element);
-			}
+			const closedElements = whileElements;
+			const closedCondition = whileCondition;
+			const closedValue = whileConditionValue;
+			const exitCondition = endWhileMatch[1];
 			insideWhile = false;
 			whileCondition = null;
 			whileConditionValue = null;
 			whileElements = [];
+			pushElement({
+				type: 'while',
+				condition: closedCondition,
+				conditionValue: closedValue,
+				exitCondition: exitCondition,
+				elements: closedElements
+			});
 			continue;
 		}
 
-		// Fork (parallel): fork
+		// Repeat (do-while): repeat
+		if (trimmed === 'repeat' && !insideRepeat) {
+			insideRepeat = true;
+			repeatElements = [];
+			continue;
+		}
+
+		// End repeat: repeat while (condition)
+		const repeatWhileMatch = trimmed.match(/^repeat\s+while\s*\(([^)]+)\)$/);
+		if (repeatWhileMatch && insideRepeat) {
+			const closedElements = repeatElements;
+			const condition = repeatWhileMatch[1];
+			insideRepeat = false;
+			repeatElements = [];
+			pushElement({
+				type: 'repeat',
+				condition: condition,
+				elements: closedElements
+			});
+			continue;
+		}
+
+		// Fork (parallel): fork - supports nesting via stack
 		if (trimmed === 'fork') {
-			insideFork = true;
-			forkBranches = [];
-			currentForkBranch = [];
+			forkStack.push({ branches: [], currentBranch: [] });
 			continue;
 		}
 
 		// Fork again: fork again
-		if (trimmed === 'fork again' && insideFork) {
-			forkBranches.push(currentForkBranch);
-			currentForkBranch = [];
+		if (trimmed === 'fork again' && forkStack.length > 0) {
+			const current = forkStack[forkStack.length - 1];
+			current.branches.push(current.currentBranch);
+			current.currentBranch = [];
 			continue;
 		}
 
 		// End fork: end fork
-		if (trimmed === 'end fork' && insideFork) {
-			forkBranches.push(currentForkBranch);
-			const element = {
+		if (trimmed === 'end fork' && forkStack.length > 0) {
+			const closed = forkStack.pop();
+			closed.branches.push(closed.currentBranch);
+			pushElement({
 				type: 'fork',
-				branches: forkBranches
-			};
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else {
-				elements.push(element);
-			}
-			insideFork = false;
-			forkBranches = [];
-			currentForkBranch = [];
+				branches: closed.branches
+			});
+			continue;
+		}
+
+		// Split (parallel, same semantics as fork): split - supports nesting via stack
+		if (trimmed === 'split') {
+			forkStack.push({ branches: [], currentBranch: [] });
+			continue;
+		}
+
+		// Split again: split again
+		if (trimmed === 'split again' && forkStack.length > 0) {
+			const current = forkStack[forkStack.length - 1];
+			current.branches.push(current.currentBranch);
+			current.currentBranch = [];
+			continue;
+		}
+
+		// End split: end split
+		if (trimmed === 'end split' && forkStack.length > 0) {
+			const closed = forkStack.pop();
+			closed.branches.push(closed.currentBranch);
+			pushElement({
+				type: 'fork',
+				branches: closed.branches
+			});
 			continue;
 		}
 
@@ -258,25 +304,11 @@ function parsePlantUMLActivityDiagram(content) {
 			if (trimmed.endsWith(';')) {
 				// End of multi-line activity
 				multiLineActivity += ' ' + trimmed.slice(0, -1);  // Remove trailing ;
-				// Clean up the activity text
 				let activityText = multiLineActivity
 					.replace(/\\n/g, ' ')
-					.replace(/__([^_]+)__/g, '$1')  // Remove PlantUML underline formatting
+					.replace(/__([^_]+)__/g, '$1')
 					.trim();
-
-				const element = { type: 'activity', text: activityText };
-
-				if (currentPartition) {
-					partitionElements.push(element);
-				} else if (insideFork) {
-					currentForkBranch.push(element);
-				} else if (insideWhile) {
-					whileElements.push(element);
-				} else if (insideIf) {
-					ifBranches[currentBranch].push(element);
-				} else {
-					elements.push(element);
-				}
+				pushElement({ type: 'activity', text: activityText });
 				multiLineActivity = null;
 			} else {
 				multiLineActivity += ' ' + trimmed;
@@ -287,25 +319,11 @@ function parsePlantUMLActivityDiagram(content) {
 		// Activity: :text; (single line)
 		const activityMatch = trimmed.match(/^:([^;]+);$/);
 		if (activityMatch) {
-			// Clean up the activity text
 			let activityText = activityMatch[1]
 				.replace(/\\n/g, ' ')
-				.replace(/__([^_]+)__/g, '$1')  // Remove PlantUML underline formatting
+				.replace(/__([^_]+)__/g, '$1')
 				.trim();
-
-			const element = { type: 'activity', text: activityText };
-
-			if (currentPartition) {
-				partitionElements.push(element);
-			} else if (insideFork) {
-				currentForkBranch.push(element);
-			} else if (insideWhile) {
-				whileElements.push(element);
-			} else if (insideIf) {
-				ifBranches[currentBranch].push(element);
-			} else {
-				elements.push(element);
-			}
+			pushElement({ type: 'activity', text: activityText });
 			continue;
 		}
 	}
@@ -328,6 +346,9 @@ function parsePlantUMLActivityDiagram(content) {
 				countElements(el.elements);
 			}
 			if (el.type === 'while') {
+				countElements(el.elements);
+			}
+			if (el.type === 'repeat') {
 				countElements(el.elements);
 			}
 			if (el.type === 'fork') {
@@ -368,7 +389,10 @@ function extractPartitionTitle(name) {
 }
 
 /**
- * Generate accessible description from parsed activity diagram
+ * Generate accessible description from parsed activity diagram.
+ * Uses begin/end markers with numbered parallel blocks for screen reader navigation.
+ * No step numbering - uses "Stap." prefix without numbers.
+ *
  * @param {object} parsed - Parsed diagram structure
  * @param {string} locale - Locale for output ('nl' or 'en')
  * @returns {string} HTML description
@@ -385,7 +409,6 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 			? t.withPartition.replace('{count}', parsed.partitionCount)
 			: t.withPartitions.replace('{count}', parsed.partitionCount));
 		summary += ' ' + (locale === 'nl' ? 'en' : 'and');
-		// Use simple count without "with" prefix when partitions are present
 		summary += ` ${parsed.activityCount} ` + (parsed.activityCount === 1
 			? (locale === 'nl' ? 'activiteit' : 'activity')
 			: (locale === 'nl' ? 'activiteiten' : 'activities'));
@@ -406,55 +429,32 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 	// Flow section
 	parts.push(`<p><strong>${t.flow}:</strong></p>`);
 
-	let stepNumber = 0;
+	// Global counter for parallel execution numbering (to disambiguate nested forks)
+	let forkCounter = 0;
 
 	/**
-	 * Format elements for output
+	 * Format elements for output - no step numbering, with begin/end markers
 	 * @param {Array} elements - Elements to format
-	 * @param {string} prefix - Prefix for sub-numbering (e.g., "1" for "1.1", "1.2")
-	 * @param {string} partitionLetter - Letter for partition sub-steps (e.g., "A" for "A1", "A2")
 	 * @returns {Array} Formatted lines
 	 */
-	function formatElements(elements, prefix = '', partitionLetter = '') {
+	function formatElements(elements) {
 		const result = [];
-		let subStepNumber = 0;
 
 		for (const el of elements) {
-			// Start and stop are not numbered as steps
 			if (el.type === 'start') {
 				result.push(t.start);
-				continue;
 			} else if (el.type === 'stop') {
 				result.push(t.stop);
-				continue;
 			} else if (el.type === 'end') {
 				result.push(t.end);
-				continue;
-			}
-
-			// For partition sub-steps, use letter+number (A1, A2, etc.)
-			// For other nested elements (while, fork), use prefix.number (1.1, 1.2, etc.)
-			let stepLabel;
-			if (partitionLetter) {
-				subStepNumber++;
-				stepLabel = `${partitionLetter}${subStepNumber}`;
-			} else if (prefix) {
-				subStepNumber++;
-				stepLabel = `${prefix}.${subStepNumber}`;
-			} else {
-				stepNumber++;
-				stepLabel = `${stepNumber}`;
-			}
-
-			if (el.type === 'activity') {
-				result.push(`${t.step} ${stepLabel}. ${el.text}`);
+			} else if (el.type === 'activity') {
+				result.push(`${t.step}. ${el.text}`);
 			} else if (el.type === 'decision') {
-				result.push(`${t.step} ${stepLabel}. ${t.decision}: ${el.condition}`);
-				// Format branches as sub-items
+				result.push(`${t.decision}: ${el.condition}`);
 				if (el.yesBranch.length > 0) {
 					const yesText = el.yesBranch
 						.filter(e => e.type === 'activity')
-						.map(e => e.text)
+						.map(e => `${t.step}. ${e.text}`)
 						.join(', ') || '';
 					if (yesText) {
 						result.push(`   - ${t.yes}: ${yesText}`);
@@ -463,38 +463,57 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 				if (el.noBranch.length > 0) {
 					const noText = el.noBranch
 						.filter(e => e.type === 'activity')
-						.map(e => e.text)
+						.map(e => `${t.step}. ${e.text}`)
 						.join(', ') || '';
 					if (noText) {
 						result.push(`   - ${t.no}: ${noText}`);
 					}
 				}
 			} else if (el.type === 'partition') {
-				// Partitions are not numbered as steps, use letter + title format
 				const letter = extractPartitionLetter(el.name);
 				const title = extractPartitionTitle(el.name);
-				result.push(`${t.partition} ${letter}: ${title}`);
-				// Sub-steps use the partition letter (A1, A2, etc.)
-				const subElements = formatElements(el.elements, '', letter);
-				result.push(...subElements.map(line => `   ${line}`));
-			} else if (el.type === 'while') {
-				const conditionText = el.conditionValue
-					? `${el.condition} (${el.conditionValue})`
-					: el.condition;
-				result.push(`${t.step} ${stepLabel}. ${t.repeatWhile} ${conditionText}:`);
-				const subElements = formatElements(el.elements, stepLabel, '');
-				result.push(...subElements.map(line => `   ${line}`));
-			} else if (el.type === 'fork') {
-				result.push(`${t.step} ${stepLabel}. ${t.parallelExecution}:`);
-				let forkSubNumber = 0;
-				for (const branch of el.branches) {
-					for (const branchEl of branch) {
-						if (branchEl.type === 'activity') {
-							forkSubNumber++;
-							result.push(`   ${t.step} ${stepLabel}.${forkSubNumber}. ${branchEl.text}`);
-						}
-					}
+				if (letter) {
+					result.push(`${t.partition} ${letter}: ${title}, ${t.consistingOf}:`);
+				} else {
+					result.push(`${t.partition}: ${el.name}, ${t.consistingOf}:`);
 				}
+				const subElements = formatElements(el.elements);
+				result.push(...subElements.map(line => `   ${line}`));
+				if (letter) {
+					result.push(`${t.endPartition} ${letter}.`);
+				} else {
+					result.push(`${t.endPartition}.`);
+				}
+			} else if (el.type === 'while') {
+				let conditionText;
+				if (el.condition) {
+					conditionText = el.conditionValue
+						? `${el.condition} (${el.conditionValue})`
+						: el.condition;
+				} else {
+					conditionText = el.exitCondition || el.conditionValue || '';
+				}
+				result.push(`${t.repeatWhile} ${conditionText}, ${t.consistingOf}:`);
+				const subElements = formatElements(el.elements);
+				result.push(...subElements.map(line => `   ${line}`));
+				result.push(`${t.endRepeat}.`);
+			} else if (el.type === 'repeat') {
+				result.push(`${t.repeatDoWhile} ${el.condition}, ${t.consistingOf}:`);
+				const subElements = formatElements(el.elements);
+				result.push(...subElements.map(line => `   ${line}`));
+				result.push(`${t.endRepeat}.`);
+			} else if (el.type === 'fork') {
+				forkCounter++;
+				const forkNumber = forkCounter;
+				result.push(`${t.parallelExecution} ${forkNumber}, ${t.consistingOf}:`);
+				let branchNumber = 0;
+				for (const branch of el.branches) {
+					branchNumber++;
+					result.push(`   ${t.branch} ${branchNumber}:`);
+					const branchElements = formatElements(branch);
+					result.push(...branchElements.map(line => `      ${line}`));
+				}
+				result.push(`${t.endParallelExecution} ${forkNumber}.`);
 			}
 		}
 		return result;

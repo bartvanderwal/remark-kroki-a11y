@@ -4,12 +4,12 @@
   "private": true,
   "description": "Documentation site for remark-kroki-a11y plugin - also serves as a live demo.",
   "scripts": {
-    "start": "docusaurus start",
-    "start:strict": "docusaurus build && docusaurus start",
-    "stop": "lsof -ti:3000 | xargs kill -9 2>/dev/null || echo 'Geen proces op poort 3000'",
+    "start": "docusaurus start --port 3001",
+    "start:strict": "docusaurus build && docusaurus start --port 3001",
+    "stop": "lsof -ti:3001 | xargs kill -9 2>/dev/null || echo 'Geen proces op poort 3001'",
     "build": "docusaurus build",
     "clear": "docusaurus clear",
-    "serve": "docusaurus serve",
+    "serve": "docusaurus serve --port 3001",
     "swizzle": "docusaurus swizzle"
   },
   "dependencies": {

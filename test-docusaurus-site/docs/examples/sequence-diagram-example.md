@@ -1,3 +1,7 @@
+---
+sidebar_label: Sequentiediagram (Nederlands)
+---
+
 # Sequentiediagram: Bestelling in een Café
 
 Dit voorbeeld toont hoe een sequentiediagram de interactie tussen objecten weergeeft als methode-aanroepen.
