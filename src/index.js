@@ -115,12 +115,14 @@ function escapeHtml(text) {
 function extractTextContent(html) {
 	// Remove HTML tags and decode entities
 	return html
+		.replace(/<\/li>/g, '. ') // Add period after list items for natural pauses
 		.replace(/<[^>]*>/g, '') // Remove all HTML tags
 		.replace(/&lt;/g, '<')   // Decode entities
 		.replace(/&gt;/g, '>')
 		.replace(/&quot;/g, '"')
 		.replace(/&amp;/g, '&')
 		.replace(/\s+/g, ' ')    // Normalize whitespace
+		.replace(/\.\s*\./g, '.') // Remove duplicate periods
 		.trim();
 }
 
@@ -239,12 +241,14 @@ const uiLabels = {
 		tabA11y: 'In natuurlijke taal',
 		summaryText: '{type} broncode voor "{title}"',
 		a11ySummaryText: 'Beschrijving in natuurlijke taal voor "{title}"',
+		speakOutLoud: 'Spreek uit',
 	},
 	en: {
 		tabSource: 'Source',
 		tabA11y: 'In natural language',
 		summaryText: '{type} source for "{title}"',
 		a11ySummaryText: 'Natural language description for "{title}"',
+		speakOutLoud: 'Out loud',
 	},
 };
 
@@ -359,9 +363,16 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 				// Generate unique IDs for ARIA relationships
 				const tabId = `diagram-tabs-${index}`;
 			
-			// Extract plain text from a11y description for aria-label
+			// Generate unique IDs for ARIA relationships
+			const tabId = `diagram-tabs-${index}`;
 			const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
-
+		// Build speak button if enabled
+		let speakButtonHtml = '';
+		if (opts.showSpeakButton) {
+			const speakBtnId = `diagram-speak-btn-${index}`;
+			const speakLabel = ui.speakOutLoud || 'Out loud';
+			speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${tabId}-panel-a11y" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</button>`;
+		}
 			const tabsHtml = `
 <details class="${opts.cssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${summaryText}</summary>
@@ -374,6 +385,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 <pre><code>${escapedCode}</code></pre>
 </section>
 <section class="${opts.cssClass}-tab-content" data-tab="a11y" role="tabpanel" tabindex="0" id="${tabId}-panel-a11y" aria-label="${a11yLabelText}">
+${speakButtonHtml}
 ${a11yDescription}
 </section>
 </div>
@@ -405,15 +417,24 @@ ${a11yDescription}
 						.replace('{title}', escapeHtml(title))
 						.replace('{type}', escapeHtml(langName));
 				
-				// Extract plain text from a11y description for aria-label
+				// Generate unique IDs for ARIA relationships
+				const a11yContentId = `diagram-a11y-content-${index}`;
 				const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
 
-				nodesToInsert.push({
-					type: 'html',
-					value: `
+				// Build speak button if enabled
+				let speakButtonHtml = '';
+				if (opts.showSpeakButton) {
+					const speakBtnId = `diagram-speak-btn-${index}`;
+					const speakLabel = ui.speakOutLoud || 'Out loud';
+				speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yContentId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</button>`;
+			}
+
+			nodesToInsert.push({
+				type: 'html',
+				value: `
 <details class="${opts.a11yCssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
-<div class="${opts.a11yCssClass}-content" aria-label="${a11yLabelText}">${a11yDescription}</div>
+<div class="${opts.a11yCssClass}-content" id="${a11yContentId}" aria-label="${a11yLabelText}">${speakButtonHtml}${a11yDescription}</div>
 </details>`
 					});
 				}

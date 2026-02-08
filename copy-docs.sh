@@ -53,16 +53,18 @@ sidebar_label: README
 description: The main README file from the GitHub repository
 ---
 
+FRONTMATTER
+fix_links "$(cat "$SCRIPT_DIR/README.md")" >> "$DOCS_CONTENT_DIR/index.md"
+cat >> "$DOCS_CONTENT_DIR/index.md" << 'FOOTER'
+
+---
+
 :::info Single Source of Truth
 This page is automatically copied from the repository root `README.md` file.
 The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
 Edit the root `README.md` to update this page.
 :::
-
----
-
-FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/README.md")" >> "$DOCS_CONTENT_DIR/index.md"
+FOOTER
 
 # Copy CONTRIBUTING.md
 echo "📄 Copying CONTRIBUTING.md to docs/contributing.md..."
@@ -74,16 +76,18 @@ sidebar_label: Contributing
 description: How to contribute to remark-kroki-a11y
 ---
 
+FRONTMATTER
+fix_links "$(cat "$SCRIPT_DIR/CONTRIBUTING.md")" >> "$DOCS_CONTENT_DIR/contributing.md"
+cat >> "$DOCS_CONTENT_DIR/contributing.md" << 'FOOTER'
+
+---
+
 :::info Single Source of Truth
 This page is automatically copied from the repository root `CONTRIBUTING.md` file.
 The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
 Edit the root `CONTRIBUTING.md` to update this page.
 :::
-
----
-
-FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/CONTRIBUTING.md")" >> "$DOCS_CONTENT_DIR/contributing.md"
+FOOTER
 
 # Copy definition-of-done.md
 echo "📄 Copying definition-of-done.md to docs/definition-of-done.md..."
@@ -95,15 +99,17 @@ sidebar_label: Definition of Done
 description: Quality criteria for completed features and fixes
 ---
 
+FRONTMATTER
+fix_links "$(cat "$SCRIPT_DIR/definition-of-done.md")" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
+cat >> "$DOCS_CONTENT_DIR/definition-of-done.md" << 'FOOTER'
+
+---
+
 :::info Single Source of Truth
 This page is automatically copied from the repository root `definition-of-done.md` file.
 Edit the root file to update this page.
 :::
-
----
-
-FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/definition-of-done.md")" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
+FOOTER
 
 # Copy ADRs
 echo "📄 Copying ADRs to docs/adr/..."
@@ -118,15 +124,17 @@ sidebar_label: Overview
 description: Overview of Architecture Decision Records for remark-kroki-a11y
 ---
 
+FRONTMATTER
+cat "$ADR_SOURCE_DIR/README.md" >> "$ADR_TARGET_DIR/index.md"
+cat >> "$ADR_TARGET_DIR/index.md" << 'FOOTER'
+
+---
+
 :::info Single Source of Truth
 This page is automatically copied from `docs/adr/README.md` in the repository.
 Edit the source file to update this page.
 :::
-
----
-
-FRONTMATTER
-cat "$ADR_SOURCE_DIR/README.md" >> "$ADR_TARGET_DIR/index.md"
+FOOTER
 
 # Copy each ADR file
 for adr_file in "$ADR_SOURCE_DIR"/0*.md; do
@@ -145,15 +153,17 @@ sidebar_label: "ADR-$adr_num"
 description: "Architecture Decision Record $adr_num"
 ---
 
+FRONTMATTER
+        tail -n +2 "$adr_file" >> "$ADR_TARGET_DIR/$filename"
+        cat >> "$ADR_TARGET_DIR/$filename" << FOOTER
+
+---
+
 :::info Single Source of Truth
 This ADR is automatically copied from \`docs/adr/$filename\` in the repository.
 Edit the source file to update this page.
 :::
-
----
-
-FRONTMATTER
-        tail -n +2 "$adr_file" >> "$ADR_TARGET_DIR/$filename"
+FOOTER
     fi
 done
 

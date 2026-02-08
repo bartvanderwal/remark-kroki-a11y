@@ -74,6 +74,7 @@ module.exports = {
             [require('../src/index.js'), {
               showSource: true,
               showA11yDescription: true,
+              showSpeakButton: true,
               cssClass: 'diagram-expandable-source',
               languages: ['kroki'],
               locale: 'en',
@@ -89,6 +90,9 @@ module.exports = {
           rehypePlugins: [
             // Enable raw HTML in MDX (needed for remark plugin HTML output)
             [rehypeRaw, { passThrough }],
+            // Fix Kroki image accessibility: alt text and aria-describedby
+            // Must come AFTER rehype-raw so raw HTML is parsed into AST
+            require('../src/rehype-kroki-a11y-img'),
           ],
         },
         blog: false,

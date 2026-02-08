@@ -13,16 +13,17 @@
     "swizzle": "docusaurus swizzle"
   },
   "dependencies": {
-    "@easyops-cn/docusaurus-search-local": "^0.52.1",
     "@docusaurus/core": "^3.9.2",
     "@docusaurus/preset-classic": "^3.9.2",
     "@docusaurus/theme-mermaid": "3.9.2",
+    "@easyops-cn/docusaurus-search-local": "^0.52.1",
     "@mdx-js/react": "^3.0.0",
     "node-fetch": "^2.7.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-loadable": "*",
     "rehype-raw": "^7.0.0",
+    "remark-gfm": "^4.0.1",
     "remark-kroki-a11y": "file:../",
     "remark-kroki-plugin": "^0.1.1",
     "unist-util-visit": "^5.0.0"

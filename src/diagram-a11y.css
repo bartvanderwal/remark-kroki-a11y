@@ -89,6 +89,40 @@
 	display: block;
 }
 
+/* Speak button styling */
+.diagram-expandable-source-speak-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	margin-bottom: 1rem;
+	margin-left: 1rem;
+	float: right;
+	background-color: transparent;
+	color: var(--ifm-color-primary, #2e8555);
+	border: 2px solid var(--ifm-color-primary, #2e8555);
+	border-radius: 4px;
+	font-size: 0.9rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+}
+
+.diagram-expandable-source-speak-btn:hover {
+	background-color: var(--ifm-color-primary-lightest, #e8f5f0);
+	border-color: var(--ifm-color-primary-dark, #1f5e3a);
+	transform: translateY(-1px);
+}
+
+.diagram-expandable-source-speak-btn:active {
+	transform: translateY(0);
+}
+
+.diagram-expandable-source-speak-btn:focus {
+	outline: 2px solid var(--ifm-color-primary, #2e8555);
+	outline-offset: 2px;
+}
+
 /* A11y description styling (standalone, without tabs) */
 .diagram-a11y-description summary {
 	cursor: pointer;

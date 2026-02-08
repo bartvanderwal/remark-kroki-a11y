@@ -87,3 +87,30 @@ Feature: English class diagram descriptions
     When I generate a description in English
     Then the description should contain "ClockDisplay has an association-relationship named 'minutes' with NumberDisplay"
     And the description should contain "ClockDisplay has an association-relationship named 'hours' with NumberDisplay"
+
+  # Generic types - List<String> is read as "List of String"
+
+  Scenario: PlantUML class with generic type List<String> (English)
+    Given the following PlantUML class diagram:
+      """
+      @startuml
+      class WordList {
+        -words: List<String>
+      }
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "Class WordList"
+    And the description should contain "private attribute 'words' of type List of String"
+
+  Scenario: PlantUML class with generic type with multiple type parameters (English)
+    Given the following PlantUML class diagram:
+      """
+      @startuml
+      class Cache {
+        -items: Map<String, Integer>
+      }
+      @enduml
+      """
+    When I generate a description in English
+    Then the description should contain "private attribute 'items' of type Map of String, Integer"

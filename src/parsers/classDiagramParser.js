@@ -61,6 +61,14 @@ const i18n = {
 		noMethodsAndAttributes: 'zonder methoden en attributen',
 		// Array types
 		array: 'Array',
+		// Generic types
+		of: 'van',
+		// Packages/namespaces
+		packages: 'Packages',
+		package: 'Package',
+		namespace: 'Namespace',
+		inPackage: 'in package',
+		containingClasses: 'bevat klassen',
 	},
 	en: {
 		classDiagram: 'Class diagram',
@@ -107,6 +115,14 @@ const i18n = {
 		noMethodsAndAttributes: 'without methods and attributes',
 		// Array types
 		array: 'Array',
+		// Generic types
+		of: 'of',
+		// Packages/namespaces
+		packages: 'Packages',
+		package: 'Package',
+		namespace: 'Namespace',
+		inPackage: 'in package',
+		containingClasses: 'containing classes',
 	}
 };
 
@@ -125,20 +141,34 @@ function parseVisibility(symbol, locale) {
 }
 
 /**
- * Parse a type string, handling arrays
+ * Parse a type string, handling arrays and generics
+ * Examples:
+ *   String[] -> "String Array"
+ *   List<String> -> "List of String"
+ *   Map<String, Integer> -> "Map of String, Integer"
  */
 function parseType(typeStr, locale) {
 	const t = i18n[locale] || i18n.nl;
 	if (!typeStr) return null;
 
-	// Handle array notations: String[], List<String>, etc.
+	// Handle array notations: String[]
 	if (typeStr.endsWith('[]')) {
 		return typeStr.slice(0, -2) + ' ' + t.array;
 	}
-	if (typeStr.indexOf('<') !== -1 && typeStr.indexOf('>') !== -1) {
-		// Generic type like List<String>
-		return typeStr;
+
+	// Handle generic types: List<String>, Map<String, Integer>, etc.
+	const genericStart = typeStr.indexOf('<');
+	const genericEnd = typeStr.lastIndexOf('>');
+	if (genericStart !== -1 && genericEnd !== -1 && genericEnd > genericStart) {
+		const containerType = typeStr.slice(0, genericStart);
+		const innerTypes = typeStr.slice(genericStart + 1, genericEnd);
+		// Recursively parse inner types (for nested generics)
+		const parsedInner = innerTypes.split(',').map(function(innerType) {
+			return parseType(innerType.trim(), locale) || innerType.trim();
+		}).join(', ');
+		return containerType + ' ' + t.of + ' ' + parsedInner;
 	}
+
 	return typeStr;
 }
 

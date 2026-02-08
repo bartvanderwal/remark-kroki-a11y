@@ -35,7 +35,8 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0008](0008-test-strategie-storybook-playwright.md) | Test strategie met Storybook en Playwright | Accepted |
 | [0009](0009-activity-diagram-step-numbering.md) | No automatic step numbering in activity diagram descriptions | Accepted |
 | [0010](0010-screenreader-prosody-and-visual-hierarchy.md) | Screenreader prosody and visual hierarchy | Pending |
+| [0011](0011-faithful-source-representation.md) | Faithful representation of diagram source | Accepted |
 
 ---
 
-*Last update*: 2026-02-05
+*Last update*: 2026-02-06

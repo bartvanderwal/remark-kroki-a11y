@@ -4,6 +4,8 @@ const MermaidClassdiagramA11YReader = require('../../src/mermaid-classdiagram-a1
 const { parsePlantUMLClassDiagram, generateAccessibleDescription } = require('../../src/parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('../../src/parsers/sequenceDiagramParser');
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('../../src/parsers/activityDiagramParser');
+const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('../../src/parsers/c4DiagramParser');
+const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('../../src/parsers/pieDiagramParser');
 
 const { generateUnsupportedDescription } = require('../../src/parsers/unsupportedDiagramParser');
 
@@ -15,6 +17,8 @@ let currentCustomDescription;
 let generatedDescription;
 let generatedAriaStructure;
 let isPlantUML = false;
+let showSpeakButton = false;
+let currentLanguage = 'en';
 
 Before(function() {
 	reader = new MermaidClassdiagramA11YReader({ locale: 'nl' });
@@ -24,6 +28,8 @@ Before(function() {
 	generatedDescription = null;
 	generatedAriaStructure = null;
 	isPlantUML = false;
+	showSpeakButton = false;
+	currentLanguage = 'en';
 });
 
 Given('het volgende klassediagram:', function(diagramSource) {
@@ -71,6 +77,18 @@ Given('the following PlantUML activity diagram:', function(diagramSource) {
 	currentDiagram = diagramSource;
 	currentDiagramType = 'activity';
 	isPlantUML = true;
+});
+
+Given('the following PlantUML C4 context diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'c4context';
+	isPlantUML = true;
+});
+
+Given('the following Mermaid pie chart:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'pie';
+	isPlantUML = false;
 });
 
 // Step definitions for diagrams with explicit type (for unsupported diagram tests)
@@ -130,12 +148,64 @@ When('I generate a description in English', function() {
 		// Activity diagram
 		const parsed = parsePlantUMLActivityDiagram(currentDiagram);
 		generatedDescription = generateActivityDescription(parsed, 'en');
+	} else if (currentDiagramType === 'c4context') {
+		// C4 context diagram
+		const parsed = parseC4Context(currentDiagram);
+		generatedDescription = generateC4Description(parsed, 'en');
+	} else if (currentDiagramType === 'pie') {
+		// Pie chart
+		const parsed = parseMermaidPieChart(currentDiagram);
+		generatedDescription = generatePieDescription(parsed, 'en');
 	} else if (currentDiagramType) {
 		// Other unsupported diagram types
 		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'en');
 	} else {
 		const parsed = parsePlantUMLClassDiagram(currentDiagram);
 		generatedDescription = generateAccessibleDescription(parsed, 'en');
+	}
+
+	// Add speak button if enabled
+	if (showSpeakButton) {
+		const speakButtonHtml = `
+<button class="diagram-expandable-source-speak-btn" data-lang="${currentLanguage}">
+🗣️ Out loud ▶️
+</button>`;
+		generatedDescription = speakButtonHtml + '\n' + generatedDescription;
+	}
+});
+
+When('I generate a description in Dutch', function() {
+	// Check for sequence diagram
+	if (currentDiagramType === 'sequence') {
+		const parsed = parseMermaidSequenceDiagram(currentDiagram);
+		generatedDescription = generateSequenceDescription(parsed, 'nl');
+	} else if (currentDiagramType === 'activity') {
+		// Activity diagram
+		const parsed = parsePlantUMLActivityDiagram(currentDiagram);
+		generatedDescription = generateActivityDescription(parsed, 'nl');
+	} else if (currentDiagramType === 'c4context') {
+		// C4 context diagram
+		const parsed = parseC4Context(currentDiagram);
+		generatedDescription = generateC4Description(parsed, 'nl');
+	} else if (currentDiagramType === 'pie') {
+		// Pie chart
+		const parsed = parseMermaidPieChart(currentDiagram);
+		generatedDescription = generatePieDescription(parsed, 'nl');
+	} else if (currentDiagramType) {
+		// Other unsupported diagram types
+		generatedDescription = generateUnsupportedDescription(currentDiagram, currentDiagramType, 'nl');
+	} else {
+		const parsed = parsePlantUMLClassDiagram(currentDiagram);
+		generatedDescription = generateAccessibleDescription(parsed, 'nl');
+	}
+
+	// Add speak button if enabled
+	if (showSpeakButton) {
+		const speakButtonHtml = `
+<button class="diagram-expandable-source-speak-btn" data-lang="${currentLanguage}">
+🗣️ Out loud ▶️
+</button>`;
+		generatedDescription = speakButtonHtml + '\n' + generatedDescription;
 	}
 });
 
@@ -214,5 +284,37 @@ Then('the first line should be:', function(expectedDocString) {
 		firstLine,
 		expected,
 		`First line mismatch. Expected:\n${expected}\nBut got:\n${firstLine}`
+	);
+});
+
+Then('the description should start with:', function(expectedDocString) {
+	const expected = (expectedDocString || '').trim();
+	const actual = (generatedDescription || '').trim();
+	assert.ok(
+		actual.startsWith(expected),
+		`Description should start with:\n${expected}\n\nBut got:\n${actual}`
+	);
+});
+
+// Speak button steps
+Given('speak button is enabled', function() {
+	showSpeakButton = true;
+});
+
+Given('speak button is disabled', function() {
+	showSpeakButton = false;
+});
+
+Then('the description should contain a speak button', function() {
+	assert.ok(
+		generatedDescription.includes('diagram-expandable-source-speak-btn'),
+		`Expected speak button in description, but found:\n${generatedDescription}`
+	);
+});
+
+Then('the description should not contain a speak button', function() {
+	assert.ok(
+		!generatedDescription.includes('diagram-expandable-source-speak-btn'),
+		`Did not expect speak button in description, but found it:\n${generatedDescription}`
 	);
 });

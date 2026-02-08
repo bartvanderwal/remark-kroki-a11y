@@ -5,14 +5,6 @@ sidebar_label: README
 description: The main README file from the GitHub repository
 ---
 
-:::info Single Source of Truth
-This page is automatically copied from the repository root `README.md` file.
-The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
-Edit the root `README.md` to update this page.
-:::
-
----
-
 # remark-kroki-a11y
 
 [![npm version](https://img.shields.io/npm/v/remark-kroki-a11y.svg)](https://www.npmjs.com/package/remark-kroki-a11y)
@@ -45,15 +37,71 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 
 ### Current A11y Description Support
 
-| Diagram Type | PlantUML | Mermaid | Status |
-|--------------|----------|---------|--------|
-| Class diagrams | ✅ Full | ⚠️ To test | Partial |
-| State diagrams | ✅ Full | ❌ | Partial |
-| Sequence diagrams | ⚠️ Beta | ⚠️ Beta | Partial |
-| Activity diagrams | ⚠️ Beta | ❌ | Partial |
-| C4 diagrams | ❌ | N/A | Planned |
-| ER diagrams | ❌ | ❌ | Planned |
-| Gantt charts | ❌ | ❌ | Future |
+| Diagram Type      | PlantUML | Mermaid    | Status  |
+| ----------------- | -------- | ---------- |-------- |
+| Class diagrams    | ✅ Full  | ⚠️ To test | Partial |
+| State diagrams    | ✅ Full  | ❌         | Partial |
+| Sequence diagrams | ⚠️ Beta  | ⚠️ Beta    | Partial |
+| Activity diagrams | ⚠️ Beta  | ❌         | Partial |
+| C4 diagrams       | ❌       | N/A        | Planned |
+| ER diagrams       | ❌       | ❌         | Planned |
+| Gantt charts      | ❌       | ❌         | Future  |
+| Pie charts        | N/A      | ❌         | Planned |
+
+<details>
+<summary><strong>Complete Diagram Type Reference (PlantUML vs Mermaid)</strong></summary>
+
+#### UML Diagrams
+
+| Diagram Type       | PlantUML | Mermaid     | A11y Support            |
+| ------------------ | -------- | ----------- | ------------------------|
+| Class Diagram      | ✅       | ✅          | ✅ PlantUML, ⚠️ Mermaid |
+| Sequence Diagram   | ✅       | ✅          | ⚠️ Beta                 |
+| Activity Diagram   | ✅       | ❌ [^1]     | ⚠️ Beta                 |
+| State Diagram      | ✅       | ✅          | ✅ PlantUML             |
+| Use Case Diagram   | ✅       | ❌          | ❌                      |
+| Object Diagram     | ✅       | ❌          | ❌                      |
+| Component Diagram  | ✅       | ❌          | ❌                      |
+| Deployment Diagram | ✅       | ❌          | ❌                      |
+
+[^1]: Mermaid has no Activity Diagram; use Flowchart instead.
+
+#### Data & Flow Diagrams
+
+| Diagram Type   | PlantUML | Mermaid | A11y Support |
+|----------------|----------|---------|--------------|
+| ER Diagram     | ✅       | ✅      | ❌ Planned   |
+| Flowchart      | ❌       | ✅      | ❌           |
+| Pie Chart      | ❌       | ✅      | ❌ Planned   |
+| Gantt Chart    | ✅       | ✅      | ❌           |
+| Mind Map       | ✅       | ✅      | ❌           |
+| Timeline       | ❌       | ✅      | ❌           |
+| XY Chart       | ❌       | ✅      | ❌           |
+| Quadrant Chart | ❌       | ✅      | ❌           |
+
+#### Architecture & Specialized Diagrams
+
+| Diagram Type        | PlantUML  | Mermaid   | A11y Support |
+| ------------------- | --------- | --------- | ------------ |
+| C4 Diagram          | ✅ [^2]   | ✅ (beta) | ❌ Planned   |
+| Git Graph           | ❌        | ✅        | ❌           |
+| User Journey        | ❌        | ✅        | ❌           |
+| Sankey Diagram      | ❌        | ✅ (beta) | ❌           |
+| Block Diagram       | ✅        | ✅ (beta) | ❌           |
+| BPMN                | ✅        | ❌        | ❌           |
+| Archimate           | ✅        | ❌        | ❌           |
+| Network Diagram     | ✅        | ❌        | ❌           |
+| Wireframe (Salt)    | ✅        | ❌        | ❌           |
+| WBS                 | ✅        | ❌        | ❌           |
+| JSON/YAML           | ✅        | ❌        | ❌           |
+| Requirement Diagram | ❌        | ✅        | ❌           |
+| Packet Diagram      | ❌        | ✅ (beta) | ❌           |
+
+[^2]: PlantUML C4 support via the C4-PlantUML extension.
+
+**Legend:** ✅ = Full support | ⚠️ = Beta/partial | ❌ = Not supported | N/A = Not applicable
+
+</details>
 
 ## Roadmap
 
@@ -64,7 +112,7 @@ We support multiple diagram-as-text formats through Kroki:
 | Format | UML Support | C4 | Other |
 |--------|-------------|-----|-------|
 | **PlantUML** | All 14 UML types | ✅ via C4-PlantUML | Mindmaps, Gantt, etc. |
-| **Mermaid** | Class, Sequence, State, ER | ❌ | Flowchart, Pie, etc. |
+| **Mermaid** | Class, Sequence, State, ER | ✅ (beta) | Flowchart, Pie, etc. |
 
 ### Future Diagram Types (Student Projects Welcome!)
 
@@ -95,6 +143,17 @@ yarn add remark-kroki-a11y
 In your `docusaurus.config.js`:
 
 ```js
+const rehypeRaw = require('rehype-raw').default;
+
+// MDX node types to pass through (not processed by rehype-raw)
+const passThrough = [
+  'mdxFlowExpression',
+  'mdxJsxFlowElement',
+  'mdxJsxTextElement',
+  'mdxTextExpression',
+  'mdxjsEsm',
+];
+
 module.exports = {
   presets: [
     [
@@ -122,6 +181,13 @@ module.exports = {
               imgDir: 'static/img/kroki',
             }],
           ],
+          rehypePlugins: [
+            // Enable raw HTML in MDX (needed for remark plugin HTML output)
+            [rehypeRaw, { passThrough }],
+            // Fix Kroki image accessibility: alt text and aria-describedby
+            // Must come AFTER rehype-raw so raw HTML is parsed into AST
+            require('remark-kroki-a11y/rehype-kroki-a11y-img'),
+          ],
         },
       },
     ],
@@ -129,9 +195,33 @@ module.exports = {
 };
 ```
 
-### Client Module for Tabs
+### Required: Client Module and CSS
 
-Tabs are always used when both source and a11y text are present (generated or fallback). Add the client module `src/clientModules/diagramTabs.js`:
+The plugin requires a client-side module for tab switching and CSS styling. These are included in the package:
+
+```js
+// In docusaurus.config.js
+module.exports = {
+  clientModules: [
+    require.resolve('remark-kroki-a11y/src/diagramTabs.js'),
+  ],
+  // ...
+};
+```
+
+For CSS, import the provided stylesheet or copy it to your project:
+
+```js
+// In your custom.css or via import
+@import 'remark-kroki-a11y/src/diagram-tabs.css';
+```
+
+<details>
+<summary><strong>Custom CSS and Client Module (optional)</strong></summary>
+
+If you want to customize the styling or tab behavior, you can copy these files to your project instead:
+
+**Client Module (`src/clientModules/diagramTabs.js`):**
 
 ```js
 export function onRouteDidUpdate() {
@@ -160,20 +250,7 @@ export function onRouteDidUpdate() {
 }
 ```
 
-And register it in `docusaurus.config.js`:
-
-```js
-module.exports = {
-  clientModules: [
-    require.resolve('./src/clientModules/diagramTabs.js'),
-  ],
-  // ...
-};
-```
-
-### CSS Styling
-
-Add the following CSS to your custom stylesheet:
+**CSS Styling:**
 
 ```css
 /* Expandable source code block for diagrams */
@@ -225,6 +302,8 @@ Add the following CSS to your custom stylesheet:
   display: block;
 }
 ```
+
+</details>
 
 ## Options
 
@@ -284,6 +363,8 @@ This plugin improves diagram accessibility by:
 1. **Providing source code** - Screen readers can read the diagram syntax (PlantUML, Mermaid, etc.) which describes the structure
 2. **Generating natural language descriptions** - For supported diagram types, creates human-readable text descriptions
 3. **Keyboard navigation** - Uses native `<details>` elements accessible via keyboard
+4. **Proper alt text** - The `rehype-kroki-a11y-img` plugin replaces hash-based alt text with meaningful titles
+5. **ARIA linkage** - Adds `aria-describedby` to images pointing to the natural language description section
 
 ## Documentation Site
 
@@ -358,3 +439,11 @@ For quality standards and acceptance criteria, see the [Definition of Done](./de
 ## License
 
 MIT
+
+---
+
+:::info Single Source of Truth
+This page is automatically copied from the repository root `README.md` file.
+The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
+Edit the root `README.md` to update this page.
+:::

@@ -106,3 +106,30 @@ Functionaliteit: Klassen met alleen attributen of methoden
     Dan zou de beschrijving moeten bevatten "'a' van type int"
     Dan zou de beschrijving moeten bevatten "return type int"
     Dan zou de beschrijving moeten bevatten "private methode 'validate'"
+
+  # Generic types - List<String> wordt voorgelezen als "List van String"
+
+  Scenario: PlantUML klasse met generic type List<String>
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Woordenlijst {
+        -woorden: List<String>
+      }
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "Klasse Woordenlijst"
+    Dan zou de beschrijving moeten bevatten "private attribuut 'woorden' van type List van String"
+
+  Scenario: PlantUML klasse met generic type met meerdere type parameters
+    Gegeven het volgende PlantUML klassediagram:
+      """
+      @startuml
+      class Cache {
+        -items: Map<String, Integer>
+      }
+      @enduml
+      """
+    Als ik een beschrijving genereer
+    Dan zou de beschrijving moeten bevatten "private attribuut 'items' van type Map van String, Integer"

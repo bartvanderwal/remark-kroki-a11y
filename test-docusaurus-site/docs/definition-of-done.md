@@ -5,13 +5,6 @@ sidebar_label: Definition of Done
 description: Quality criteria for completed features and fixes
 ---
 
-:::info Single Source of Truth
-This page is automatically copied from the repository root `definition-of-done.md` file.
-Edit the root file to update this page.
-:::
-
----
-
 # Definition of Done
 
 Dit document beschrijft de criteria waaraan een feature of bugfix moet voldoen voordat deze als "Done" wordt beschouwd.
@@ -88,3 +81,10 @@ De pre-commit hook (Husky) voert automatisch uit:
 - [ ] Spelling gecontroleerd
 - [ ] Links gevalideerd
 - [ ] Screenshots/voorbeelden bijgewerkt indien nodig
+
+---
+
+:::info Single Source of Truth
+This page is automatically copied from the repository root `definition-of-done.md` file.
+Edit the root file to update this page.
+:::

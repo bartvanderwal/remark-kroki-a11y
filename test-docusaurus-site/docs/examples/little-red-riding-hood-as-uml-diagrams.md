@@ -4,6 +4,8 @@ sidebar_label: Red Riding Hood as UML diagrams
 
 # Red Riding Hood as UML diagrams
 
+## A gentle introduction to UML diagrams*
+
 <img src={require('./roodkapje-in-het-bos-dalle.png').default} alt="Little Red Riding Hood in the forest" width="600" />
 
 Little Red Riding Hood in the forest (image generated with ChatGPT/DALL-E, OpenAI, 2025).*
