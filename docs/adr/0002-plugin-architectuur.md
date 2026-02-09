@@ -36,6 +36,10 @@ Voor specifieke use-cases (zoals tab-componenten in Docusaurus) kan aanvullend e
 - Maximale herbruikbaarheid wordt bereikt door de kern als plain JavaScript plugin te houden, met optionele uitbreidingen voor specifieke frameworks.
 - Op termijn is het wenselijk dat a11y standaard wordt ingebouwd in PlantUML en Mermaid zelf, conform wetgeving en best practices.
 
+## Gerelateerde ADRs
+
+- [ADR-0012: Replace archived remark-kroki-plugin dependency](0012-integrate-remark-kroki-plugin.md) - Deze ADR beschrijft de keuze om de Kroki-integratie (via `remark-kroki-plugin` of een alternatief zoals `remark-kroki`) te wrappen of te integreren. Dit is een implementatie-beslissing binnen de gekozen remark plugin architectuur.
+
 ## Bronnen
 
 - [Bijectie (Wikipedia)](https://nl.wikipedia.org/wiki/Bijectie)

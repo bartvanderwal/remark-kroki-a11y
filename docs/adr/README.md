@@ -1,6 +1,6 @@
 # Architecture Decision Records (ADR)
 
-This ADR overview describes the main architectural decisions for the remark-kroki-a11y codebase. Each ADR documents a choice, context, alternatives, and consequences, following the format by Michael Nygard (2011).
+This ADR overview describes the main architectural decisions for the remark-kroki-a11y codebase. Each ADR documents a choice, context, alternatives, and consequences, following the format by Michael Nygard (2011) with some additions.
 
 ## Format used
 
@@ -25,6 +25,7 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 
 | ADR | Title | Status |
 |-----|-------|--------|
+| [0000](0000-deterministic-parsing-vs-live-llm.md) | Deterministic parsing vs live LLM | Accepted |
 | [0001](0001-ondersteuning-relatie-richtingen.md) | Relation direction and bijectivity | Accepted |
 | [0002](0002-plugin-architectuur.md) | Plugin architecture | Accepted |
 | [0003](0003-project-language.md) | Project language (English) | Accepted |
@@ -36,7 +37,9 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0009](0009-activity-diagram-step-numbering.md) | No automatic step numbering in activity diagram descriptions | Accepted |
 | [0010](0010-screenreader-prosody-and-visual-hierarchy.md) | Screenreader prosody and visual hierarchy | Pending |
 | [0011](0011-faithful-source-representation.md) | Faithful representation of diagram source | Accepted |
+| [0012](0012-integrate-remark-kroki-plugin.md) | Replace archived remark-kroki-plugin dependency | Pending |
+| [0013](0013-i18n-framework.md) | Internationalization (i18n) framework | Pending |
 
 ---
 
-*Last update*: 2026-02-06
+*Last update*: 2026-02-09
