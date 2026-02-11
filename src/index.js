@@ -51,6 +51,7 @@ const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateD
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('./parsers/activityDiagramParser');
+const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('./parsers/c4DiagramParser');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
 // Each parser entry has: { canParse, parse, generate }
@@ -84,6 +85,12 @@ const parserRegistry = [
 		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'activityDiagram',
 		parse: parsePlantUMLActivityDiagram,
 		generate: generateActivityDescription,
+	},
+	{
+		name: 'C4 Context Diagram',
+		canParse: (imgType, diagramType) => imgType === 'plantuml' && diagramType === 'c4Diagram',
+		parse: parseC4Context,
+		generate: generateC4Description,
 	},
 ];
 
@@ -150,16 +157,25 @@ function extractLocale(meta) {
 	return match ? match[1] : null;
 }
 
-// Extract custom description from meta string (e.g., customDescription="Custom text here")
-function extractCustomDescription(meta) {
+// Extract a11y description override from meta string
+// e.g., a11yDescriptionOverride="Custom text here"
+function extractDescriptionOverride(meta) {
 	if (!meta) return null;
-	const match = meta.match(/customDescription="([^"]+)"/);
+	const match = meta.match(/a11yDescriptionOverride="([^"]+)"/);
 	return match ? match[1] : null;
 }
 
 // Detect PlantUML diagram type from content
 function detectPlantUMLDiagramType(content) {
 	const lowerContent = content.toLowerCase();
+	// C4 diagram detection: look for C4-PlantUML include or C4 macros
+	if (lowerContent.includes('c4_context') || lowerContent.includes('c4_component') ||
+	    lowerContent.includes('c4_container') || lowerContent.includes('c4-plantuml') ||
+	    /\bperson\s*\(/.test(lowerContent) || /\bsystem\s*\(/.test(lowerContent) ||
+	    /\bsystem_ext\s*\(/.test(lowerContent) || /\bcontainer\s*\(/.test(lowerContent) ||
+	    /\brel\s*\(/.test(lowerContent)) {
+		return 'c4Diagram';
+	}
 	if (lowerContent.includes('statediagram') || (lowerContent.includes('@startuml') && lowerContent.includes('-->'))) {
 		// Check for state diagram patterns
 		if (lowerContent.includes('[*]') || lowerContent.includes('state ')) {
@@ -167,12 +183,17 @@ function detectPlantUMLDiagramType(content) {
 		}
 	}
 	if (lowerContent.includes('class ') || lowerContent.includes('interface ')) return 'classDiagram';
+	// Sequence diagram: explicit keywords OR arrow syntax (-> or -->)
 	if (lowerContent.includes('actor ') || lowerContent.includes('participant ')) return 'sequenceDiagram';
+	// Also detect sequence diagrams by arrow syntax (Alice -> Bob pattern)
+	if (/\w+\s*-+>\s*\w+/.test(lowerContent)) return 'sequenceDiagram';
 	if (lowerContent.includes('entity ')) return 'erDiagram';
 	if (lowerContent.includes('component ')) return 'componentDiagram';
 	if (lowerContent.includes('usecase ')) return 'usecaseDiagram';
-	// Activity diagram detection: look for start/stop, while/repeat, split, fork/join
-	if (lowerContent.includes('start') || lowerContent.includes('stop') ||
+	// Activity diagram detection: look for :action; syntax or control flow keywords
+	// Use word boundaries to avoid matching '@startuml' as 'start'
+	if (/:\s*[^;]+;/.test(content) || // :action; syntax
+	    /\bstart\b/.test(lowerContent) || /\bstop\b/.test(lowerContent) ||
 	    lowerContent.includes('while ') || lowerContent.includes('repeat') ||
 	    lowerContent.includes('fork') || lowerContent.includes('split')) return 'activityDiagram';
 	return 'diagram';
@@ -188,6 +209,7 @@ const diagramTypeNames = {
 		erDiagram: 'ER-diagrammen',
 		componentDiagram: 'componentdiagrammen',
 		usecaseDiagram: 'use case diagrammen',
+		c4Diagram: 'C4-diagrammen',
 		diagram: 'dit diagram type',
 	},
 	en: {
@@ -198,6 +220,7 @@ const diagramTypeNames = {
 		erDiagram: 'ER diagrams',
 		componentDiagram: 'component diagrams',
 		usecaseDiagram: 'use case diagrams',
+		c4Diagram: 'C4 diagrams',
 		diagram: 'this diagram type',
 	}
 };
@@ -268,7 +291,12 @@ const defaultOptions = {
 	fallbackA11yText: defaultFallbackA11yText,
 };
 
-module.exports = function remarkKrokiWithExpandableSource(options = {}) {
+// Export utility functions for testing and potential reuse
+module.exports.escapeHtml = escapeHtml;
+module.exports.extractTextContent = extractTextContent;
+
+// Main plugin export
+function remarkKrokiA11y(options = {}) {
 	const opts = {
 		...defaultOptions,
 		...options,
@@ -289,15 +317,19 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			const hideSource = node.meta && node.meta.includes('hideSource');
 			const hideA11y = node.meta && node.meta.includes('hideA11y');
 			const hideDiagram = node.meta && node.meta.includes('hideDiagram');
+			const hideSpeakButton = node.meta && node.meta.includes('hideSpeakButton');
 
-			// Clean meta from flags and customDescription attribute
+			// Extract description override BEFORE cleaning meta
+			const descriptionOverride = extractDescriptionOverride(node.meta);
+
+			// Clean meta from flags and description override attributes
 			if (node.meta) {
-				// Remove customDescription="..." attribute (with quoted value)
-				node.meta = node.meta.replace(/customDescription="[^"]*"/g, '');
+				// Remove a11yDescriptionOverride="..."
+				node.meta = node.meta.replace(/a11yDescriptionOverride="[^"]*"/g, '');
 				// Remove simple flags
 				node.meta = node.meta
 					.split(/\s+/)
-					.filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== '')
+					.filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== 'hideSpeakButton' && m !== '')
 					.join(' ');
 			}
 
@@ -324,10 +356,11 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 			const shouldAttemptA11y = opts.showA11yDescription && !hideA11y;
 
 			// Check for custom description override - skip all parsing if set
-			const customDescription = extractCustomDescription(node.meta);
-			if (shouldAttemptA11y && customDescription) {
+			// Check for description override - skip all parsing if set
+			// (descriptionOverride was extracted earlier, before cleaning meta)
+			if (shouldAttemptA11y && descriptionOverride) {
 				// Wrap plain text in <p> tag for visual display
-				a11yDescription = `<p>${escapeHtml(customDescription)}</p>`;
+				a11yDescription = `<p>${escapeHtml(descriptionOverride)}</p>`;
 			}
 
 			// Try registered parsers for a11y description
@@ -362,17 +395,16 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 
 				// Generate unique IDs for ARIA relationships
 				const tabId = `diagram-tabs-${index}`;
-			
-			// Generate unique IDs for ARIA relationships
-			const tabId = `diagram-tabs-${index}`;
+
 			const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
-		// Build speak button if enabled
-		let speakButtonHtml = '';
-		if (opts.showSpeakButton) {
-			const speakBtnId = `diagram-speak-btn-${index}`;
-			const speakLabel = ui.speakOutLoud || 'Out loud';
-			speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${tabId}-panel-a11y" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</button>`;
-		}
+			const a11yTextId = `diagram-a11y-text-${index}`;
+			// Build speak button if enabled globally and not hidden per-diagram
+			let speakButtonHtml = '';
+			if (opts.showSpeakButton && !hideSpeakButton) {
+				const speakBtnId = `diagram-speak-btn-${index}`;
+				const speakLabel = ui.speakOutLoud || 'Out loud';
+				speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
+			}
 			const tabsHtml = `
 <details class="${opts.cssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${summaryText}</summary>
@@ -386,7 +418,7 @@ module.exports = function remarkKrokiWithExpandableSource(options = {}) {
 </section>
 <section class="${opts.cssClass}-tab-content" data-tab="a11y" role="tabpanel" tabindex="0" id="${tabId}-panel-a11y" aria-label="${a11yLabelText}">
 ${speakButtonHtml}
-${a11yDescription}
+<div class="diagram-a11y-description-text" id="${a11yTextId}">${a11yDescription}</div>
 </section>
 </div>
 </details>`;
@@ -419,22 +451,23 @@ ${a11yDescription}
 				
 				// Generate unique IDs for ARIA relationships
 				const a11yContentId = `diagram-a11y-content-${index}`;
+				const a11yTextId = `diagram-a11y-text-${index}`;
 				const a11yLabelText = escapeHtml(extractTextContent(a11yDescription));
 
-				// Build speak button if enabled
+				// Build speak button if enabled globally and not hidden per-diagram
 				let speakButtonHtml = '';
-				if (opts.showSpeakButton) {
+				if (opts.showSpeakButton && !hideSpeakButton) {
 					const speakBtnId = `diagram-speak-btn-${index}`;
 					const speakLabel = ui.speakOutLoud || 'Out loud';
-				speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yContentId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</button>`;
-			}
+					speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
+				}
 
 			nodesToInsert.push({
 				type: 'html',
 				value: `
 <details class="${opts.a11yCssClass}" lang="${blockLocale}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
-<div class="${opts.a11yCssClass}-content" id="${a11yContentId}" aria-label="${a11yLabelText}">${speakButtonHtml}${a11yDescription}</div>
+<div class="${opts.a11yCssClass}-content" id="${a11yContentId}" aria-label="${a11yLabelText}">${speakButtonHtml}<div class="diagram-a11y-description-text" id="${a11yTextId}">${a11yDescription}</div></div>
 </details>`
 					});
 				}
@@ -445,4 +478,7 @@ ${a11yDescription}
 			}
 		});
 	};
-};
+}
+
+// CommonJS export for Docusaurus compatibility
+module.exports = remarkKrokiA11y;

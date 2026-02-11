@@ -31,10 +31,7 @@ Feature: C4 context diagram descriptions
       @enduml
       """
     When I generate a description in English
-    Then the description should start with:
-      """
-      C4 System Context diagram with:
-      """
+    Then the description should contain "C4 System Context diagram with:"
     And the description should contain "2 actors: Content Author, Reader"
     And the description should contain "4 systems:"
     And the description should contain "remark-kroki-a11y"
@@ -42,11 +39,11 @@ Feature: C4 context diagram descriptions
     And the description should contain "Kroki Service"
     And the description should contain "Web Browser"
     And the description should contain "5 relationships:"
-    And the description should contain "Content Author writes Markdown with diagrams to Static Site Generator"
-    And the description should contain "Static Site Generator processes Markdown via remark pipeline through remark-kroki-a11y"
-    And the description should contain "remark-kroki-a11y requests diagram images from Kroki Service"
-    And the description should contain "Static Site Generator generates HTML site to Web Browser"
-    And the description should contain "Reader views documentation on Web Browser"
+    And the description should contain "<li>Content Author writes Markdown with diagrams to Static Site Generator</li>"
+    And the description should contain "<li>Static Site Generator processes Markdown via remark pipeline through remark-kroki-a11y</li>"
+    And the description should contain "<li>remark-kroki-a11y requests diagram images from Kroki Service</li>"
+    And the description should contain "<li>Static Site Generator generates HTML site to Web Browser</li>"
+    And the description should contain "<li>Reader views documentation on Web Browser</li>"
 
   Scenario: C4 context with multiple actors and systems
     Given the following PlantUML C4 context diagram:
@@ -72,10 +69,7 @@ Feature: C4 context diagram descriptions
       @enduml
       """
     When I generate a description in English
-    Then the description should start with:
-      """
-      C4 System Context diagram with:
-      """
+    Then the description should contain "C4 System Context diagram with:"
     And the description should contain "2 actors: Customer, Administrator"
     And the description should contain "3 systems:"
     And the description should contain "E-Commerce System"
@@ -103,7 +97,7 @@ Feature: C4 context diagram descriptions
     And the description should contain "1 system:"
     And the description should contain "Application"
     And the description should contain "1 relationship:"
-    And the description should contain "User uses Application"
+    And the description should contain "<li>User uses Application</li>"
 
   Scenario: C4 context distinguishes between internal and external systems
     Given the following PlantUML C4 context diagram:
@@ -127,4 +121,4 @@ Feature: C4 context diagram descriptions
     When I generate a description in English
     Then the description should contain "1 internal system: Core System"
     And the description should contain "1 external system: Third-party API"
-    And the description should contain "Core System calls Third-party API"
+    And the description should contain "<li>Core System calls Third-party API</li>"

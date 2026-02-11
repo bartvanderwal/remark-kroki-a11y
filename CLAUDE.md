@@ -68,6 +68,14 @@ npm publish                        # Publish to npm
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed development setup.
 
+## Important: Do NOT Generate a11yDescriptionOverride
+
+**Never add `a11yDescriptionOverride` attributes to diagram code blocks.**
+
+The goal of this project is automatic description generation through deterministic parsers. When an LLM (like you, Claude) adds `a11yDescriptionOverride` attributes, it undermines this goal - it makes it look like the plugin generates good descriptions when it's actually just using manually written text.
+
+Exception: Keep exactly one example in the test-docusaurus-site that demonstrates the `a11yDescriptionOverride` feature for documentation purposes.
+
 ## Writing Style Guidelines
 
 ### Leeswijzer (Reading Guide)

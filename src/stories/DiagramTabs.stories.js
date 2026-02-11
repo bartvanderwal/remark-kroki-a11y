@@ -4,7 +4,7 @@
  *
  * Related to GitHub issue #10: Tab content niet keyboard toegankelijk voor screenreaders
  */
-import { userEvent, within, expect } from 'storybook/test';
+import { userEvent, within, expect, waitFor } from 'storybook/test';
 // CSS is now imported globally in .storybook/preview.js
 
 // HTML that simulates the output of remark-kroki-a11y plugin
@@ -136,33 +136,44 @@ export const KeyboardNavigationTest = {
 		const canvas = within(canvasElement);
 
 		await step('Open details met keyboard', async () => {
-			// Focus op de summary (details trigger)
-			const summary = canvas.getByText(/PlantUML broncode voor/);
+			// Wacht tot summary beschikbaar is
+			const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
 			summary.focus();
-			expect(document.activeElement).toBe(summary);
+
+			await waitFor(() => {
+				expect(document.activeElement).toBe(summary);
+			});
 
 			// Open met Enter
 			await userEvent.keyboard('{Enter}');
 
-			// Verify details is open
+			// Wacht tot details open is
 			const details = summary.closest('details');
-			expect(details).toHaveAttribute('open');
+			await waitFor(() => {
+				expect(details).toHaveAttribute('open');
+			});
 		});
 
 		await step('Navigeer naar Natuurlijke taal tab', async () => {
 			// Tab naar eerste button
 			await userEvent.tab();
 			const sourceBtn = canvas.getByRole('tab', { name: 'Bron' });
-			expect(document.activeElement).toBe(sourceBtn);
+			await waitFor(() => {
+				expect(document.activeElement).toBe(sourceBtn);
+			});
 
 			// Tab naar tweede button
 			await userEvent.tab();
-			const a11yBtn = canvas.getByRole('tab', { name: 'Natuurlijke taal' });
-			expect(document.activeElement).toBe(a11yBtn);
+			const a11yBtn = canvas.getByRole('tab', { name: 'In natuurlijke taal' });
+			await waitFor(() => {
+				expect(document.activeElement).toBe(a11yBtn);
+			});
 
 			// Activeer met Enter
 			await userEvent.keyboard('{Enter}');
-			expect(a11yBtn).toHaveClass('active');
+			await waitFor(() => {
+				expect(a11yBtn).toHaveClass('active');
+			});
 		});
 
 		await step('Tab naar content (dit faalt momenteel!)', async () => {
@@ -248,10 +259,16 @@ Dit toont hoe de HTML eruit zou moeten zien NA de fix:
 		const canvas = within(canvasElement);
 
 		await step('Open en navigeer naar content met fix', async () => {
-			// Open details
-			const summary = canvas.getByText(/PlantUML broncode voor/);
+			// Wacht tot summary beschikbaar is
+			const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
 			summary.focus();
 			await userEvent.keyboard('{Enter}');
+
+			// Wacht tot details open is
+			const details = summary.closest('details');
+			await waitFor(() => {
+				expect(details).toHaveAttribute('open');
+			});
 
 			// Tab naar a11y tab en activeer
 			await userEvent.tab(); // Bron tab
@@ -262,7 +279,9 @@ Dit toont hoe de HTML eruit zou moeten zien NA de fix:
 			await userEvent.tab();
 
 			const a11yContent = canvasElement.querySelector('[data-tab="a11y"]');
-			expect(document.activeElement).toBe(a11yContent);
+			await waitFor(() => {
+				expect(document.activeElement).toBe(a11yContent);
+			});
 			console.log('✅ Content is nu keyboard focusable!');
 		});
 	},

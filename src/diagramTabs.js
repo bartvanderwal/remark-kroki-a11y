@@ -100,7 +100,10 @@ export function onRouteDidUpdate() {
 						ttsService = null;
 					},
 					onError: (error) => {
-						console.error('Speech synthesis error:', error);
+						const errorType = error && (error.error || error.name);
+						if (errorType !== 'canceled' && errorType !== 'interrupted') {
+							console.error('Speech synthesis error:', error);
+						}
 						btn.textContent = originalText;
 						ttsService = null;
 					},

@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.4] - 2026-02-11
+
+### Added
+
+- **C4 System Context diagram support (Beta)** - PlantUML C4 context diagrams now generate accessible descriptions with proper HTML `<ul>/<li>` lists
+  - Parses: Person, System, System_Ext, and Rel entries
+  - Output includes actors, internal/external systems, and relationships with full sentences
+  - BDD test coverage with 4 scenarios in English
+
+### Changed
+
+- **Renamed `naturalLanguageDescriptionOverride` to `a11yDescriptionOverride`** - Shorter, clearer name (breaking change: old attribute name no longer recognized)
+- C4 diagram Rel labels in Software Guidebook now include prepositions for complete read-aloud sentences (e.g., "requests diagram images from")
+- Updated diagram type support tables: C4 diagrams listed as Beta/Partial
+- Use case diagrams in Software Guidebook split into core actors diagram and extended configuration options diagram
+
 ## [0.4.0] - 2025-02-03
 
 ### Added
@@ -15,7 +31,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Localization: Dutch (nl) and English (en)
   - BDD test coverage with 4 scenarios each in NL and EN
 
-- **Storybook integration** - Added Storybook for visual testing and documentation of accessible components
+- **Storybook integration** - Added Storybook for the test docusaurus site of the plugin for visual testing and documentation of accessible components
   - DiagramTabs stories with accessibility tests
   - Visual regression testing support
 
@@ -39,7 +55,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Sequence diagram support (Beta) for PlantUML and Mermaid
 - Class diagram support for PlantUML (Full) and Mermaid (To test)
 - State diagram support for PlantUML (Full)
-- Custom description support via `customDescription` attribute
+- Custom description support via `a11yDescriptionOverride` attribute
 - Localization support for Dutch and English
 
 ### Features

@@ -5,7 +5,7 @@ Functionaliteit: Custom beschrijving override
   Zodat ik zelf de toegankelijkheidstekst kan bepalen wanneer automatische generatie niet geschikt is
 
   Scenario: Custom beschrijving overschrijft automatische generatie voor klassendiagram
-    Gegeven het volgende PlantUML klassediagram met customDescription:
+    Gegeven het volgende PlantUML klassediagram met a11yDescriptionOverride:
       """
       @startuml
       class Voorbeeld {
@@ -13,13 +13,13 @@ Functionaliteit: Custom beschrijving override
       }
       @enduml
       """
-    En de customDescription is "Geen automatische A11Y tekst: zie toelichting in tekst voor beschrijving wat er in dit diagram staat"
+    En de a11yDescriptionOverride is "Geen automatische A11Y tekst: zie toelichting in tekst voor beschrijving wat er in dit diagram staat"
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Geen automatische A11Y tekst"
     En zou de beschrijving niet moeten bevatten "Klassendiagram"
 
   Scenario: Custom beschrijving voor sequentiediagram (café voorbeeld)
-    Gegeven het volgende PlantUML klassediagram met customDescription:
+    Gegeven het volgende PlantUML klassediagram met a11yDescriptionOverride:
       """
       @startuml
       autonumber
@@ -31,7 +31,7 @@ Functionaliteit: Custom beschrijving override
       Bob --> Alice: geefDrankje("appelsap")
       @enduml
       """
-    En de customDescription is "Zie toelichting onder dit diagram voor beschrijving van de interactie."
+    En de a11yDescriptionOverride is "Zie toelichting onder dit diagram voor beschrijving van de interactie."
     Als ik een beschrijving genereer
     Dan zou de beschrijving moeten bevatten "Zie toelichting onder dit diagram"
     En zou de beschrijving niet moeten bevatten "ondersteunt nog geen"

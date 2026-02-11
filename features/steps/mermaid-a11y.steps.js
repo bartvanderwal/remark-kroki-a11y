@@ -13,7 +13,6 @@ const { generateUnsupportedDescription } = require('../../src/parsers/unsupporte
 let reader;
 let currentDiagram;
 let currentDiagramType;
-let currentCustomDescription;
 let generatedDescription;
 let generatedAriaStructure;
 let isPlantUML = false;
@@ -24,7 +23,6 @@ Before(function() {
 	reader = new MermaidClassdiagramA11YReader({ locale: 'nl' });
 	currentDiagram = null;
 	currentDiagramType = null;
-	currentCustomDescription = null;
 	generatedDescription = null;
 	generatedAriaStructure = null;
 	isPlantUML = false;
@@ -85,6 +83,18 @@ Given('the following PlantUML C4 context diagram:', function(diagramSource) {
 	isPlantUML = true;
 });
 
+Given('the following PlantUML C4 container diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'c4context';
+	isPlantUML = true;
+});
+
+Given('the following PlantUML C4 component diagram:', function(diagramSource) {
+	currentDiagram = diagramSource;
+	currentDiagramType = 'c4context';
+	isPlantUML = true;
+});
+
 Given('the following Mermaid pie chart:', function(diagramSource) {
 	currentDiagram = diagramSource;
 	currentDiagramType = 'pie';
@@ -104,20 +114,20 @@ Given('the following PlantUML diagram with type {string}:', function(diagramType
 	isPlantUML = true;
 });
 
-// Custom description step definitions
-Given('het volgende PlantUML klassediagram met customDescription:', function(diagramSource) {
+// Description override step definitions
+Given('het volgende PlantUML klassediagram met a11yDescriptionOverride:', function(diagramSource) {
 	currentDiagram = diagramSource;
 	isPlantUML = true;
 });
 
-Given('de customDescription is {string}', function(customDesc) {
-	currentCustomDescription = customDesc;
+Given('de a11yDescriptionOverride is {string}', function(a11yDescriptionOverride) {
+	this.a11yDescriptionOverride = a11yDescriptionOverride;
 });
 
 When('ik een beschrijving genereer', function() {
 	// Check if custom description is set - use it directly without parsing
-	if (currentCustomDescription) {
-		generatedDescription = currentCustomDescription;
+	if (this.a11yDescriptionOverride) {
+		generatedDescription = this.a11yDescriptionOverride;
 		return;
 	}
 	// Check for sequence diagram

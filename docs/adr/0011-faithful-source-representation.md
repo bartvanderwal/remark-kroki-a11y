@@ -129,7 +129,7 @@ The following transformations are acceptable as they improve readability without
 
 ### Mitigation
 
-For cases where computed values would be helpful, users can use the `customDescription` attribute to provide their own enhanced description.
+For cases where computed values would be helpful, users can use the `a11yDescriptionOverride` attribute to provide their own enhanced description.
 
 ## References
 

@@ -36,7 +36,7 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 | State diagrams    | ✅ Full  | ❌         | Partial |
 | Sequence diagrams | ⚠️ Beta  | ⚠️ Beta    | Partial |
 | Activity diagrams | ⚠️ Beta  | ❌         | Partial |
-| C4 diagrams       | ❌       | N/A        | Planned |
+| C4 diagrams       | ⚠️ Beta  | N/A        | Partial |
 | ER diagrams       | ❌       | ❌         | Planned |
 | Gantt charts      | ❌       | ❌         | Future  |
 | Pie charts        | N/A      | ❌         | Planned |
@@ -76,7 +76,7 @@ Works with any diagram type supported by [Kroki](https://kroki.io/), including:
 
 | Diagram Type        | PlantUML  | Mermaid   | A11y Support |
 | ------------------- | --------- | --------- | ------------ |
-| C4 Diagram          | ✅ [^2]   | ✅ (beta) | ❌ Planned   |
+| C4 Diagram          | ✅ [^2]   | ✅ (beta) | ⚠️ Beta      |
 | Git Graph           | ❌        | ✅        | ❌           |
 | User Journey        | ❌        | ✅        | ❌           |
 | Sankey Diagram      | ❌        | ✅ (beta) | ❌           |
@@ -120,6 +120,8 @@ These diagram types don't have good diagram-as-text standards yet:
 We use PlantUML's data structure as internal representation (IR) with adapters for each input format. See [ADR-0006](docs/adr/0006-plantuml-als-interne-standaard.md) for details.
 
 The official [`@mermaid-js/parser`](https://www.npmjs.com/package/@mermaid-js/parser) npm package provides AST parsing for Mermaid diagrams, enabling conversion to our IR.
+
+For comprehensive architecture documentation following Simon Brown's Software Guidebook structure, see the [Software Guidebook](https://bartvanderwal.github.io/remark-kroki-a11y/architecture/software-guidebook) (includes C4 diagrams, use cases, and component views).
 
 For all architecture decisions, see the [Architecture Decision Records (ADRs)](docs/adr/README.md).
 
@@ -335,7 +337,7 @@ Control per-diagram behavior using flags in the code block meta:
 ```
 
 <!-- Override automatic description with custom text -->
-```kroki customDescription="Zie toelichting in tekst voor beschrijving van dit diagram" imgType="plantuml"
+```kroki a11yDescriptionOverride="Zie toelichting in tekst voor beschrijving van dit diagram" imgType="plantuml"
 @startuml
 ...
 @enduml
@@ -343,7 +345,7 @@ Control per-diagram behavior using flags in the code block meta:
 
 ~~~
 
-The `customDescription` attribute is useful when:
+The `a11yDescriptionOverride` attribute is useful when:
 
 - The diagram type is not yet supported for automatic description generation
 - You want to provide a more context-specific description
