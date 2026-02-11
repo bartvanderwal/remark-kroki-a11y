@@ -1,0 +1,409 @@
+---
+sidebar_label: Software Guidebook
+sidebar_position: 1
+---
+
+# Software Guidebook: remark-kroki-a11y
+
+This Software Guidebook follows the structure defined by Simon Brown in his book *Software Architecture for Developers*. It provides a comprehensive overview of the remark-kroki-a11y plugin architecture.
+
+## 1. Context
+
+The remark-kroki-a11y plugin operates in the intersection of:
+
+- **Static Site Generators** (Docusaurus, mdBook, etc.) that use the unified/remark ecosystem
+- **Diagram-as-Code tools** (Kroki, PlantUML, Mermaid) that render diagrams from text
+- **Web Accessibility requirements** (WCAG, European Accessibility Act) that mandate alternatives for visual content
+
+```kroki imgType="plantuml" imgTitle="System Context: remark-kroki-a11y" lang="en"
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+title System Context: remark-kroki-a11y Plugin
+
+Person(author, "Content Author", "Writes documentation with PlantUML/Mermaid diagrams")
+Person(reader, "Reader", "Consumes documentation, possibly using assistive technology")
+
+System(plugin, "remark-kroki-a11y", "Remark plugin that adds accessible descriptions to diagrams")
+
+System_Ext(ssg, "Static Site Generator", "Docusaurus, mdBook, Jekyll, etc.")
+System_Ext(kroki, "Kroki Service", "Renders diagrams to SVG/PNG")
+System_Ext(browser, "Web Browser", "Renders final HTML with diagrams and descriptions")
+
+Rel(author, ssg, "Writes Markdown with diagrams to")
+Rel(ssg, plugin, "Processes Markdown via remark pipeline through")
+Rel(plugin, kroki, "Requests diagram images from")
+Rel(ssg, browser, "Generates HTML site to")
+Rel(reader, browser, "Views documentation on")
+
+SHOW_LEGEND()
+@enduml
+```
+
+For detailed context including stakeholders and external systems, see the [README](/).
+
+## 2. Functional Overview
+
+The plugin provides the following core functionality:
+
+### Use Cases
+
+```kroki imgType="plantuml" imgTitle="Use Cases: Core Actors" lang="en"
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+actor "UML Content\nAuthor" as author
+actor "Visually impaired\nprogrammer" as reader
+actor "Beginner UML\ndiagram reader" as beginner
+actor "CI/CD Pipeline" as ci
+
+rectangle "remark-kroki-a11y Plugin" {
+  usecase "Generate accessible diagram\nwith natural language description" as UC_BASE
+}
+
+author --> UC_BASE : writes diagrams for
+reader --> UC_BASE : benefits from
+beginner --> UC_BASE : benefits from
+ci --> UC_BASE : builds documentation with
+@enduml
+```
+
+### Configuration Options
+
+| Option | Use Case | Default |
+|--------|----------|---------|
+| `showSource` | Display source code tab for all diagrams | `true` |
+| `hideA11y` | Per-diagram flag to hide the natural language description | `false` |
+| `locale` | Set language for generated descriptions (`'en'` or `'nl'`) | `'en'` |
+| `a11yDescriptionOverride` | Per-diagram manual description override | - |
+
+<details>
+<summary><strong>Extended use cases: configuration options</strong></summary>
+
+```kroki imgType="plantuml" imgTitle="Use Cases: Plugin Configuration Options" lang="en"
+@startuml
+left to right direction
+skinparam actorStyle awesome
+
+actor "UML Content\nAuthor" as author
+
+rectangle "remark-kroki-a11y Plugin" {
+  usecase "Generate accessible diagram\nwith natural language description" as UC_BASE
+
+  usecase "Show/hide source code\n(showSource)" as UC_SOURCE
+  usecase "Hide A11y description\nfor simplicity (hideA11y)" as UC_HIDE_A11Y
+  usecase "Explicitly choose language if\nscreenreader detection is wrong\n(locale: 'en' | 'nl')" as UC_LANG
+  usecase "Override A11y description if it\ninterferes with existing text\n(a11yDescriptionOverride)" as UC_OVERRIDE
+
+  ' Force UC_BASE to appear at the top
+  UC_BASE -[hidden]down-> UC_SOURCE
+  UC_SOURCE -[hidden]down-> UC_HIDE_A11Y
+  UC_HIDE_A11Y -[hidden]down-> UC_LANG
+  UC_LANG -[hidden]down-> UC_OVERRIDE
+
+  UC_SOURCE .> UC_BASE : <<extend>>
+  UC_HIDE_A11Y .> UC_BASE : <<extend>>
+  UC_LANG .> UC_BASE : <<extend>>
+  UC_OVERRIDE .> UC_BASE : <<extend>>
+}
+
+author --> UC_BASE : writes diagrams for
+author --> UC_SOURCE : shows/hides source code
+author --> UC_HIDE_A11Y : hides A11y description\nfor simplicity
+author --> UC_LANG : explicitly chooses language
+author --> UC_OVERRIDE : overrides A11y description\nwhen it interferes with text
+
+note right of UC_BASE
+  Base use case: Plugin parses
+  diagram source and generates
+  a natural language description
+  using deterministic parsers.
+end note
+
+note right of UC_OVERRIDE
+  Escape hatch when automatic
+  generation is not suitable.
+  See ADR-0000.
+end note
+@enduml
+```
+
+</details>
+
+## 3. Quality Attributes
+
+The key quality attributes for this plugin are:
+
+### Accessibility (Primary)
+- All diagrams must have alternative text descriptions
+- Generated descriptions must be screen reader friendly
+- UI components must be keyboard navigable
+
+### Determinism
+- Descriptions are generated by parsers, not AI (see [ADR-0000](/adr/deterministic-parsing-vs-live-llm))
+- Same input always produces same output
+- No external API calls for description generation
+
+### Extensibility
+- New diagram types can be added via new parsers
+- Support for multiple diagram-as-code formats (PlantUML, Mermaid)
+
+### Performance
+- No runtime API calls (build-time only)
+- Minimal impact on build performance
+
+## 4. Constraints
+
+### Technical Constraints
+- Must work within the unified/remark ecosystem
+- Must be compatible with Docusaurus (primary target)
+- Browser support limited by native `<details>` element support
+
+### Organizational Constraints
+
+- Plugin used in educational context
+- Student contributions welcome for new diagram parsers
+
+### External Constraints
+
+- Depends on Kroki service for diagram rendering
+- PlantUML/Mermaid syntax defines what can be parsed
+
+## 5. Principles
+
+### Core Architectural Principles
+
+1. **Deterministic over AI-generated** - Descriptions are generated by parsers that understand diagram syntax, not by LLMs (see [ADR-0000](/adr/deterministic-parsing-vs-live-llm))
+
+2. **PlantUML as Internal Representation** - PlantUML data structures serve as the canonical format, with adapters for other formats (see [ADR-0006](/adr/plantuml-als-interne-standaard))
+
+3. **Build-time processing** - All work happens during static site generation, not at runtime
+
+4. **Progressive enhancement** - Diagrams work without the plugin; plugin adds accessibility layer
+
+### Development Principles
+
+- **BDD Testing** - Features defined in Gherkin, tested with Cucumber
+- **Single Source Documentation** - README/CONTRIBUTING maintained in one place (see [ADR-0007](/adr/single-source-documentation))
+- **Eating our own dog food** - This documentation site uses the plugin to render its diagrams
+
+## 6. Software Architecture
+
+### High-Level Architecture
+
+The plugin operates as a remark plugin in the unified.js processing pipeline:
+
+```
+Markdown → remark-kroki-a11y → remark-kroki-plugin → rehype → HTML
+              ↓
+    Parse diagram source
+    Generate description
+    Add tabs/details HTML
+```
+
+### Processing Flow
+
+```kroki imgType="plantuml" imgTitle="Sequence Diagram: Build-time Flow" lang="en"
+@startuml
+hide footbox
+title Build-time Processing Flow
+
+participant "Static Site\nGenerator" as SSG
+participant "remark-kroki-a11y\n(this plugin)" as Plugin
+participant "Parser\n(class/state/sequence)" as Parser
+participant "remark-kroki-plugin" as KrokiPlugin
+participant "Kroki Service" as Kroki
+
+SSG -> SSG: Start build
+SSG -> SSG: Load Markdown page
+
+loop for each diagram code block
+    SSG -> Plugin: Process code block
+
+    Plugin -> Plugin: Detect diagram type\n(class/state/sequence)
+    Plugin -> Parser: Parse diagram source
+    Parser --> Plugin: Parsed structure\n(classes, relations, etc.)
+
+    Plugin -> Plugin: Generate natural language\ndescription (NL or EN)
+    Plugin -> Plugin: Create tabs HTML:\n- Source code tab\n- Description tab
+
+    Plugin --> SSG: Modified AST with\ntabs and description
+
+    SSG -> KrokiPlugin: Process same code block
+    KrokiPlugin -> Kroki: Request SVG/PNG
+    Kroki --> KrokiPlugin: Diagram image
+    KrokiPlugin --> SSG: Image embedded in AST
+end
+
+SSG -> SSG: Generate HTML output
+SSG -> SSG: Write to build folder
+
+@enduml
+```
+
+## 7. Code
+
+### Source Code Structure
+
+```
+src/
+├── index.js                 # Main plugin entry point
+├── parsers/
+│   ├── classDiagramParser.js    # PlantUML/Mermaid class diagrams
+│   ├── stateDiagramParser.js    # PlantUML state diagrams
+│   └── sequenceDiagramParser.js # Sequence diagram parsing
+├── diagramTabs.js           # Client-side tab switching
+└── diagram-tabs.css         # Styling for tabs UI
+```
+
+### Parser Architecture
+
+Each parser:
+1. Receives raw diagram source code
+2. Parses it into a structured representation
+3. Generates natural language description in the requested locale
+
+For implementation details, see the source files on GitHub.
+
+## 8. Containers
+
+As a remark plugin, remark-kroki-a11y is an npm package that runs within the static site generator's build process. In a local development setup, the Docusaurus dev server runs on the host machine and communicates with a local Kroki service running in Docker containers.
+
+```kroki imgType="plantuml" imgTitle="Container Diagram: Local Development Setup" lang="en"
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Container Diagram: Local Development Setup
+
+Person(author, "Content Author", "Writes Markdown with diagram code blocks")
+
+System_Boundary(host, "Host Machine") {
+    Container(docusaurus, "Docusaurus Dev Server", "Node.js", "Builds and serves documentation site with hot reload")
+    Container(plugin, "remark-kroki-a11y", "npm package", "Remark plugin that parses diagrams and generates accessible descriptions")
+    Container(krokiPlugin, "remark-kroki-plugin", "npm package", "Remark plugin that sends diagram source to Kroki for rendering")
+}
+
+System_Boundary(docker, "Docker") {
+    Container(kroki, "Kroki", "Docker container", "Diagram rendering gateway, delegates to format-specific renderers")
+    Container(mermaid, "kroki-mermaid", "Docker container", "Renders Mermaid diagrams to SVG")
+}
+
+System_Ext(browser, "Web Browser", "Renders final HTML with diagrams and descriptions")
+
+Rel(author, docusaurus, "writes Markdown files to")
+Rel(docusaurus, plugin, "processes Markdown through")
+Rel(docusaurus, krokiPlugin, "processes diagram code blocks through")
+Rel(krokiPlugin, kroki, "requests diagram images from")
+Rel(kroki, mermaid, "delegates Mermaid diagrams to")
+Rel(docusaurus, browser, "serves HTML to")
+
+SHOW_LEGEND()
+@enduml
+```
+
+The plugin interacts with:
+
+- **remark-kroki-plugin** (peer dependency) - Handles Kroki API calls for diagram rendering
+- **rehype-raw** (required) - Enables raw HTML in MDX output
+- **Kroki service** - Can be local (Docker) or remote (kroki.io)
+
+## 9. Components
+
+```kroki imgType="plantuml" imgTitle="Component Diagram: Current Implementation" lang="en"
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+title Component Diagram: remark-kroki-a11y (Current)
+
+Container_Boundary(plugin, "remark-kroki-a11y Plugin") {
+    Component(index, "index.js", "JavaScript", "Main entry point, remark plugin interface")
+    Component(classParser, "classDiagramParser.js", "JavaScript", "Parses PlantUML/Mermaid class diagrams")
+    Component(stateParser, "stateDiagramParser.js", "JavaScript", "Parses PlantUML state diagrams")
+    Component(seqParser, "sequenceDiagramParser.js", "JavaScript", "Parses PlantUML/Mermaid sequence diagrams")
+    Component(tabsGen, "diagramTabs.js", "JavaScript", "Generates expandable tabs UI")
+}
+
+Rel(index, classParser, "delegates class diagrams to")
+Rel(index, stateParser, "delegates state diagrams to")
+Rel(index, seqParser, "delegates sequence diagrams to")
+Rel(index, tabsGen, "uses for UI generation")
+
+SHOW_LEGEND()
+@enduml
+```
+
+## 10. Deployment
+
+### npm Package
+
+The plugin is published to npm:
+
+```bash
+npm install remark-kroki-a11y
+```
+
+### GitHub Pages
+
+The documentation site is deployed automatically via GitHub Actions on push to `main`:
+
+1. Run tests
+2. Build Docusaurus site
+3. Deploy to GitHub Pages
+
+See `.github/workflows/` for pipeline configuration.
+
+### Local Development
+
+```bash
+# From repository root
+./start-docs.sh
+
+# Or manually
+cd test-docusaurus-site
+npm install
+npm run start:strict  # Recommended: validates broken links
+```
+
+## 11. Views and Perspectives
+
+### Diagram Type Support Matrix
+
+| Diagram Type | PlantUML | Mermaid | A11y Status |
+|--------------|----------|---------|-------------|
+| Class diagrams | ✅ Full | ⚠️ To test | Partial |
+| State diagrams | ✅ Full | ❌ | Partial |
+| Sequence diagrams | ⚠️ Beta | ⚠️ Beta | Partial |
+| Activity diagrams | ⚠️ Beta | ❌ | Partial |
+| C4 diagrams | ⚠️ Beta | N/A | Partial |
+
+### Accessibility Compliance
+
+The plugin contributes to WCAG 2.1 compliance:
+
+- **1.1.1 Non-text Content (A)** - Provides text alternatives for diagrams
+- **2.1.1 Keyboard (A)** - Tab/details UI is keyboard accessible
+- **4.1.2 Name, Role, Value (A)** - Proper ARIA attributes on diagram images
+
+## 12. Decisions
+
+Architecture decisions are recorded as ADRs (Architecture Decision Records):
+
+| ADR | Title | Status |
+|-----|-------|--------|
+| [ADR-0000](/adr/deterministic-parsing-vs-live-llm) | Deterministic Parsing vs Live LLM | Accepted |
+| [ADR-0001](/adr/ondersteuning-relatie-richtingen) | Ondersteuning relatie richtingen | Accepted |
+| [ADR-0002](/adr/plugin-architectuur) | Plugin architectuur | Accepted |
+| [ADR-0003](/adr/project-language) | Project language | Accepted |
+| [ADR-0004](/adr/integrated-test-docusaurus-site) | Integrated test Docusaurus site | Accepted |
+| [ADR-0005](/adr/navigeerbare-a11y-beschrijvingen) | Navigeerbare A11y beschrijvingen | Accepted |
+| [ADR-0006](/adr/plantuml-als-interne-standaard) | PlantUML als interne standaard | Accepted |
+| [ADR-0007](/adr/single-source-documentation) | Single source documentation | Accepted |
+| [ADR-0012](/adr/integrate-remark-kroki-plugin) | Integrate remark-kroki-plugin | Accepted |
+| [ADR-0013](/adr/i18n-framework) | i18n framework | Accepted |
+
+For the complete list, see the [ADR index](/adr/).
+
+---
+
+*This Software Guidebook follows the structure from Simon Brown's book "Software Architecture for Developers".*

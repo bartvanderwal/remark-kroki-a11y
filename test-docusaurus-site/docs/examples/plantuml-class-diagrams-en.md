@@ -93,3 +93,16 @@ Relations:
 - QuickSort implements interface SortStrategy
 Notes:
 - At class WordList: "The sort method calls currentStrategy.sort with words as parameter"
+
+## Simple class diagram without Out loud button
+
+This diagram has the Out loud button hidden via the `hideSpeakButton` flag, demonstrating per-diagram control over the speak button.
+
+```kroki imgType="plantuml" imgTitle="WordList class (no speak button)" lang="en" hideSpeakButton
+@startuml
+class WordList {
+  -words : String[]
+  +sort() : void
+}
+@enduml
+```

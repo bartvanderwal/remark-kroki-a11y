@@ -8,7 +8,7 @@ Dit voorbeeld toont hoe een sequentiediagram de interactie tussen objecten weerg
 
 ## Alice bestelt een drankje bij Bob
 
-```kroki imgType="plantuml" imgTitle="Café bestelling" lang="nl" customDescription="Zie toelichting onder dit diagram voor beschrijving van de interactie."
+```kroki imgType="plantuml" imgTitle="Café bestelling" lang="nl" a11yDescriptionOverride="Zie toelichting onder dit diagram voor beschrijving van de interactie."
 @startuml
 autonumber
 
@@ -40,17 +40,17 @@ Het sequentiediagram hierboven toont de volgende interactie:
 5. **Alice bevestigt aan Bob** - Alice stuurt de betaalbevestiging door naar Bob
 6. **Bob geeft drankje** - Bob roept `geefDrankje("appelsap")` aan en zegt "Enjoy!"
 
-### Waarom customDescription?
+### Waarom a11yDescriptionOverride?
 
-Dit diagram gebruikt `customDescription` omdat:
+Dit diagram gebruikt `a11yDescriptionOverride` omdat:
 - Sequentiediagrammen nog niet automatisch worden geparsed
 - De toelichting in de tekst een betere context geeft dan een automatisch gegenereerde beschrijving zou kunnen
 
 ---
 
-## Zonder customDescription: "niet ondersteund" melding
+## Zonder a11yDescriptionOverride: "niet ondersteund" melding
 
-Hieronder hetzelfde diagram, maar zonder `customDescription`. De plugin toont dan automatisch een melding dat sequentiediagrammen nog niet ondersteund worden:
+Hieronder hetzelfde diagram, maar zonder `a11yDescriptionOverride`. De plugin toont dan automatisch een melding dat sequentiediagrammen nog niet ondersteund worden:
 
 ```kroki imgType="plantuml" imgTitle="Café bestelling (zonder override)" lang="nl"
 @startuml

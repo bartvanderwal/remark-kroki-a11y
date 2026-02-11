@@ -6,7 +6,7 @@ The following  pie charts show general accessibility support for PlantUML and Me
 
 ## PlantUML A11y Coverage
 
-```kroki imgType="mermaid" imgTitle="PlantUML A11y Coverage" customDescription="Pie chart showing PlantUML accessibility support: 4 diagram types with full or beta A11y support (Class, Sequence, Activity, State), and 12 diagram types without A11y support yet."
+```kroki imgType="mermaid" imgTitle="PlantUML A11y Coverage"
 pie showData
     title PlantUML A11y Support
     "With A11y support" : 4
@@ -15,7 +15,7 @@ pie showData
 
 ## Mermaid A11y Coverage
 
-```kroki imgType="mermaid" imgTitle="Mermaid A11y Coverage" customDescription="Pie chart showing Mermaid accessibility support: 2 diagram types with beta A11y support (Class, Sequence), and 13 diagram types without A11y support yet."
+```kroki imgType="mermaid" imgTitle="Mermaid A11y Coverage"
 pie showData
     title Mermaid A11y Support
     "With A11y support" : 2
@@ -48,7 +48,7 @@ pie showData
 
 ## Sequence Diagrams
 
-- [Café Ordering Example](/examples/sequence-diagram-example) - Demonstrates `customDescription` for diagrams without automatic parsing
+- [Café Ordering Example](/examples/sequence-diagram-example) - Demonstrates `a11yDescriptionOverride` for diagrams without automatic parsing
 
 ## Data Visualizations
 

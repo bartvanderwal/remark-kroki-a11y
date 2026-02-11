@@ -58,9 +58,9 @@ module.exports = {
     },
     {
       type: 'category',
-      label: 'Software Guidebook',
+      label: 'Plugin Architecture (SGB)',
       items: [
-        'architecture/plugin-architecture',
+        'architecture/software-guidebook',
       ],
     },
     {

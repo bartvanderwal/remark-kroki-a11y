@@ -24,7 +24,7 @@ This article first introduces the domain model: the "world" of the fairy tale wi
 
 Before we tell the story in sequence diagrams, we first define the "world" of the fairy tale in a class diagram. This is a simple *domain model* in the style of Larman (2004): only attributes, without data types or methods. This keeps the model readable and focuses on *what* exists in the fairy tale world, not yet *how* these concepts behave.
 
-```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Domain Model (Larman-style)" lang="en" customDescription="Simple domain model with all characters from the Little Red Riding Hood story. Little Red has a name and a red hood. Mother has a name and gives tasks. Wolf has hunger and a disguise. Grandmother is sick. Huntsman has scissors. Basket contains cookies and wine. House is in the forest. Stone has a weight."
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Domain Model (Larman-style)" lang="en"
 @startuml
 !theme plain
 title Once upon a time... the domain model of Little Red Riding Hood
@@ -100,6 +100,8 @@ In this beginner-friendly model, we show all entities at the same level of abstr
 For this story, we intentionally chose a *flat* structure because the narrative is more about **who interacts with whom** rather than their taxonomic classification. The detailed Fowler-style version in [Appendix A](#appendix-a-detailed-domain-model-fowler-style) goes deeper into this aspect.
 
 **Note about concrete examples:** In a production environment, the Glossary would include concrete examples, such as `LittleRedRidingHood { name: "Little Red", hasRedHood: true }` or `Basket { cookies: 12, wine: 1 }`. This helps developers and domain experts understand the data format and possible values. For this educational example, we've omitted these details to focus on the relationships between entities.
+
+(Of course, Grandmother's cabin in the original fairy tale predates modern addressing systems. In a contemporary retelling, we might add `Grandmother { address: "Deep Forest Lane 7", postalCode: "12345-WOOD" }` using the [ZIP+4 format](https://en.wikipedia.org/wiki/ZIP_Code). The Wolf could then use Google Maps to plan a faster route through the forest, while Little Red Riding Hood gets stuck on the scenic path after exceeding her monthly mobile data limit - unable to check Waze for traffic updates.)
 :::
 
 ---
@@ -118,7 +120,7 @@ A large sequence diagram with all interactions quickly becomes confusing. Just l
 
 First, an activity diagram showing the main storyline:
 
-```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Overview of the three phases" lang="en" customDescription="Activity diagram with three phases: A) Journey to grandmother with wolf encounter, B) At grandmother's house where the wolf eats Little Red, C) The huntsman rescues Little Red. The diagram shows the sequence of these phases."
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Overview of the three phases" lang="en"
 @startuml
 !theme plain
 title Little Red Riding Hood - Overview
@@ -164,7 +166,7 @@ Little Red Riding Hood receives the task to bring a basket to grandmother and me
 
 In this first phase we use **strings as messages** - the simplest way to show interactions between characters. This is how Alan Kay originally envisioned Object-Oriented Programming: objects that send messages to each other, without knowing the internal implementation of the receiver.
 
-```kroki imgType="plantuml" imgTitle="Phase A: Journey to grandmother" lang="en" customDescription="Sequence diagram of phase A: Mother gives Little Red a basket with the task to go to grandmother. On the way, Little Red meets the Wolf who asks where she is going. Little Red tells about grandmother's house. The Wolf decides to take a shorter path."
+```kroki imgType="plantuml" imgTitle="Phase A: Journey to grandmother" lang="en"
 @startuml
 title Phase A: The journey to grandmother
 
@@ -220,7 +222,7 @@ The wolf arrives first, eats grandmother, and disguises himself. Then Little Red
 
 In this phase we switch from strings to **method names**. This is a step towards the formal UML notation used in software design. Method names are more specific: `knock()` is clearer than "knocks on the door".
 
-```kroki imgType="plantuml" imgTitle="Phase B: At grandmother's house" lang="en" customDescription="Sequence diagram of phase B: The Wolf arrives at grandmother's house and knocks. Grandmother opens, the Wolf eats her. The Wolf disguises himself as grandmother and gets into bed. Little Red arrives and knocks. After the famous dialogue about big eyes, ears and mouth, the Wolf also eats Little Red."
+```kroki imgType="plantuml" imgTitle="Phase B: At grandmother's house" lang="en"
 @startuml
 title Phase B: At grandmother's house
 
@@ -288,7 +290,7 @@ The huntsman hears snoring, investigates the situation and rescues Little Red an
 
 In this phase we add even more detail: a **StoneFactory** that creates stones in a loop. This introduces two advanced UML concepts: the *Factory* design pattern and *loop* constructs in sequence diagrams.
 
-```kroki imgType="plantuml" imgTitle="Phase C: The rescue" lang="en" customDescription="Sequence diagram of phase C: The Huntsman hears loud snoring and decides to investigate. He enters grandmother's house, sees the Wolf with a fat belly. The Huntsman cuts the belly open and rescues Little Red and Grandmother. A StoneFactory creates multiple stones that are put in the wolf's belly. The Wolf is punished."
+```kroki imgType="plantuml" imgTitle="Phase C: The rescue" lang="en"
 @startuml
 title Phase C: The rescue
 
@@ -370,7 +372,7 @@ In real software development you would choose *one* level of detail for all part
 
 As an alternative to the activity diagram, we can also create a high-level sequence diagram. This is more abstract and shows only the main interactions:
 
-```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Overview as sequence diagram" lang="en" customDescription="High-level sequence diagram showing the three phases: In phase A Little Red meets the Wolf in the forest. In phase B the Wolf eats first Grandmother then Little Red. In phase C the Huntsman rescues both and punishes the Wolf."
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Overview as sequence diagram" lang="en"
 @startuml
 title Little Red Riding Hood - Main storyline
 
@@ -546,7 +548,7 @@ Although I (Bart) am ultimately responsible for the content, feedback on any err
 
 For software developers who want to see a more formal domain model, we show below the Fowler-style version: with data types, visibility modifiers, and methods.
 
-```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Detailed Domain Model (Fowler-style)" lang="en" customDescription="Detailed class diagram with inheritance. LittleRedRidingHood, Grandmother, and Huntsman inherit from abstract class FairyTaleCharacter, which has an association with Weapon. This means any character can wield a weapon - not just the Huntsman. The Wolf is a separate class. This modernized model passes the Bechdel test: female characters can have agency and weapons too."
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Detailed Domain Model (Fowler-style)" lang="en"
 @startuml
 !theme plain
 title Once upon a time... the domain model of Little Red Riding Hood (Fowler-style)
@@ -665,7 +667,7 @@ The diagram below is an **anti-pattern**. We show it here explicitly to demonstr
 Creating a "God Diagram" is choosing the second option: so complex that you can no longer see the flaws.
 :::
 
-```kroki imgType="plantuml" imgTitle="ANTI-PATTERN: God Diagram with all phases" lang="en" customDescription="This is an anti-pattern. A combined sequence diagram with ALL interactions from phases A, B, and C. The diagram is deliberately too large and confusing to show why you should not do this. It contains more than 40 interactions and is virtually unreadable."
+```kroki imgType="plantuml" imgTitle="ANTI-PATTERN: God Diagram with all phases" lang="en"
 @startuml
 title ANTI-PATTERN: Little Red Riding Hood - God Diagram\n(Do NOT do this!)
 

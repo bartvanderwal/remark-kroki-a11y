@@ -11,3 +11,6 @@ build
 docs/readme.md
 docs/contributing.md
 docs/adr/
+
+# The GitHub Actions CI/CD pipeline uses yarn, so we any npm lock file generated 'by mistakenly' using npm build instead of yarn build.
+package-lock.json

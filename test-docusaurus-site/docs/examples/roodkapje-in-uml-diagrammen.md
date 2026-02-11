@@ -26,7 +26,7 @@ Voordat we het verhaal in sequentiediagrammen vertellen, definiëren we eerst de
 
 We gebruiken hier een domeinmodel in de stijl van Larman: focus op de entiteiten (concepten) en hun attributen, zonder methodes en zonder expliciete types. Bij twijfel of iets een primitief attribuut is of een eigen entiteit verdient, kies je voor een aparte entiteit. Business-activiteiten (zoals "eet op") mogen als relatie worden weergegeven.
 
-```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Larman-stijl)" lang="nl" customDescription="Eenvoudig domeinmodel met de hoofdentiteiten uit het Roodkapje-verhaal: Roodkapje, Moeder, Oma, Wolf, Jager, Mandje, Huis en Steen. Alleen attributen, geen methodes. Relaties tonen wie wat doet met wie."
+```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Larman-stijl)" lang="nl"
 @startuml
 !theme plain
 title Er was eens... het domeinmodel van Roodkapje
@@ -125,7 +125,7 @@ Een groot sequentiediagram met alle interacties wordt snel onoverzichtelijk. Net
 
 Eerst een activity diagram dat de hoofdlijnen van het verhaal toont:
 
-```kroki imgType="plantuml" imgTitle="Roodkapje: Overzicht van de drie fasen" lang="nl" customDescription="Activity diagram met drie fasen: A) Reis naar oma met ontmoeting wolf, B) Bij oma's huis waar de wolf Roodkapje opeet, C) De jager bevrijdt Roodkapje. Het diagram toont de volgorde van deze fasen."
+```kroki imgType="plantuml" imgTitle="Roodkapje: Overzicht van de drie fasen" lang="nl"
 @startuml
 !theme plain
 title Roodkapje - Overzicht
@@ -169,7 +169,7 @@ We gebruiken hier een **activity diagram** voor het overzicht omdat:
 
 Roodkapje krijgt de opdracht om een mandje naar oma te brengen en ontmoet onderweg de wolf.
 
-```kroki imgType="plantuml" imgTitle="Fase A: Reis naar oma" lang="nl" customDescription="Sequentiediagram van fase A: Moeder geeft Roodkapje een mandje met opdracht naar oma te gaan. Onderweg ontmoet Roodkapje de Wolf die vraagt waar ze heen gaat. Roodkapje vertelt over oma's huis. De Wolf besluit een kortere weg te nemen."
+```kroki imgType="plantuml" imgTitle="Fase A: Reis naar oma" lang="nl"
 @startuml
 hide footbox
 title Fase A: De reis naar oma
@@ -226,7 +226,7 @@ In de volgende fase schakelen we over naar **methode-aanroepen**, want dat is wa
 
 De wolf arriveert als eerste, eet oma op, en vermomt zich. Dan arriveert Roodkapje.
 
-```kroki imgType="plantuml" imgTitle="Fase B: Bij oma's huis" lang="nl" customDescription="Sequentiediagram van fase B: De Wolf arriveert bij oma's huis en klopt aan. Oma doet open, de Wolf eet haar op. De Wolf vermomt zich als oma en gaat in bed liggen. Roodkapje arriveert en klopt aan. Na de bekende dialoog over grote ogen, oren en mond, eet de Wolf ook Roodkapje op."
+```kroki imgType="plantuml" imgTitle="Fase B: Bij oma's huis" lang="nl"
 @startuml
 hide footbox
 title Fase B: Bij oma's huis
@@ -334,7 +334,7 @@ In fase C gaan we juist de andere kant op: we voegen *meer* detail toe, inclusie
 
 De jager hoort gesnurk, onderzoekt de situatie en bevrijdt Roodkapje en oma.
 
-```kroki imgType="plantuml" imgTitle="Fase C: De redding" lang="nl" customDescription="Sequentiediagram van fase C: De Jager hoort hard gesnurk en besluit te onderzoeken. Hij gaat oma's huis binnen, ziet de Wolf met dikke buik. De Jager knipt de buik open en bevrijdt Roodkapje en Oma. Via een StenenFactory worden stenen verzameld in een loop totdat de Jager niet meer kan dragen. De stenen worden in de Wolf gestopt."
+```kroki imgType="plantuml" imgTitle="Fase C: De redding" lang="nl"
 @startuml
 hide footbox
 title Fase C: De redding
@@ -455,7 +455,7 @@ Andere UML-keywords in dit diagram:
 
 Als alternatief voor het activity diagram kunnen we ook een high-level sequence diagram maken. Dit is abstracter en toont alleen de hoofdinteracties:
 
-```kroki imgType="plantuml" imgTitle="Roodkapje: Overzicht als sequence diagram" lang="nl" customDescription="High-level sequentiediagram dat de drie fasen toont: In fase A ontmoet Roodkapje de Wolf in het bos. In fase B eet de Wolf eerst Oma en dan Roodkapje op. In fase C bevrijdt de Jager beiden en straft de Wolf."
+```kroki imgType="plantuml" imgTitle="Roodkapje: Overzicht als sequence diagram" lang="nl"
 @startuml
 hide footbox
 title Roodkapje - Hoofdlijnen
@@ -675,7 +675,7 @@ Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over event
 
 In de hoofdtekst gebruikten we een eenvoudig domeinmodel in Larman-stijl. Hieronder hetzelfde model in **Fowler-stijl**: met methodes, expliciete types en meer technisch detail. Dit is geschikt voor de ontwerpfase en communicatie met developers.
 
-```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Fowler-stijl)" lang="nl" customDescription="Gedetailleerd klassendiagram met alle karakters en objecten uit het Roodkapje-verhaal. Bevat methodes met parameters en return types. Roodkapje heeft vertrek(), klop() en vraag() methodes. De Wolf heeft methodes om te vermommen en op te eten. De Jager kan de buik openknippen en dichtNaaien."
+```kroki imgType="plantuml" imgTitle="Roodkapje: Domeinmodel (Fowler-stijl)" lang="nl"
 @startuml
 !theme plain
 title Domeinmodel van Roodkapje (Fowler-stijl)
@@ -773,7 +773,7 @@ Een "God Diagram" maken is kiezen voor de tweede optie: zo complex dat je eventu
 
 :::
 
-```kroki imgType="plantuml" imgTitle="ANTI-PATTERN: God Diagram met alle fasen" lang="nl" customDescription="Dit is een anti-pattern. Een gecombineerd sequentiediagram met ALLE interacties uit fase A, B en C. Het diagram is bewust te groot en onoverzichtelijk om te laten zien waarom je dit niet moet doen. Het bevat meer dan 40 interacties en is vrijwel onleesbaar."
+```kroki imgType="plantuml" imgTitle="ANTI-PATTERN: God Diagram met alle fasen" lang="nl"
 @startuml
 hide footbox
 title ANTI-PATTERN: Roodkapje - God Diagram\n(Doe dit NIET!)
