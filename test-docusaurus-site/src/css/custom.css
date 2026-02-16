@@ -2,3 +2,150 @@
 
 /* Import diagram A11y styles from the plugin */
 @import '../../../src/diagram-a11y.css';
+
+.coveragePieRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 1rem;
+  align-items: start;
+}
+
+.coveragePieItem {
+  min-width: 0;
+}
+
+.coveragePieItem h3 {
+  margin-top: 0;
+}
+
+.coveragePieItem img {
+  width: min(100%, 340px);
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 996px) {
+  .coveragePieRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+.quizdown-debug {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin: 1rem 0;
+}
+
+.quizdown-rendered {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.quizdown-rendered h3 {
+  margin-top: 0;
+}
+
+.quizdown-assistive-note {
+  margin-top: 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+.quizdown-question {
+  border: 1px solid var(--ifm-color-emphasis-200);
+  border-radius: 8px;
+  padding: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.quizdown-question-correct {
+  border-color: var(--ifm-color-success);
+}
+
+.quizdown-question-wrong {
+  border-color: var(--ifm-color-danger);
+}
+
+.quizdown-options {
+  display: grid;
+  gap: 0.4rem;
+}
+
+.quizdown-option-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.6rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 0.4rem 0.6rem;
+}
+
+.quizdown-option-label {
+  cursor: pointer;
+}
+
+.quizdown-option-row input:focus-visible,
+.quizdown-strike-toggle:focus-visible,
+.quizdown-open-input:focus-visible {
+  outline: 2px solid var(--ifm-color-primary);
+  outline-offset: 2px;
+}
+
+.quizdown-option-correct span {
+  font-weight: 600;
+}
+
+.quizdown-strike-toggle {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 50%;
+  border: 1px solid var(--ifm-color-emphasis-400);
+  background: var(--ifm-background-color);
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
+}
+
+.quizdown-option-struck {
+  opacity: 0.65;
+}
+
+.quizdown-option-struck .quizdown-option-label {
+  text-decoration: line-through;
+}
+
+.quizdown-open-input {
+  width: min(100%, 420px);
+}
+
+.quizdown-open-note {
+  margin-top: 0.5rem;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.quizdown-question-feedback {
+  margin-top: 0.6rem;
+  font-weight: 600;
+}
+
+.quizdown-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 0.8rem;
+}
+
+.quizdown-score {
+  margin-top: 0.8rem;
+  font-weight: 700;
+}
+
+.quizdown-warnings {
+  margin-top: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-left: 3px solid var(--ifm-color-warning);
+  background: var(--ifm-color-emphasis-100);
+}

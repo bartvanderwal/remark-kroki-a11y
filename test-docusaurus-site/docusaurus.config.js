@@ -13,7 +13,9 @@ const passThrough = [
   'mdxjsEsm',
 ];
 
-module.exports = {
+module.exports = async function createConfigAsync() {
+  const { default: remarkQuizdown } = await import('./src/remark/remark-quizdown.mjs');
+  return {
   title: 'remark-kroki-a11y',
   tagline: 'Accessible diagram descriptions for Kroki diagrams in Docusaurus',
   url: 'https://bartvanderwal.github.io',
@@ -27,6 +29,7 @@ module.exports = {
   // Client-side module for tab switching
   clientModules: [
     require.resolve('../src/diagramTabs.js'),
+    require.resolve('./src/quizdown-client.js'),
   ],
   markdown: {
     hooks: {
@@ -63,6 +66,8 @@ module.exports = {
           showLastUpdateTime: true,
           showLastUpdateAuthor: true,
           remarkPlugins: [
+            // Experimental parser for ```quiz fenced blocks
+            remarkQuizdown,
             // Mermaid A11y plugin for native ```mermaid blocks (client-side rendered)
             // MUST come BEFORE theme-mermaid processes the blocks
             [require('../src/mermaid-a11y'), {
@@ -172,4 +177,5 @@ module.exports = {
       copyright: `Copyright © ${new Date().getFullYear()} Bart van der Wal. Built with Docusaurus.`,
     },
   },
+  };
 };
