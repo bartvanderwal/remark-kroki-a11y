@@ -1,0 +1,92 @@
+.quiz {
+  margin: 2rem 0;
+}
+
+.meta {
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.95rem;
+}
+
+.card {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  margin: 1rem 0;
+  padding: 1rem;
+}
+
+.question {
+  font-weight: 700;
+  padding: 0 0.35rem;
+}
+
+.options {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}
+
+.option {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 0.75rem;
+  background: var(--ifm-background-color);
+}
+
+.option:hover {
+  border-color: var(--ifm-color-emphasis-500);
+}
+
+.optionSelectedCorrect {
+  border-color: var(--ifm-color-success);
+  background: color-mix(in srgb, var(--ifm-color-success) 10%, transparent);
+}
+
+.optionSelectedWrong {
+  border-color: var(--ifm-color-danger);
+  background: color-mix(in srgb, var(--ifm-color-danger) 10%, transparent);
+}
+
+.optionMissedCorrect {
+  border-color: var(--ifm-color-success);
+  border-style: dashed;
+}
+
+.resultIcon {
+  font-weight: 700;
+}
+
+.correct {
+  color: var(--ifm-color-success-darkest);
+  margin-top: 0.75rem;
+}
+
+.wrong {
+  color: var(--ifm-color-danger-darkest);
+  margin-top: 0.75rem;
+}
+
+.hintBlock {
+  margin-top: 0.75rem;
+}
+
+.hintText {
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--ifm-color-info);
+  background: var(--ifm-color-emphasis-100);
+}
+
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.score {
+  font-weight: 700;
+  margin-top: 1rem;
+}

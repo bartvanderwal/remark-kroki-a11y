@@ -7,6 +7,8 @@ module.exports = {
       items: [
         'examples/little-red-riding-hood-as-uml-diagrams',
         'examples/roodkapje-in-uml-diagrammen',
+        'examples/uml-quiz-multiple-choice',
+        'examples/uml-quiz-experimental-syntax',
       ],
     },
     {

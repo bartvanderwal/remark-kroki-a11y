@@ -2,9 +2,11 @@
 
 This section contains live examples that demonstrate the remark-kroki-a11y plugin in action. Each page shows diagrams with their automatically generated accessible descriptions.
 
-The following  pie charts show general accessibility support for PlantUML and Mermaid diagram types.
+The following pie charts show general accessibility support for PlantUML and Mermaid diagram types.
 
-## PlantUML A11y Coverage
+<div className="coveragePieRow">
+  <div className="coveragePieItem">
+    <h3>PlantUML A11y Coverage</h3>
 
 ```kroki imgType="mermaid" imgTitle="PlantUML A11y Coverage"
 pie showData
@@ -12,8 +14,9 @@ pie showData
     "With A11y support" : 4
     "Planned/None" : 12
 ```
-
-## Mermaid A11y Coverage
+  </div>
+  <div className="coveragePieItem">
+    <h3>Mermaid A11y Coverage</h3>
 
 ```kroki imgType="mermaid" imgTitle="Mermaid A11y Coverage"
 pie showData
@@ -21,6 +24,8 @@ pie showData
     "With A11y support" : 2
     "Planned/None" : 13
 ```
+  </div>
+</div>
 
 ---
 
@@ -28,6 +33,8 @@ pie showData
 
 - [Red Riding Hood as UML diagrams](/examples/little-red-riding-hood-as-uml-diagrams) - A gentle introduction to (some) UML diagrams
 - [Roodkapje in UML diagrammen](/examples/roodkapje-in-uml-diagrammen) - Een toegankelijke introductie in (enkele) UML diagrammen
+- [UML Quiz (Multiple Choice)](/examples/uml-quiz-multiple-choice) - Interactive quiz using current component
+- [UML Quiz (Syntax)](/examples/uml-quiz-experimental-syntax) - Syntax-based quiz with single, multiple, and open-answer types
 
 ## Class Diagrams
 

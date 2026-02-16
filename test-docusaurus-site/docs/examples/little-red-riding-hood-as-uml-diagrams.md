@@ -116,6 +116,15 @@ A large sequence diagram with all interactions quickly becomes confusing. Just l
 
 ---
 
+## Quiz exercises
+
+The quiz examples for this article are available as two separate pages:
+
+- [UML Quiz (Multiple Choice)](/examples/uml-quiz-multiple-choice)
+- [UML Quiz (Syntax)](/examples/uml-quiz-experimental-syntax)
+
+---
+
 ## Overview Diagram: The Three Phases
 
 First, an activity diagram showing the main storyline:
