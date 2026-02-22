@@ -211,6 +211,13 @@ Verify the server is reachable:
 curl http://localhost:8000/health
 ```
 
+The compose file also mounts a local include folder and sets
+`KROKI_PLANTUML_INCLUDE_PATH`, so PlantUML can resolve:
+
+```plantuml
+!include domainStory.puml
+```
+
 Use the local server in `docusaurus.config.js`:
 
 ```js

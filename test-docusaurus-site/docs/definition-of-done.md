@@ -7,80 +7,80 @@ description: Quality criteria for completed features and fixes
 
 # Definition of Done
 
-Dit document beschrijft de criteria waaraan een feature of bugfix moet voldoen voordat deze als "Done" wordt beschouwd.
+This document defines the criteria that a feature or bug fix must meet before it is considered "Done".
 
-## Acceptatiecriteria
+## Acceptance Criteria
 
-Elke taak/feature moet acceptatiecriteria hebben voordat deze als Done kan worden beschouwd:
+Each task/feature must have acceptance criteria before it can be considered Done:
 
-- [ ] **Acceptatiecriteria gedefinieerd** - Duidelijke, testbare criteria voor de feature
-- [ ] **BDD tests geschreven** - Acceptatiecriteria vertaald naar `.feature` bestanden
+- [ ] **Acceptance criteria defined** - Clear, testable criteria for the feature
+- [ ] **BDD tests written** - Acceptance criteria translated into `.feature` files
 
-Zie bestaande voorbeelden in de `features/` map:
+See existing examples in the `features/` folder:
 
-- [features/basic-classdiagram.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/basic-classdiagram.feature) - Basis klassediagram parsing
-- [features/sequence-diagram.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/sequence-diagram.feature) - Sequentiediagram parsing
-- [features/unsupported-diagrams.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/unsupported-diagrams.feature) - Fallback voor niet-ondersteunde types
+- [features/basic-classdiagram.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/basic-classdiagram.feature) - Basic class diagram parsing
+- [features/sequence-diagram.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/sequence-diagram.feature) - Sequence diagram parsing
+- [features/unsupported-diagrams.feature](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/features/unsupported-diagrams.feature) - Fallback for unsupported types
 
-## Code Kwaliteit
+## Code Quality
 
-- [ ] **ESLint passes** - Geen linting errors (`yarn lint`)
-- [ ] **Markdownlint passes** - Documentatie volgt markdown best practices
-- [ ] **Syntax geldig** - `node -c src/index.js` slaagt zonder errors
+- [ ] **ESLint passes** - No linting errors (`yarn lint`)
+- [ ] **Markdownlint passes** - Documentation follows markdown best practices
+- [ ] **Valid syntax** - `node -c src/index.js` succeeds without errors
 
 ## Build & Runtime
 
-- [ ] **Compileert** - `yarn build` voltooit zonder errors
-- [ ] **Draait correct** - `yarn start` start zonder runtime errors
-- [ ] **Package werkt** - `npm pack` of `yarn pack` slaagt
+- [ ] **Compiles** - `yarn build` completes without errors
+- [ ] **Runs correctly** - `yarn start` starts without runtime errors
+- [ ] **Package works** - `npm pack` or `yarn pack` succeeds
 
 ## Testing
 
-- [ ] **BDD tests slagen** - Alle tests in `yarn test` slagen
-- [ ] **Nieuwe features hebben tests** - BDD scenario's toegevoegd voor nieuwe functionaliteit
-- [ ] **Geen regressies** - Bestaande tests slagen nog steeds
+- [ ] **BDD tests pass** - All tests in `yarn test` pass
+- [ ] **New features have tests** - BDD scenarios added for new functionality
+- [ ] **No regressions** - Existing tests still pass
 
-## Documentatie
+## Documentation
 
-- [ ] **Links werken** - Docusaurus link checker slaagt (`onBrokenLinks: 'throw'` is enabled)
-- [ ] **README bijgewerkt** - Nieuwe opties of features gedocumenteerd
-- [ ] **Changelog bijgewerkt** - (indien van toepassing)
+- [ ] **Links work** - Docusaurus link checker passes (`onBrokenLinks: 'throw'` is enabled)
+- [ ] **README updated** - New options or features documented
+- [ ] **Changelog updated** - (if applicable)
 
 ## Docusaurus Test Site
 
-- [ ] **Site bouwt** - `cd test-docusaurus-site && yarn build` slaagt
-- [ ] **Site draait** - `yarn start` toont de site correct
-- [ ] **Voorbeeld toegevoegd** - Bij nieuwe diagram types is er een voorbeeld pagina in `test-docusaurus-site/docs/examples/`
+- [ ] **Site builds** - `cd test-docusaurus-site && yarn build` succeeds
+- [ ] **Site runs** - `yarn start` shows the site correctly
+- [ ] **Example added** - For new diagram types, an example page exists in `test-docusaurus-site/docs/examples/`
 
 ## Pre-commit Checks
 
-De pre-commit hook (Husky) voert automatisch uit:
+The pre-commit hook (Husky) automatically runs:
 
-1. Check op `package-lock.json` (warning - we gebruiken yarn)
-2. Check op aanwezigheid `yarn.lock` (warning)
-3. **BDD tests** (blocking - moet slagen om te committen)
+1. Check for `package-lock.json` (warning - we use yarn)
+2. Check for `yarn.lock` presence (warning)
+3. **BDD tests** (blocking - must pass before commit)
 
-## Checklist voor specifieke wijzigingen
+## Checklist for Specific Changes
 
-### Nieuwe Diagram Parser
+### New Diagram Parser
 
-- [ ] Parser bestand aangemaakt in `src/parsers/`
-- [ ] BDD feature file aangemaakt in `features/`
-- [ ] Step definitions toegevoegd/uitgebreid in `features/steps/`
-- [ ] Nederlandse (nl) en Engelse (en) lokalisatie
-- [ ] Voorbeeld pagina in test-docusaurus-site (NL + EN versie)
+- [ ] Parser file created in `src/parsers/`
+- [ ] BDD feature file created in `features/`
+- [ ] Step definitions added/extended in `features/steps/`
+- [ ] Dutch (nl) and English (en) localization
+- [ ] Example page in test-docusaurus-site (NL + EN version)
 
 ### Bug Fix
 
-- [ ] Falende test toegevoegd die de bug reproduceert
-- [ ] Fix geïmplementeerd
-- [ ] Test slaagt na fix
+- [ ] Failing test added that reproduces the bug
+- [ ] Fix implemented
+- [ ] Test passes after the fix
 
-### Documentatie
+### Documentation
 
-- [ ] Spelling gecontroleerd
-- [ ] Links gevalideerd
-- [ ] Screenshots/voorbeelden bijgewerkt indien nodig
+- [ ] Spelling checked
+- [ ] Links validated
+- [ ] Screenshots/examples updated if needed
 
 ---
 
