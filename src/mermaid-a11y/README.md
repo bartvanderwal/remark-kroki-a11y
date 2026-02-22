@@ -1,4 +1,4 @@
-# remark-mermaid-with-expandable-source
+# mermaid-a11y
 
 A [Remark plugin](https://docusaurus.io/docs/markdown-features/plugins#creating-new-rehyperemark-plugins) that adds expandable source code blocks and accessible descriptions below native Mermaid diagrams in Docusaurus.
 
@@ -18,27 +18,12 @@ A [Remark plugin](https://docusaurus.io/docs/markdown-features/plugins#creating-
 
 This plugin extends Docusaurus's native Mermaid rendering with accessibility features:
 
-```text
-┌─────────────────────────────────────────────────────────────────┐
-│                    Docusaurus Build Process                     │
-├─────────────────────────────────────────────────────────────────┤
-│                                                                 │
-│  1. MDX/Markdown file with ```mermaid code block                │
-│                     ↓                                           │
-│  2. remark-mermaid-with-expandable-source (this plugin)         │
-│     - Parses Mermaid syntax                                     │
-│     - Generates accessible description (for classDiagram)       │
-│     - Injects <details> HTML nodes into AST                     │
-│                     ↓                                           │
-│  3. rehype-raw (required for MDX)                               │
-│     - Converts raw HTML nodes to JSX                            │
-│                     ↓                                           │
-│  4. @docusaurus/theme-mermaid                                   │
-│     - Renders Mermaid diagram as SVG (client-side)              │
-│                     ↓                                           │
-│  5. Final output: Diagram + Expandable source + A11y description│
-│                                                                 │
-└─────────────────────────────────────────────────────────────────┘
+```mermaid
+flowchart TD
+  A["MDX/Markdown with Mermaid code block"] --> B["mermaid-a11y (this plugin)<br/>- Parses Mermaid syntax<br/>- Generates accessible description (classDiagram)<br/>- Injects <details> nodes into AST"]
+  B --> C["rehype-raw (required for MDX)<br/>Converts raw HTML nodes to JSX"]
+  C --> D["@docusaurus/theme-mermaid<br/>Renders Mermaid diagram as SVG (client-side)"]
+  D --> E["Final output:<br/>Diagram + Expandable source + A11y description"]
 ```
 
 ### Architecture Decision Records (ADRs)
@@ -53,7 +38,7 @@ Key design decisions are documented in the [adr/](adr/) folder:
 
 ## Installation
 
-Copy the `plugins/remark-mermaid-with-expandable-source` folder to your Docusaurus project.
+Copy the `plugins/mermaid-a11y` folder to your Docusaurus project.
 
 ## Usage
 
@@ -66,7 +51,7 @@ const rehypeRaw = require('rehype-raw');
 docs: {
   sidebarPath: require.resolve('./sidebars.js'),
   remarkPlugins: [
-    [require('./plugins/remark-mermaid-with-expandable-source'), {
+    [require('./plugins/mermaid-a11y'), {
       // All options are optional:
       defaultExpanded: false,
       summaryText: 'Mermaid broncode voor "{title}"',
@@ -280,7 +265,7 @@ The plugin generates semantic HTML with ARIA roles for screen reader navigation:
 ## File Structure
 
 ```text
-plugins/remark-mermaid-with-expandable-source/
+plugins/mermaid-a11y/
 ├── index.js                   # Main plugin
 ├── parsers/
 │   └── classDiagramParser.js  # Mermaid classDiagram parser + a11y generator
