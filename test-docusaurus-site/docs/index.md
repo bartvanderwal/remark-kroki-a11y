@@ -197,6 +197,43 @@ module.exports = {
 };
 ```
 
+### Local Kroki via Docker (recommended for stable local builds)
+
+If `kroki.io` is unavailable or blocked, run a local Kroki server:
+
+```bash
+docker compose -f docker-compose.kroki.yml up -d
+```
+
+Verify the server is reachable:
+
+```bash
+curl http://localhost:8000/health
+```
+
+Use the local server in `docusaurus.config.js`:
+
+```js
+[require('remark-kroki-plugin'), {
+  krokiBase: 'http://localhost:8000',
+  lang: 'kroki',
+  imgRefDir: '/img/kroki',
+  imgDir: 'static/img/kroki',
+}]
+```
+
+Or without editing config, set:
+
+```bash
+export KROKI_BASE_URL=http://localhost:8000
+```
+
+Stop it when done:
+
+```bash
+docker compose -f docker-compose.kroki.yml down
+```
+
 ### Required: Client Module and CSS
 
 The plugin requires a client-side module for tab switching and CSS styling. These are included in the package:

@@ -1,0 +1,11 @@
+services:
+  kroki:
+    image: yuzutech/kroki:latest
+    container_name: kroki-local
+    ports:
+      - "8000:8000"
+    environment:
+      - KROKI_PLANTUML_INCLUDE_PATH=/opt/kroki/includes
+    volumes:
+      - ./test-docusaurus-site/kroki-includes:/opt/kroki/includes:ro
+    restart: unless-stopped

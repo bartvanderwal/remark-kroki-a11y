@@ -17,26 +17,23 @@ The remark-kroki-a11y plugin operates in the intersection of:
 
 ```kroki imgType="plantuml" imgTitle="System Context: remark-kroki-a11y" lang="en"
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
 
 title System Context: remark-kroki-a11y Plugin
 
-Person(author, "Content Author", "Writes documentation with PlantUML/Mermaid diagrams")
-Person(reader, "Reader", "Consumes documentation, possibly using assistive technology")
+actor "Content Author" as author
+actor "Reader" as reader
 
-System(plugin, "remark-kroki-a11y", "Remark plugin that adds accessible descriptions to diagrams")
+rectangle "remark-kroki-a11y\n(plugin)" as plugin
 
-System_Ext(ssg, "Static Site Generator", "Docusaurus, mdBook, Jekyll, etc.")
-System_Ext(kroki, "Kroki Service", "Renders diagrams to SVG/PNG")
-System_Ext(browser, "Web Browser", "Renders final HTML with diagrams and descriptions")
+rectangle "Static Site Generator\n(Docusaurus, mdBook, Jekyll)" as ssg
+rectangle "Kroki Service" as kroki
+rectangle "Web Browser" as browser
 
-Rel(author, ssg, "Writes Markdown with diagrams to")
-Rel(ssg, plugin, "Processes Markdown via remark pipeline through")
-Rel(plugin, kroki, "Requests diagram images from")
-Rel(ssg, browser, "Generates HTML site to")
-Rel(reader, browser, "Views documentation on")
-
-SHOW_LEGEND()
+author --> ssg : writes Markdown with diagrams
+ssg --> plugin : processes via remark pipeline
+plugin --> kroki : requests diagram images
+ssg --> browser : generates HTML site
+reader --> browser : views documentation
 @enduml
 ```
 
@@ -272,33 +269,30 @@ As a remark plugin, remark-kroki-a11y is an npm package that runs within the sta
 
 ```kroki imgType="plantuml" imgTitle="Container Diagram: Local Development Setup" lang="en"
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
 
 title Container Diagram: Local Development Setup
 
-Person(author, "Content Author", "Writes Markdown with diagram code blocks")
+actor "Content Author" as author
 
-System_Boundary(host, "Host Machine") {
-    Container(docusaurus, "Docusaurus Dev Server", "Node.js", "Builds and serves documentation site with hot reload")
-    Container(plugin, "remark-kroki-a11y", "npm package", "Remark plugin that parses diagrams and generates accessible descriptions")
-    Container(krokiPlugin, "remark-kroki-plugin", "npm package", "Remark plugin that sends diagram source to Kroki for rendering")
+rectangle "Host Machine" {
+    rectangle "Docusaurus Dev Server\n(Node.js)" as docusaurus
+    rectangle "remark-kroki-a11y\n(npm package)" as plugin
+    rectangle "remark-kroki-plugin\n(npm package)" as krokiPlugin
 }
 
-System_Boundary(docker, "Docker") {
-    Container(kroki, "Kroki", "Docker container", "Diagram rendering gateway, delegates to format-specific renderers")
-    Container(mermaid, "kroki-mermaid", "Docker container", "Renders Mermaid diagrams to SVG")
+rectangle "Docker" {
+    rectangle "Kroki\n(container)" as kroki
+    rectangle "kroki-mermaid\n(container)" as mermaid
 }
 
-System_Ext(browser, "Web Browser", "Renders final HTML with diagrams and descriptions")
+rectangle "Web Browser" as browser
 
-Rel(author, docusaurus, "writes Markdown files to")
-Rel(docusaurus, plugin, "processes Markdown through")
-Rel(docusaurus, krokiPlugin, "processes diagram code blocks through")
-Rel(krokiPlugin, kroki, "requests diagram images from")
-Rel(kroki, mermaid, "delegates Mermaid diagrams to")
-Rel(docusaurus, browser, "serves HTML to")
-
-SHOW_LEGEND()
+author --> docusaurus : writes Markdown files
+docusaurus --> plugin : processes Markdown
+docusaurus --> krokiPlugin : processes diagram code blocks
+krokiPlugin --> kroki : requests diagram images
+kroki --> mermaid : delegates Mermaid diagrams
+docusaurus --> browser : serves HTML
 @enduml
 ```
 
@@ -312,24 +306,21 @@ The plugin interacts with:
 
 ```kroki imgType="plantuml" imgTitle="Component Diagram: Current Implementation" lang="en"
 @startuml
-!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
 
 title Component Diagram: remark-kroki-a11y (Current)
 
-Container_Boundary(plugin, "remark-kroki-a11y Plugin") {
-    Component(index, "index.js", "JavaScript", "Main entry point, remark plugin interface")
-    Component(classParser, "classDiagramParser.js", "JavaScript", "Parses PlantUML/Mermaid class diagrams")
-    Component(stateParser, "stateDiagramParser.js", "JavaScript", "Parses PlantUML state diagrams")
-    Component(seqParser, "sequenceDiagramParser.js", "JavaScript", "Parses PlantUML/Mermaid sequence diagrams")
-    Component(tabsGen, "diagramTabs.js", "JavaScript", "Generates expandable tabs UI")
+rectangle "remark-kroki-a11y Plugin" {
+    rectangle "index.js\n(main plugin entry)" as index
+    rectangle "classDiagramParser.js" as classParser
+    rectangle "stateDiagramParser.js" as stateParser
+    rectangle "sequenceDiagramParser.js" as seqParser
+    rectangle "diagramTabs.js" as tabsGen
 }
 
-Rel(index, classParser, "delegates class diagrams to")
-Rel(index, stateParser, "delegates state diagrams to")
-Rel(index, seqParser, "delegates sequence diagrams to")
-Rel(index, tabsGen, "uses for UI generation")
-
-SHOW_LEGEND()
+index --> classParser : delegates class diagrams
+index --> stateParser : delegates state diagrams
+index --> seqParser : delegates sequence diagrams
+index --> tabsGen : uses for UI generation
 @enduml
 ```
 

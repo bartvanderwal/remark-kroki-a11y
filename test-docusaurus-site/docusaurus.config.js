@@ -3,6 +3,7 @@
 
 const { docs } = require("./sidebars");
 const rehypeRaw = require('rehype-raw').default;
+const { version: pluginVersion } = require('../package.json');
 
 // MDX node types to pass through (not processed by rehype-raw)
 const passThrough = [
@@ -15,6 +16,7 @@ const passThrough = [
 
 module.exports = async function createConfigAsync() {
   const { default: remarkQuizdown } = await import('./src/remark/remark-quizdown.mjs');
+  const krokiBase = process.env.KROKI_BASE_URL || 'https://kroki.io';
   return {
   title: 'remark-kroki-a11y',
   tagline: 'Accessible diagram descriptions for Kroki diagrams in Docusaurus',
@@ -87,7 +89,7 @@ module.exports = async function createConfigAsync() {
             }],
             // Kroki plugin for PlantUML, GraphViz, etc.
             [require('remark-kroki-plugin'), {
-              krokiBase: 'https://kroki.io',
+              krokiBase,
               lang: 'kroki',
               imgRefDir: '/remark-kroki-a11y/img/kroki',
               imgDir: 'static/img/kroki',
@@ -127,6 +129,11 @@ module.exports = async function createConfigAsync() {
         {
           href: 'https://github.com/bartvanderwal/remark-kroki-a11y',
           label: 'GitHub',
+          position: 'right',
+        },
+        {
+          href: 'https://www.npmjs.com/package/remark-kroki-a11y',
+          label: `v${pluginVersion}`,
           position: 'right',
         },
       ],

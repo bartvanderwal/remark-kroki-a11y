@@ -12,11 +12,11 @@ Little Red Riding Hood in the forest (image generated with ChatGPT/DALL-E, OpenA
 
 ---
 
-This example demonstrates how to translate a natural language story (the fairy tale of Little Red Riding Hood) into formal diagrams; specifically, UML diagrams. In this way, it provides a good introduction to (some) UML diagrams for non-technical people to get an understanding, or for beginning technical people (software engineers).
+This article demonstrates how to translate a natural language story (the fairy tale of Little Red Riding Hood) into formal diagrams; specifically, UML diagrams. These are diagrams used to analyse a domain and/or design software systems (like applications). On the one hand this is rather ridiculous (or perhaps funny), as this fairy tale clearly does not need or implicate any software. On the other hand this fairy tale (story) is well known. And int this way can form a well known 'domain' for most readers. So this is a good introduction to (some) UML diagrams for non-technical people to get an understanding, or for beginning technical people (software engineering students).
 
-We split the story into three parts to avoid a "God Diagram". A God diagram is an anti-pattern, just like a ['God object'](https://en.wikipedia.org/wiki/God_object). Splitting is a best practice to prevent 'cognitive load'. To still provide an overview, we create a separate diagram that shows the relationships between parts. This is similar to how C4 also uses different zoom levels.
+We split the story into three parts to avoid the "One diagram to rule them all" antipattern (ODTRTA). A God diagram is an anti-pattern, just like a ['God object'](https://en.wikipedia.org/wiki/God_object). Splitting large diagrams up into several diagrams is a best practice to prevent 'cognitive load'. To still provide an overview, we create a separate high level diagram that shows the relationships between parts. This is similar to the C4 model method, which introduced different zoom levels. C4 is a method that followed UML, and the UML 'code' diagrams are the fourth C in C4.
 
-This article first introduces the domain model: the "world" of the fairy tale with all characters and their relationships. Then we work out the story in three phases, each with a sequence diagram showing interactions between characters. Finally, the appendices contain a more detailed domain model (Fowler-style) and the "God Diagram" as an anti-pattern example.
+This article first introduces the domain model: the "world" of the fairy tale with all characters and their relationships. Then we work out the story in three phases, each with a sequence diagram showing interactions between characters. Finally, the appendices contain a more detailed domain model (Fowler-style), the "God Diagram" as an anti-pattern example, and a use case view that connects the class and sequence perspectives.
 
 ---
 
@@ -166,6 +166,10 @@ We use an **activity diagram** for the overview because:
 - It shows the **sequence** of phases (flow)
 - Partitions clearly separate the **three parts**
 - It's more abstract than a sequence diagram (no objects/methods)
+
+For a behavioral bridge between this domain/class perspective and the sequence
+diagrams in phases A, B, and C, see
+[Appendix C: Use Case Diagram](#appendix-c-use-case-diagram-linking-class-and-sequence-views).
 
 ---
 
@@ -781,3 +785,48 @@ The biggest challenge is often to ultimately **validate** the entire solution as
 Software Engineering is a *Design Science* (DS). This anti-pattern illustrates the DS equivalent of the fact that a good/useful whole (system) is more than just the sum of its parts (elements). Splitting into parts is necessary, but the art is to design those parts so that together they form a coherent whole.
 
 Or, as we stated in the introduction: just like with C4 diagrams, you use different zoom levels. You need an overview AND detailed views - but not everything in one diagram.
+
+---
+
+### Appendix C: Use Case Diagram (linking class and sequence views)
+
+This use case diagram provides a behavioral bridge between the class/domain model
+and the sequence diagrams above. The use cases describe *what* the actors try to
+achieve; the sequence diagrams show *how* those interactions unfold over time.
+
+```kroki imgType="plantuml" imgTitle="Little Red Riding Hood: Use Case Diagram" lang="en"
+@startuml
+left to right direction
+title Little Red Riding Hood - Use Case View
+
+actor Mother
+actor "Little Red" as LR
+actor Wolf
+actor Grandmother
+actor Huntsman
+
+rectangle "Story World" {
+  usecase "Deliver basket\nto grandmother" as UC1
+  usecase "Talk to wolf\nin forest" as UC2
+  usecase "Enter\ngrandmother's house" as UC3
+  usecase "Disguise as\ngrandmother" as UC4
+  usecase "Rescue victims" as UC5
+  usecase "Punish wolf" as UC6
+}
+
+Mother --> UC1
+LR --> UC1
+LR --> UC2
+Wolf --> UC2
+LR --> UC3
+Wolf --> UC3
+Wolf --> UC4
+Grandmother --> UC3
+Huntsman --> UC5
+LR --> UC5
+Grandmother --> UC5
+LR --> UC6
+Huntsman --> UC6
+Wolf --> UC6
+@enduml
+```

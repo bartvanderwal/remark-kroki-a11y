@@ -25,6 +25,65 @@ function parseMetaFlags(meta) {
   };
 }
 
+function shuffleArray(values) {
+  const result = [...values];
+  for (let i = result.length - 1; i > 0; i -= 1) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
+
+function orderOptionsForRendering(options) {
+  if (!options || options.length <= 1) return options || [];
+
+  const forced = options.filter((o) => Number.isInteger(o.forcedOrder));
+  const unforced = options.filter((o) => !Number.isInteger(o.forcedOrder));
+
+  // Default: randomize all options when no forced positions are provided.
+  if (forced.length === 0) {
+    return shuffleArray(options);
+  }
+
+  // If forced positions exist, keep those positions fixed and randomize the rest.
+  const total = options.length;
+  const slots = new Array(total).fill(null);
+  const forcedSorted = [...forced].sort((a, b) => {
+    if (a.forcedOrder !== b.forcedOrder) return a.forcedOrder - b.forcedOrder;
+    return 0;
+  });
+
+  forcedSorted.forEach((opt) => {
+    const preferred = Math.max(0, Math.min(total - 1, opt.forcedOrder - 1));
+    if (slots[preferred] === null) {
+      slots[preferred] = opt;
+      return;
+    }
+    for (let i = preferred + 1; i < total; i += 1) {
+      if (slots[i] === null) {
+        slots[i] = opt;
+        return;
+      }
+    }
+    for (let i = preferred - 1; i >= 0; i -= 1) {
+      if (slots[i] === null) {
+        slots[i] = opt;
+        return;
+      }
+    }
+  });
+
+  const randomizedUnforced = shuffleArray(unforced);
+  let unforcedIndex = 0;
+  for (let i = 0; i < total; i += 1) {
+    if (slots[i] !== null) continue;
+    slots[i] = randomizedUnforced[unforcedIndex];
+    unforcedIndex += 1;
+  }
+
+  return slots.filter(Boolean);
+}
+
 function finalizeQuestion(current, warnings, index) {
   if (!current) return null;
 
@@ -158,9 +217,21 @@ function parseQuizdown(source) {
 
     const optionMatch = line.match(/^\s*-\s*(?:(\d+)\.\s*)?(\([ xX]\)|\[[ xX]\])\s*(.*)$/);
     if (optionMatch) {
-      const forcedOrder = optionMatch[1] ? Number.parseInt(optionMatch[1], 10) : null;
+      const forcedBeforeMarker = optionMatch[1]
+        ? Number.parseInt(optionMatch[1], 10)
+        : null;
       const marker = optionMatch[2];
-      const text = optionMatch[3] || '';
+      let text = optionMatch[3] || '';
+      let forcedOrder = forcedBeforeMarker;
+
+      // Also support "- ( ) 4. All of the above" style.
+      if (forcedOrder === null) {
+        const forcedAfterMarker = text.match(/^(\d+)\.\s+(.*)$/);
+        if (forcedAfterMarker) {
+          forcedOrder = Number.parseInt(forcedAfterMarker[1], 10);
+          text = forcedAfterMarker[2];
+        }
+      }
       const markerKind = marker.startsWith('[') ? 'square' : 'round';
       const isCorrect = /x/i.test(marker);
 
@@ -213,7 +284,8 @@ function renderQuizHtml(model, blockId) {
       const inputType = q.questionType === 'multiple' ? 'checkbox' : 'radio';
       const inputName = `${blockId}-${q.id}`;
       blocks.push('<div class="quizdown-options">');
-      q.options.forEach((opt, optionIndex) => {
+      const renderedOptions = orderOptionsForRendering(q.options || []);
+      renderedOptions.forEach((opt, optionIndex) => {
         const inputId = `${blockId}-${q.id}-opt-${optionIndex + 1}`;
         const correctnessClass = opt.isCorrect
           ? 'quizdown-option-row quizdown-option-correct'

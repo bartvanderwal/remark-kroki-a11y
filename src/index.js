@@ -52,6 +52,7 @@ const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleD
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('./parsers/activityDiagramParser');
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('./parsers/c4DiagramParser');
+const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('./parsers/pieDiagramParser');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
 // Each parser entry has: { canParse, parse, generate }
@@ -73,6 +74,12 @@ const parserRegistry = [
 		canParse: (imgType, _diagramType, content) => imgType === 'mermaid' && content.toLowerCase().includes('classdiagram'),
 		parse: parseMermaidClassDiagram,
 		generate: generateClassDescription,
+	},
+	{
+		name: 'Mermaid Pie Diagram',
+		canParse: (imgType, diagramType, content) => imgType === 'mermaid' && (diagramType === 'pieDiagram' || /^\s*pie\b/i.test(content)),
+		parse: parseMermaidPieChart,
+		generate: generatePieDescription,
 	},
 	{
 		name: 'PlantUML Sequence Diagram',
@@ -199,6 +206,18 @@ function detectPlantUMLDiagramType(content) {
 	return 'diagram';
 }
 
+// Detect Mermaid diagram type from content
+function detectMermaidDiagramType(content) {
+	const lowerContent = content.toLowerCase();
+	if (/^\s*pie\b/m.test(lowerContent)) return 'pieDiagram';
+	if (lowerContent.includes('classdiagram')) return 'classDiagram';
+	if (lowerContent.includes('sequencediagram')) return 'sequenceDiagram';
+	if (lowerContent.includes('statediagram')) return 'stateDiagram';
+	if (lowerContent.includes('erdiagram')) return 'erDiagram';
+	if (lowerContent.includes('flowchart') || lowerContent.includes('graph ')) return 'activityDiagram';
+	return 'diagram';
+}
+
 // Human-readable names for diagram types
 const diagramTypeNames = {
 	nl: {
@@ -209,6 +228,7 @@ const diagramTypeNames = {
 		erDiagram: 'ER-diagrammen',
 		componentDiagram: 'componentdiagrammen',
 		usecaseDiagram: 'use case diagrammen',
+		pieDiagram: 'taartdiagrammen',
 		c4Diagram: 'C4-diagrammen',
 		diagram: 'dit diagram type',
 	},
@@ -220,6 +240,7 @@ const diagramTypeNames = {
 		erDiagram: 'ER diagrams',
 		componentDiagram: 'component diagrams',
 		usecaseDiagram: 'use case diagrams',
+		pieDiagram: 'pie charts',
 		c4Diagram: 'C4 diagrams',
 		diagram: 'this diagram type',
 	}
@@ -342,7 +363,12 @@ function remarkKrokiA11y(options = {}) {
 
 			// Extract metadata
 			const imgType = extractDiagramType(node.meta);
-			const diagramType = imgType === 'plantuml' ? detectPlantUMLDiagramType(node.value) : 'diagram';
+			const diagramType =
+				imgType === 'plantuml'
+					? detectPlantUMLDiagramType(node.value)
+					: imgType === 'mermaid'
+						? detectMermaidDiagramType(node.value)
+						: 'diagram';
 			// Support per-block locale override via lang="nl" or lang="en"
 			const blockLocale = extractLocale(node.meta) || opts.locale;
 			const title = extractTitle(node.meta) || (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;

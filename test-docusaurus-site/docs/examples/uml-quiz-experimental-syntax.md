@@ -11,11 +11,11 @@ It includes:
 2. Multi-correct checkbox options (`- [ ]` / `- [x]`)
 3. Open short-answer with accepted variants and max length (`= ... ~10`)
 
-```quizz debug=true
+```quiz debug=true
 ? Which diagram type is used for the three-phase overview in the Red Riding Hood example?
 ! Look for the diagram with swimlanes and process flow across phases.
+- ( ) Activity diagram
 - ( ) Class diagram
-- (x) Activity diagram
 - ( ) Sequence diagram
 - ( ) Use case diagram
 

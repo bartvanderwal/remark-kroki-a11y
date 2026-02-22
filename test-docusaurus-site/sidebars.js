@@ -41,6 +41,13 @@ module.exports = {
             'examples/plantuml-activity-diagrams-nl',
           ],
         },
+        {
+          type: 'category',
+          label: 'Domain Storytelling',
+          items: [
+            'examples/domain-stories',
+          ],
+        },
       ],
     },
     {

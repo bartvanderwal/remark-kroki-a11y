@@ -24,7 +24,7 @@ It is used to validate behavior across:
 1. `Quizzosaurus` UI component prototype (`src/components/Quiz`)
 2. `QuizDown` syntax parser in remark plugin:
    - file: `src/remark/remark-quizdown.mjs`
-   - fence: ````quiz` or ````quizz`
+   - fence: ```quiz or ```quizz
 3. `Quizzosaurus` runtime behavior:
    - file: `src/quizdown-client.js`
    - submit/reset validation
@@ -73,6 +73,35 @@ From `submodules/remark-kroki-a11y/test-docusaurus-site`:
 yarn start
 yarn build
 yarn serve
+```
+
+### Local Kroki server (Docker)
+
+This test site uses `remark-kroki-plugin`, which fetches diagram images from Kroki.
+For reliable local builds, run Kroki locally:
+
+```bash
+cd ..
+docker compose -f docker-compose.kroki.yml up -d
+curl http://localhost:8000/health
+```
+
+The test-site config can use:
+
+```js
+krokiBase: 'http://localhost:8000'
+```
+
+Or set:
+
+```bash
+export KROKI_BASE_URL=http://localhost:8000
+```
+
+Stop the container:
+
+```bash
+docker compose -f docker-compose.kroki.yml down
 ```
 
 From `submodules/remark-kroki-a11y` (recommended full checks):

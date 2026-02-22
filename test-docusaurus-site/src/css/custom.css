@@ -127,6 +127,17 @@
   color: var(--ifm-color-emphasis-700);
 }
 
+.quizdown-hint-toggle {
+  margin-top: 0.6rem;
+}
+
+.quizdown-hint-text {
+  margin-top: 0.5rem;
+  padding: 0.65rem 0.75rem;
+  border-left: 3px solid var(--ifm-color-info);
+  background: var(--ifm-color-emphasis-100);
+}
+
 .quizdown-question-feedback {
   margin-top: 0.6rem;
   font-weight: 600;

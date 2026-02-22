@@ -17,11 +17,11 @@ export default defineConfig({
       {
         extends: true,
         name: 'unit',
-        include: ['src/**/*.test.js'],
-        exclude: ['e2e/**'],
         test: {
           name: 'unit',
           globals: true,
+          include: ['src/**/*.test.js'],
+          exclude: ['e2e/**', '**/*.spec.js'],
         },
       },
       {

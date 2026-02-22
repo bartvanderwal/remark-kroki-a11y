@@ -53,13 +53,17 @@ pie showData
 - [Domain Models: Larman vs Fowler](/examples/domain-model-larman-vs-fowler) - Demonstrates analysis-phase vs design-phase domain modeling styles
 - [Domeinmodellen: Larman vs Fowler](/examples/domeinmodel-larman-vs-fowler) - Demonstreert analyse-fase vs ontwerp-fase domeinmodellen
 
+## Domain Storytelling
+
+- [Domain Stories (PlantUML)](/examples/domain-stories) - Example of DomainStory-PlantUML notation for stakeholder-friendly process narratives
+
 ## Sequence Diagrams
 
 - [Café Ordering Example](/examples/sequence-diagram-example) - Demonstrates `a11yDescriptionOverride` for diagrams without automatic parsing
 
 ## Data Visualizations
 
-- [Mermaid Pie Chart](/examples/mermaid-pie-chart) - Pie charts with custom accessibility descriptions (automatic parsing planned)
+- [Mermaid Pie Chart](/examples/mermaid-pie-chart) - Pie charts with automatically generated accessibility descriptions
 
 ---
 

@@ -163,6 +163,10 @@ We gebruiken hier een **activity diagram** voor het overzicht omdat:
 - Partities de **drie delen** duidelijk scheiden
 - Het abstracter is dan een sequence diagram (geen objecten/methodes)
 
+Voor een gedragsbrug tussen dit klasse-/domeinperspectief en de
+sequentiediagrammen in fase A, B en C, zie
+[Bijlage C: Use case diagram](#bijlage-c-use-case-diagram-koppeling-tussen-klasse-en-sequentieperspectief).
+
 ---
 
 ## Fase A: De reis naar oma
@@ -638,34 +642,36 @@ Doctorow (2023) noemt dit **enshittification**: platforms die eerst waarde creë
 
 ### Het echte einde
 
-*"En ze ontwierpen en documenteerden voort, steeds opnieuw validerend of hun gebruikers nog steeds gelukkig waren - wetende dat 'lang en gelukkig' geen eindtoestand is, maar een continu proces van luisteren, aanpassen en verbeteren."*
+> "En ze ontwierpen en documenteerden nog lang en gelukkig..."
+
+steeds validerend of hun gebruikers nog steeds gelukkig waren - wetende dat 'lang en gelukkig' geen eindtoestand is, maar een continu proces van luisteren, aanpassen en verbeteren.
 
 ---
 
 ## Over dit artikel
 
-Dit artikel is geschreven door Bart van der Wal met Claude (Anthropic) als co-auteur. Claude hielp bij het structureren van de inhoud, het genereren van de PlantUML-diagrammen, en het formuleren van de filosofische beschouwingen.
+Dit artikel is geschreven door Bart van der Wal met Claude (Anthropic) als co-auteur. Claude hielp bij het structureren van de inhoud, het genereren van de PlantUML-diagrammen, en het formuleren van de filosofische beschouwingen. Maar ik (Bart) ben eindverantwoordelijk voor de inhoud.
 
 :::info Feedback welkom
-Hoewel ik (Bart) eindverantwoordelijk ben voor de inhoud, is feedback over eventuele fouten of onduidelijkheden zeer welkom. Meld issues via [GitHub](https://github.com/AIM-ENE/remark-kroki-a11y/issues) of neem contact op.
+eedback over eventuele fouten of onduidelijkheden zeer welkom. Meld issues via [GitHub](https://github.com/AIM-ENE/remark-kroki-a11y/issues) of neem contact op.
 :::
 
 ---
 
 ## Bronnen
 
-- Hoare, C. A. R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
-- Reeves, J. W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
-- Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
+- Hoare, C.A.R. (1980). The emperor's old clothes. *Communications of the ACM, 24*(2), 75-83. https://doi.org/10.1145/358549.358561
 - Brandolini, A. (2009, 25 november). Strategic Domain Driven Design with Context Mapping. *InfoQ*. https://www.infoq.com/articles/ddd-contextmapping/
 - Brown, S. (2011). *The C4 model for visualising software architecture*. https://c4model.com/
 - Brown, S. (2019). *The lost art of software design* [Video]. YouTube. https://www.youtube.com/watch?v=gNj8I4uSTgc
-- Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- Reeves, J.W. (1992). What is software design? *C++ Journal, 2*(2). https://www.developerdotstar.com/mag/articles/reeves_design.html
 - Patton, J. (2014). *User story mapping: Discover the whole story, build the right product*. O'Reilly Media.
 - Theunissen, T. (2022). Evaluation of approaches for documentation in continuous software development. In *Proceedings of the 10th International Conference on Model-Driven Engineering and Software Development (MODELSWARD 2022)*. https://theotheunissen.nl/wp-content/uploads/2022/10/modelsward-2023.pdf
 - Doctorow, C. (2023, 21 januari). *Tiktok's enshittification*. Pluralistic. https://pluralistic.net/2023/01/21/potemkin-ai/
 - Dubner, S. J. (Host). (2024, 18 januari). *Are you caught in a social media trap?* [Podcast aflevering]. In *Freakonomics Radio*. Freakonomics, LLC. https://freakonomics.com/podcast/are-you-caught-in-a-social-media-trap/
-- Van der Wal, B. (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/blok-2/domein-model.html
+- Fowler, M. (2003). *UML Distilled: A Brief Guide to the Standard Object Modeling Language* (3rd ed.). Addison-Wesley.
+- Nygard, M. (2011, 15 november). *Documenting architecture decisions*. Cognitect Blog. https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions
+- Wal, B. van der (2025). *Domeinmodellen*. Minor DevOps. https://minordevops.nl/blok-2/domein-model.html
 
 ---
 
@@ -879,3 +885,46 @@ De grootste uitdaging is vaak wel de gehele oplossing uiteindelijk te **validere
 Software Engineering is een *Design Science* (DS). Dit anti-pattern illustreert het DS-equivalent van het feit dat een goed/nuttig geheel (systeem) meer is dan enkel de som van zijn delen (elementen). Het splitsen in delen is noodzakelijk, maar de kunst is om die delen zo te ontwerpen dat ze samen een coherent geheel vormen.
 
 Of, zoals we in de inleiding stelden: net als bij C4-diagrammen gebruik je verschillende zoomniveaus. Je hebt een overzicht nodig én gedetailleerde views - maar niet alles in één diagram.
+
+---
+
+### Bijlage C: Use case diagram (koppeling tussen klasse en sequentieperspectief)
+
+Dit use case diagram beschrijft WIE dot WAT en vormt zo een soort 'gedragsbrug' tussen het klasse-/domeinmodel en de sequentiediagrammen hierboven. De use cases beschrijven *wat* actoren willen bereiken; de sequentiediagrammen tonen *hoe* die interacties in de tijd verlopen.
+
+```kroki imgType="plantuml" imgTitle="Roodkapje: Use case diagram" lang="nl"
+@startuml
+left to right direction
+title Roodkapje - Use case view
+
+actor Moeder
+actor Roodkapje as RK
+actor Wolf
+actor Oma
+actor Jager
+
+rectangle "Verhaalwereld" {
+  usecase "Breng mandje\nnaar oma" as UC1
+  usecase "Praat met wolf\nin het bos" as UC2
+  usecase "Ga oma's huis\nbinnen" as UC3
+  usecase "Vermom als\noma" as UC4
+  usecase "Bevrijd\nslachtoffers" as UC5
+  usecase "Straf de wolf" as UC6
+}
+
+Moeder --> UC1
+RK --> UC1
+RK --> UC2
+Wolf --> UC2
+RK --> UC3
+Wolf --> UC3
+Wolf --> UC4
+Oma --> UC3
+Jager --> UC5
+RK --> UC5
+Oma --> UC5
+RK --> UC6
+Jager --> UC6
+Wolf --> UC6
+@enduml
+```

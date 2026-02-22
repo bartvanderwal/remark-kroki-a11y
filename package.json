@@ -3,9 +3,16 @@
   "version": "0.4.5",
   "description": "Remark plugin for Docusaurus that adds accessible source code details and natural language descriptions to Kroki diagrams (PlantUML, Mermaid, C4, GraphViz, etc.)",
   "main": "src/index.js",
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
   "exports": {
     ".": "./src/index.js",
-    "./rehype-kroki-a11y-img": "./src/rehype-kroki-a11y-img.js"
+    "./rehype-kroki-a11y-img": "./src/rehype-kroki-a11y-img.js",
+    "./diagramTabs.js": "./src/diagramTabs.js",
+    "./src/diagramTabs.js": "./src/diagramTabs.js"
   },
   "scripts": {
     "test": "cucumber-js",

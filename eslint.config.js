@@ -1,17 +1,16 @@
 // For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
 import storybook from "eslint-plugin-storybook";
+import js from '@eslint/js';
 
-const js = require('@eslint/js');
-
-module.exports = [
+export default [
 	js.configs.recommended,
 	{
-		// CommonJS files (Node.js)
+		// Mixed JS files (CommonJS + ESM)
 		files: ['**/*.js'],
-		ignores: ['src/diagramTabs.js', 'node_modules/**', 'test-docusaurus-site/**', 'test-results/**'],
+		ignores: ['node_modules/**', 'test-docusaurus-site/**', 'test-results/**'],
 		languageOptions: {
 			ecmaVersion: 2022,
-			sourceType: 'commonjs',
+			sourceType: 'module',
 			globals: {
 				// Node.js globals
 				require: 'readonly',
@@ -22,6 +21,9 @@ module.exports = [
 				process: 'readonly',
 				console: 'readonly',
 				Buffer: 'readonly',
+				// Browser globals
+				document: 'readonly',
+				window: 'readonly',
 			},
 		},
 		rules: {
@@ -38,27 +40,8 @@ module.exports = [
 			// Best practices
 			'eqeqeq': ['warn', 'smart'],
 			'no-var': 'warn',
+			'no-useless-escape': 'warn',
 		},
 	},
-	{
-		// ES modules (browser/client code)
-		files: ['src/diagramTabs.js'],
-		languageOptions: {
-			ecmaVersion: 2022,
-			sourceType: 'module',
-			globals: {
-				// Browser globals
-				document: 'readonly',
-				window: 'readonly',
-				console: 'readonly',
-			},
-		},
-		rules: {
-			'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-			'prefer-const': 'warn',
-			'indent': ['warn', 'tab'],
-			'quotes': ['warn', 'single', { avoidEscape: true }],
-			'semi': ['warn', 'always'],
-		},
-	},
+	...storybook.configs["flat/recommended"],
 ];

@@ -123,7 +123,11 @@ Notes:
    - `multiple`: one or more `[x]` required; if none marked parser emits error
 7. Optional forced ordering marker:
    - `- 4. ( ) All of the above`
+   - `- ( ) 4. All of the above` is also supported
    - numeric prefix controls display order relative to sibling options
+   - options without a number are randomized
+   - if one or more options have a forced number, those positions remain fixed
+     and only remaining options are randomized
 8. Answer option content supports full Markdown (including fenced code blocks).
 9. Diagrams in answers should render via existing markdown pipeline
    (e.g. `kroki` fenced blocks).
@@ -177,6 +181,8 @@ Example shape returned by `QuizDown`:
 1. Before submit:
    - neutral styling
    - no correctness indicators
+   - option order is randomized per question render, unless forced positions
+     are defined with numbered options
 2. After submit:
    - `single`:
      - chosen + correct => green
