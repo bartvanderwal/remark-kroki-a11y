@@ -59,40 +59,40 @@ Relaties:
 
 // Initialize tab switching behavior (same as diagramTabs.js)
 const initTabSwitching = (container) => {
-	const buttons = container.querySelectorAll('.diagram-expandable-source-tab-btn');
-	const contents = container.querySelectorAll('.diagram-expandable-source-tab-content');
+  const buttons = container.querySelectorAll('.diagram-expandable-source-tab-btn');
+  const contents = container.querySelectorAll('.diagram-expandable-source-tab-content');
 
-	buttons.forEach((button) => {
-		button.addEventListener('click', () => {
-			const tabId = button.dataset.tab;
+  buttons.forEach((button) => {
+    button.addEventListener('click', () => {
+      const tabId = button.dataset.tab;
 
-			// Update button states
-			buttons.forEach((btn) => {
-				btn.classList.remove('active');
-				btn.setAttribute('aria-selected', 'false');
-			});
-			button.classList.add('active');
-			button.setAttribute('aria-selected', 'true');
+      // Update button states
+      buttons.forEach((btn) => {
+        btn.classList.remove('active');
+        btn.setAttribute('aria-selected', 'false');
+      });
+      button.classList.add('active');
+      button.setAttribute('aria-selected', 'true');
 
-			// Update content visibility
-			contents.forEach((content) => {
-				if (content.dataset.tab === tabId) {
-					content.classList.add('active');
-				} else {
-					content.classList.remove('active');
-				}
-			});
-		});
-	});
+      // Update content visibility
+      contents.forEach((content) => {
+        if (content.dataset.tab === tabId) {
+          content.classList.add('active');
+        } else {
+          content.classList.remove('active');
+        }
+      });
+    });
+  });
 };
 
 export default {
-	title: 'General/DiagramTabs',
-	tags: ['autodocs'],
-	parameters: {
-		docs: {
-			description: {
-				component: `
+  title: 'General/DiagramTabs',
+  tags: ['autodocs'],
+  parameters: {
+    docs: {
+      description: {
+        component: `
 ## Keyboard Accessibility Test
 
 Dit component test of de diagram tabs toegankelijk zijn via het toetsenbord.
@@ -109,15 +109,15 @@ waardoor screenreaders de beschrijving niet kunnen voorlezen.
 6. **Tab → focus op tab content** (dit faalt nu!)
 7. Screenreader kan content voorlezen
 				`,
-			},
-		},
-	},
-	render: () => {
-		const container = document.createElement('div');
-		container.innerHTML = createDiagramTabsHTML();
-		initTabSwitching(container);
-		return container;
-	},
+      },
+    },
+  },
+  render: () => {
+    const container = document.createElement('div');
+    container.innerHTML = createDiagramTabsHTML();
+    initTabSwitching(container);
+    return container;
+  },
 };
 
 /**
@@ -132,81 +132,81 @@ export const Default = {};
  * Na de fix zou deze test moeten slagen.
  */
 export const KeyboardNavigationTest = {
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement);
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
 
-		await step('Open details met keyboard', async () => {
-			// Wacht tot summary beschikbaar is
-			const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
-			summary.focus();
+    await step('Open details met keyboard', async () => {
+      // Wacht tot summary beschikbaar is
+      const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
+      summary.focus();
 
-			await waitFor(() => {
-				expect(document.activeElement).toBe(summary);
-			});
+      await waitFor(() => {
+        expect(document.activeElement).toBe(summary);
+      });
 
-			// Open met Enter
-			await userEvent.keyboard('{Enter}');
+      // Open met Enter
+      await userEvent.keyboard('{Enter}');
 
-			// Wacht tot details open is
-			const details = summary.closest('details');
-			await waitFor(() => {
-				expect(details).toHaveAttribute('open');
-			});
-		});
+      // Wacht tot details open is
+      const details = summary.closest('details');
+      await waitFor(() => {
+        expect(details).toHaveAttribute('open');
+      });
+    });
 
-		await step('Navigeer naar Natuurlijke taal tab', async () => {
-			// Tab naar eerste button
-			await userEvent.tab();
-			const sourceBtn = canvas.getByRole('tab', { name: 'Bron' });
-			await waitFor(() => {
-				expect(document.activeElement).toBe(sourceBtn);
-			});
+    await step('Navigeer naar Natuurlijke taal tab', async () => {
+      // Tab naar eerste button
+      await userEvent.tab();
+      const sourceBtn = canvas.getByRole('tab', { name: 'Bron' });
+      await waitFor(() => {
+        expect(document.activeElement).toBe(sourceBtn);
+      });
 
-			// Tab naar tweede button
-			await userEvent.tab();
-			const a11yBtn = canvas.getByRole('tab', { name: 'In natuurlijke taal' });
-			await waitFor(() => {
-				expect(document.activeElement).toBe(a11yBtn);
-			});
+      // Tab naar tweede button
+      await userEvent.tab();
+      const a11yBtn = canvas.getByRole('tab', { name: 'In natuurlijke taal' });
+      await waitFor(() => {
+        expect(document.activeElement).toBe(a11yBtn);
+      });
 
-			// Activeer met Enter
-			await userEvent.keyboard('{Enter}');
-			await waitFor(() => {
-				expect(a11yBtn).toHaveClass('active');
-			});
-		});
+      // Activeer met Enter
+      await userEvent.keyboard('{Enter}');
+      await waitFor(() => {
+        expect(a11yBtn).toHaveClass('active');
+      });
+    });
 
-		await step('Tab naar content (dit faalt momenteel!)', async () => {
-			// Tab zou naar de content moeten gaan
-			await userEvent.tab();
+    await step('Tab naar content (dit faalt momenteel!)', async () => {
+      // Tab zou naar de content moeten gaan
+      await userEvent.tab();
 
-			// Haal de a11y content op
-			const a11yContent = canvasElement.querySelector('[data-tab="a11y"].active');
+      // Haal de a11y content op
+      const a11yContent = canvasElement.querySelector('[data-tab="a11y"].active');
 
-			// Dit is de test die faalt: content heeft geen tabindex, dus focus gaat ergens anders heen
-			// Na de fix zou dit moeten slagen:
-			// expect(document.activeElement).toBe(a11yContent);
+      // Dit is de test die faalt: content heeft geen tabindex, dus focus gaat ergens anders heen
+      // Na de fix zou dit moeten slagen:
+      // expect(document.activeElement).toBe(a11yContent);
 
-			// Voor nu loggen we waar de focus naartoe ging
-			console.log('Focus is now on:', document.activeElement);
-			console.log('A11y content element:', a11yContent);
-			console.log('Content has tabindex:', a11yContent?.getAttribute('tabindex'));
+      // Voor nu loggen we waar de focus naartoe ging
+      console.log('Focus is now on:', document.activeElement);
+      console.log('A11y content element:', a11yContent);
+      console.log('Content has tabindex:', a11yContent?.getAttribute('tabindex'));
 
-			// Deze assertion toont het probleem aan: content is niet focusable
-			// Verwacht: content element heeft focus
-			// Actueel: focus gaat naar iets anders (body of volgend focusable element)
-			const contentHasFocus = document.activeElement === a11yContent ||
+      // Deze assertion toont het probleem aan: content is niet focusable
+      // Verwacht: content element heeft focus
+      // Actueel: focus gaat naar iets anders (body of volgend focusable element)
+      const contentHasFocus = document.activeElement === a11yContent ||
 				a11yContent?.contains(document.activeElement);
 
-			if (!contentHasFocus) {
-				console.warn('⚠️ ACCESSIBILITY BUG: Tab content is niet keyboard focusable!');
-				console.warn('Focus ging naar:', document.activeElement.tagName, document.activeElement.className);
-			}
+      if (!contentHasFocus) {
+        console.warn('⚠️ ACCESSIBILITY BUG: Tab content is niet keyboard focusable!');
+        console.warn('Focus ging naar:', document.activeElement.tagName, document.activeElement.className);
+      }
 
-			// Uncomment na fix om te valideren:
-			// expect(contentHasFocus).toBe(true);
-		});
-	},
+      // Uncomment na fix om te valideren:
+      // expect(contentHasFocus).toBe(true);
+    });
+  },
 };
 
 /**
@@ -237,52 +237,52 @@ Roodkapje heeft een associatie-relatie met naam 'ontmoet' met Wolf.
 `;
 
 export const WithTabindexFix = {
-	name: 'Met tabindex fix (gewenst gedrag)',
-	parameters: {
-		docs: {
-			description: {
-				story: `
+  name: 'Met tabindex fix (gewenst gedrag)',
+  parameters: {
+    docs: {
+      description: {
+        story: `
 Dit toont hoe de HTML eruit zou moeten zien NA de fix:
 - \`tabindex="0"\` op de content divs
 - ARIA attributen voor betere screenreader ondersteuning
 				`,
-			},
-		},
-	},
-	render: () => {
-		const container = document.createElement('div');
-		container.innerHTML = createDiagramTabsHTMLWithFix();
-		initTabSwitching(container);
-		return container;
-	},
-	play: async ({ canvasElement, step }) => {
-		const canvas = within(canvasElement);
+      },
+    },
+  },
+  render: () => {
+    const container = document.createElement('div');
+    container.innerHTML = createDiagramTabsHTMLWithFix();
+    initTabSwitching(container);
+    return container;
+  },
+  play: async ({ canvasElement, step }) => {
+    const canvas = within(canvasElement);
 
-		await step('Open en navigeer naar content met fix', async () => {
-			// Wacht tot summary beschikbaar is
-			const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
-			summary.focus();
-			await userEvent.keyboard('{Enter}');
+    await step('Open en navigeer naar content met fix', async () => {
+      // Wacht tot summary beschikbaar is
+      const summary = await waitFor(() => canvas.getByText(/PlantUML broncode voor/));
+      summary.focus();
+      await userEvent.keyboard('{Enter}');
 
-			// Wacht tot details open is
-			const details = summary.closest('details');
-			await waitFor(() => {
-				expect(details).toHaveAttribute('open');
-			});
+      // Wacht tot details open is
+      const details = summary.closest('details');
+      await waitFor(() => {
+        expect(details).toHaveAttribute('open');
+      });
 
-			// Tab naar a11y tab en activeer
-			await userEvent.tab(); // Bron tab
-			await userEvent.tab(); // Natuurlijke taal tab
-			await userEvent.keyboard('{Enter}');
+      // Tab naar a11y tab en activeer
+      await userEvent.tab(); // Bron tab
+      await userEvent.tab(); // Natuurlijke taal tab
+      await userEvent.keyboard('{Enter}');
 
-			// Tab naar content - dit zou NU moeten werken
-			await userEvent.tab();
+      // Tab naar content - dit zou NU moeten werken
+      await userEvent.tab();
 
-			const a11yContent = canvasElement.querySelector('[data-tab="a11y"]');
-			await waitFor(() => {
-				expect(document.activeElement).toBe(a11yContent);
-			});
-			console.log('✅ Content is nu keyboard focusable!');
-		});
-	},
+      const a11yContent = canvasElement.querySelector('[data-tab="a11y"]');
+      await waitFor(() => {
+        expect(document.activeElement).toBe(a11yContent);
+      });
+      console.log('✅ Content is nu keyboard focusable!');
+    });
+  },
 };

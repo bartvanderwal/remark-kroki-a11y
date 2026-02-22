@@ -186,7 +186,7 @@ function generateAccessibleDescription(parsed, locale = 'en') {
 /**
  * Generate description for C4 System Context diagrams
  */
-function generateContextDescription(parsed, locale = 'en') {
+function generateContextDescription(parsed, _locale = 'en') {
   const { actors, systems, components, containers, relationships } = parsed;
 
   const internalSystems = systems.filter(s => !s.external);
@@ -265,7 +265,7 @@ function generateContextDescription(parsed, locale = 'en') {
 /**
  * Generate description for C4 Container diagrams
  */
-function generateContainerDescription(parsed, locale = 'en') {
+function generateContainerDescription(parsed, _locale = 'en') {
   const { actors, systems, components, containers, relationships } = parsed;
 
   const containerItems = containers.filter(c => c.type === 'container' || c.type === 'database');
@@ -343,7 +343,7 @@ function generateContainerDescription(parsed, locale = 'en') {
 /**
  * Generate description for C4 Component diagrams
  */
-function generateComponentDescription(parsed, locale = 'en') {
+function generateComponentDescription(parsed, _locale = 'en') {
   const { actors, systems, components, containers, relationships } = parsed;
 
   const boundaries = containers.filter(c => c.type === 'boundary');

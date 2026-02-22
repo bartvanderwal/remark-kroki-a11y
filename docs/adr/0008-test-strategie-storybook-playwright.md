@@ -23,6 +23,7 @@ Er zijn verschillende test-niveaus nodig (zie ook: Test Pyramid, Fowler 2012):
 ### Probleem: Accessibility Testing Gap
 
 GitHub Issue #10 identificeerde dat tab content niet keyboard-focusbaar was. Dit type bug werd niet gevangen door:
+
 - Unit tests (testen parser output, niet browser gedrag)
 - Handmatig testen (developers focussen op visueel, niet keyboard)
 
@@ -39,6 +40,7 @@ We implementeren een **multi-level test strategie** met:
 - **Interactions Addon**: `@storybook/addon-interactions` voor `play()` functie tests
 
 Stories in `src/stories/` simuleren plugin output en testen:
+
 - Keyboard navigatie flow
 - ARIA attributen
 - Focus management
@@ -62,6 +64,7 @@ export const KeyboardNavigationTest = {
 - **Scope**: Volledige user flows inclusief browser-specifiek gedrag
 
 Tests in `e2e/` verifiëren:
+
 - Plugin werkt correct in echte Docusaurus omgeving
 - Keyboard navigatie werkt cross-browser (Chromium, Firefox, WebKit)
 - ARIA attributen correct gerenderd na build
@@ -109,6 +112,7 @@ yarn test:e2e     # Run Playwright tests
 ### Alternative 1: Alleen Cypress
 
 Cypress biedt component testing en E2E, maar:
+
 - Minder goede Storybook integratie
 - Playwright heeft betere cross-browser support
 - Storybook A11y addon heeft geen Cypress equivalent
@@ -116,6 +120,7 @@ Cypress biedt component testing en E2E, maar:
 ### Alternative 2: Alleen unit tests
 
 Unit tests alleen zijn onvoldoende omdat:
+
 - Browser gedrag (focus, ARIA) niet getest wordt
 - CSS/JS interactie niet getest wordt
 - Issue #10 was niet gevangen met unit tests
@@ -123,6 +128,7 @@ Unit tests alleen zijn onvoldoende omdat:
 ### Alternative 3: Manual testing only
 
 Handmatig testen is:
+
 - Niet reproduceerbaar
 - Niet schaalbaar
 - Gevoelig voor menselijke fouten bij A11y checks

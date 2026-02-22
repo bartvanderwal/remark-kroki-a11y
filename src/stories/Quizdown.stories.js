@@ -111,7 +111,6 @@ export const WrongThenRight = {
 
 export const StrikeOutOption = {
   play: async ({ canvasElement, step }) => {
-    const canvas = within(canvasElement);
     await step('Strike and restore an option', async () => {
       const strikeButtons = canvasElement.querySelectorAll('.quizdown-strike-toggle');
       const firstStrike = strikeButtons[0];

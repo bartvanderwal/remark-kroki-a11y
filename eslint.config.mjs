@@ -33,7 +33,7 @@ export default [
 			'prefer-const': 'warn',
 
 			// Style (relaxed for existing codebase)
-			'indent': ['warn', 'tab'],
+			'indent': ['warn', 2],
 			'quotes': ['warn', 'single', { avoidEscape: true }],
 			'semi': ['warn', 'always'],
 
