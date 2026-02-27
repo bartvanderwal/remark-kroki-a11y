@@ -29,8 +29,13 @@
  *       cssClass: 'diagram-expandable-source',
  *       languages: ['kroki'],
  *       locale: 'en',
+ *       kroki: {
+ *         krokiBase: 'https://kroki.io',
+ *         lang: 'kroki',
+ *         imgRefDir: '/img/kroki',
+ *         imgDir: 'static/img/kroki',
+ *       },
  *     }],
- *     [require('remark-kroki-plugin'), { ... }],  // Must come AFTER this plugin
  *   ],
  *
  * In markdown, use flags to control per-diagram:
@@ -47,6 +52,13 @@
  */
 
 const { visit } = require('unist-util-visit');
+let remarkKrokiPlugin = null;
+try {
+  // Resolved at runtime from package dependencies.
+  remarkKrokiPlugin = require('remark-kroki-plugin');
+} catch (_err) {
+  remarkKrokiPlugin = null;
+}
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
@@ -310,6 +322,12 @@ const defaultOptions = {
   languages: ['kroki'],
   locale: 'en',
   fallbackA11yText: defaultFallbackA11yText,
+  kroki: {
+    krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
+    lang: 'kroki',
+    imgRefDir: '/img/kroki',
+    imgDir: 'static/img/kroki',
+  },
 };
 
 // Export utility functions for testing and potential reuse
@@ -318,6 +336,16 @@ module.exports.extractTextContent = extractTextContent;
 
 // Main plugin export
 function remarkKrokiA11y(options = {}) {
+  const krokiOptions = {
+    ...defaultOptions.kroki,
+    ...(options.kroki || {}),
+    // Backward-compatible flat options support.
+    ...(options.krokiBase ? { krokiBase: options.krokiBase } : {}),
+    ...(options.lang ? { lang: options.lang } : {}),
+    ...(options.imgRefDir ? { imgRefDir: options.imgRefDir } : {}),
+    ...(options.imgDir ? { imgDir: options.imgDir } : {}),
+  };
+
   const opts = {
     ...defaultOptions,
     ...options,
@@ -329,7 +357,7 @@ function remarkKrokiA11y(options = {}) {
   };
   const languages = Array.isArray(opts.languages) ? opts.languages : [opts.languages];
 
-  return (tree) => {
+  return (tree, file) => {
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
@@ -503,6 +531,15 @@ ${speakButtonHtml}
         parent.children.splice(index + 1, 0, ...nodesToInsert);
       }
     });
+
+    // Run Kroki rendering in the same remark pass, so consumers only need this plugin.
+    if (!remarkKrokiPlugin) {
+      throw new Error('remark-kroki-plugin is missing. Install dependencies for remark-kroki-a11y.');
+    }
+    const krokiTransformer = remarkKrokiPlugin(krokiOptions);
+    if (typeof krokiTransformer === 'function') {
+      return krokiTransformer(tree, file);
+    }
   };
 }
 

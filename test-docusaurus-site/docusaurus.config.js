@@ -86,21 +86,17 @@ module.exports = async function createConfigAsync() {
               cssClass: 'diagram-expandable-source',
               languages: ['kroki'],
               locale: 'en',
-            }],
-            // Kroki plugin for PlantUML, GraphViz, etc.
-            [require('remark-kroki-plugin'), {
-              krokiBase,
-              lang: 'kroki',
-              imgRefDir: '/remark-kroki-a11y/img/kroki',
-              imgDir: 'static/img/kroki',
+              kroki: {
+                krokiBase,
+                lang: 'kroki',
+                imgRefDir: '/remark-kroki-a11y/img/kroki',
+                imgDir: 'static/img/kroki',
+              },
             }],
           ],
           rehypePlugins: [
             // Enable raw HTML in MDX (needed for remark plugin HTML output)
             [rehypeRaw, { passThrough }],
-            // Fix Kroki image accessibility: alt text and aria-describedby
-            // Must come AFTER rehype-raw so raw HTML is parsed into AST
-            require('../src/rehype-kroki-a11y-img'),
           ],
         },
         blog: false,
