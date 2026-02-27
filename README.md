@@ -156,7 +156,6 @@ module.exports = {
       {
         docs: {
           remarkPlugins: [
-            // This plugin MUST come BEFORE remark-kroki-plugin
             [require('remark-kroki-a11y'), {
               showSource: true,
               showA11yDescription: true,
@@ -168,20 +167,17 @@ module.exports = {
               cssClass: 'diagram-expandable-source',
               languages: ['kroki'],
               locale: 'en',
-            }],
-            [require('remark-kroki-plugin'), {
-              krokiBase: 'https://kroki.io',
-              lang: 'kroki',
-              imgRefDir: '/img/kroki',
-              imgDir: 'static/img/kroki',
+              kroki: {
+                krokiBase: 'https://kroki.io',
+                lang: 'kroki',
+                imgRefDir: '/img/kroki',
+                imgDir: 'static/img/kroki',
+              },
             }],
           ],
           rehypePlugins: [
             // Enable raw HTML in MDX (needed for remark plugin HTML output)
             [rehypeRaw, { passThrough }],
-            // Fix Kroki image accessibility: alt text and aria-describedby
-            // Must come AFTER rehype-raw so raw HTML is parsed into AST
-            require('remark-kroki-a11y/rehype-kroki-a11y-img'),
           ],
         },
       },
@@ -214,11 +210,13 @@ The compose file also mounts a local include folder and sets
 Use the local server in `docusaurus.config.js`:
 
 ```js
-[require('remark-kroki-plugin'), {
-  krokiBase: 'http://localhost:8000',
-  lang: 'kroki',
-  imgRefDir: '/img/kroki',
-  imgDir: 'static/img/kroki',
+[require('remark-kroki-a11y'), {
+  kroki: {
+    krokiBase: 'http://localhost:8000',
+    lang: 'kroki',
+    imgRefDir: '/img/kroki',
+    imgDir: 'static/img/kroki',
+  },
 }]
 ```
 
@@ -242,7 +240,7 @@ The plugin requires a client-side module for tab switching and CSS styling. Thes
 // In docusaurus.config.js
 module.exports = {
   clientModules: [
-    require.resolve('remark-kroki-a11y/src/diagramTabs.js'),
+    require.resolve('remark-kroki-a11y/diagramTabs.js'),
   ],
   // ...
 };
@@ -252,7 +250,7 @@ For CSS, import the provided stylesheet or copy it to your project:
 
 ```js
 // In your custom.css or via import
-@import 'remark-kroki-a11y/src/diagram-tabs.css';
+@import 'remark-kroki-a11y/diagram-a11y.css';
 ```
 
 <details>
@@ -359,6 +357,7 @@ export function onRouteDidUpdate() {
 | `languages` | string[] | `['kroki']` | Code block languages to process |
 | `locale` | string | `'en'` | Locale for generated descriptions (`'en'` or `'nl'`) |
 | `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
+| `kroki` | object | `{ krokiBase, lang, imgRefDir, imgDir }` | Kroki render settings passed to the internally used `remark-kroki-plugin` |
 
 ## Markdown Flags
 
@@ -402,8 +401,7 @@ This plugin improves diagram accessibility by:
 1. **Providing source code** - Screen readers can read the diagram syntax (PlantUML, Mermaid, etc.) which describes the structure
 2. **Generating natural language descriptions** - For supported diagram types, creates human-readable text descriptions
 3. **Keyboard navigation** - Uses native `<details>` elements accessible via keyboard
-4. **Proper alt text** - The `rehype-kroki-a11y-img` plugin replaces hash-based alt text with meaningful titles
-5. **ARIA linkage** - Adds `aria-describedby` to images pointing to the natural language description section
+4. **Config simplification** - One remark plugin entry handles both a11y enrichment and Kroki rendering
 
 ## Documentation Site
 

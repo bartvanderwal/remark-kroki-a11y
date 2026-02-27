@@ -1,6 +1,6 @@
 {
   "name": "remark-kroki-a11y",
-  "version": "0.4.6",
+  "version": "0.4.7",
   "description": "Remark plugin for Docusaurus that adds accessible source code details and natural language descriptions to Kroki diagrams (PlantUML, Mermaid, C4, GraphViz, etc.)",
   "main": "src/index.js",
   "files": [
@@ -11,6 +11,14 @@
   "exports": {
     ".": "./src/index.js",
     "./rehype-kroki-a11y-img": "./src/rehype-kroki-a11y-img.js",
+    "./diagram-a11y.css": {
+      "style": "./src/diagram-a11y.css",
+      "default": "./src/diagram-a11y.css"
+    },
+    "./src/diagram-a11y.css": {
+      "style": "./src/diagram-a11y.css",
+      "default": "./src/diagram-a11y.css"
+    },
     "./diagramTabs.js": "./src/diagramTabs.js",
     "./src/diagramTabs.js": "./src/diagramTabs.js"
   },
@@ -63,8 +71,9 @@
     "url": "https://github.com/bartvanderwal/remark-kroki-a11y/issues"
   },
   "homepage": "https://bartvanderwal.github.io/remark-kroki-a11y/",
-  "peerDependencies": {
-    "unist-util-visit": "^4.0.0 || ^5.0.0"
+  "dependencies": {
+    "remark-kroki-plugin": "^0.1.1",
+    "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
     "@chromatic-com/storybook": "^5.0.0",
