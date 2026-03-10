@@ -16,7 +16,7 @@ A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible sourc
 - **Tabs interface** - Always uses tabs when source and (generated or fallback) description are available
 - **Keyboard accessible** - Uses native `<details>` element that works with Enter/Space
 - **Localization** - Supports Dutch (nl) and English (en)
-- **Per-diagram control** - Use `hideSource` or `hideA11y` flags to control visibility
+- **Per-diagram control** - Use `hideSource`, `hidePlantuml`, or `hideA11y` flags to control visibility
 
 ## Supported Diagram Types
 
@@ -367,6 +367,13 @@ Control per-diagram behavior using flags in the code block meta:
 
 <!-- Hide source code for this diagram -->
 ```kroki hideSource imgType="plantuml"
+@startuml
+...
+@enduml
+```
+
+<!-- Hide PlantUML source tab for this PlantUML diagram only -->
+```kroki hidePlantuml imgType="plantuml"
 @startuml
 ...
 @enduml
