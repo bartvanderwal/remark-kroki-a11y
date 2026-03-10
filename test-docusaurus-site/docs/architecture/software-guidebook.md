@@ -71,6 +71,7 @@ ci --> UC_BASE : builds documentation with
 | Option | Use Case | Default |
 |--------|----------|---------|
 | `showSource` | Display source code tab for all diagrams | `true` |
+| `hidePlantuml` | Per-diagram flag to hide the PlantUML source tab while keeping A11y output | `false` |
 | `hideA11y` | Per-diagram flag to hide the natural language description | `false` |
 | `locale` | Set language for generated descriptions (`'en'` or `'nl'`) | `'en'` |
 | `a11yDescriptionOverride` | Per-diagram manual description override | - |
@@ -85,21 +86,24 @@ skinparam actorStyle awesome
 
 actor "UML Content\nAuthor" as author
 
-rectangle "remark-kroki-a11y Plugin" {
+  rectangle "remark-kroki-a11y Plugin" {
   usecase "Generate accessible diagram\nwith natural language description" as UC_BASE
 
   usecase "Show/hide source code\n(showSource)" as UC_SOURCE
+  usecase "Hide only PlantUML source tab\nfor anti-copy scenarios (hidePlantuml)" as UC_HIDE_PLANTUML
   usecase "Hide A11y description\nfor simplicity (hideA11y)" as UC_HIDE_A11Y
   usecase "Explicitly choose language if\nscreenreader detection is wrong\n(locale: 'en' | 'nl')" as UC_LANG
   usecase "Override A11y description if it\ninterferes with existing text\n(a11yDescriptionOverride)" as UC_OVERRIDE
 
   ' Force UC_BASE to appear at the top
   UC_BASE -[hidden]down-> UC_SOURCE
-  UC_SOURCE -[hidden]down-> UC_HIDE_A11Y
+  UC_SOURCE -[hidden]down-> UC_HIDE_PLANTUML
+  UC_HIDE_PLANTUML -[hidden]down-> UC_HIDE_A11Y
   UC_HIDE_A11Y -[hidden]down-> UC_LANG
   UC_LANG -[hidden]down-> UC_OVERRIDE
 
   UC_SOURCE .> UC_BASE : <<extend>>
+  UC_HIDE_PLANTUML .> UC_BASE : <<extend>>
   UC_HIDE_A11Y .> UC_BASE : <<extend>>
   UC_LANG .> UC_BASE : <<extend>>
   UC_OVERRIDE .> UC_BASE : <<extend>>
@@ -107,6 +111,7 @@ rectangle "remark-kroki-a11y Plugin" {
 
 author --> UC_BASE : writes diagrams for
 author --> UC_SOURCE : shows/hides source code
+author --> UC_HIDE_PLANTUML : hides PlantUML source\nwhile keeping A11y tab
 author --> UC_HIDE_A11Y : hides A11y description\nfor simplicity
 author --> UC_LANG : explicitly chooses language
 author --> UC_OVERRIDE : overrides A11y description\nwhen it interferes with text
@@ -298,7 +303,7 @@ docusaurus --> browser : serves HTML
 
 The plugin interacts with:
 
-- **remark-kroki-plugin** (peer dependency) - Handles Kroki API calls for diagram rendering
+- **remark-kroki-plugin** (runtime dependency) - Handles Kroki API calls for diagram rendering
 - **rehype-raw** (required) - Enables raw HTML in MDX output
 - **Kroki service** - Can be local (Docker) or remote (kroki.io)
 

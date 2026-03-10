@@ -21,6 +21,7 @@ This creates problems:
 2. **No bug fixes**: Open issues will never be addressed upstream
 3. **Complex setup**: Users must configure multiple plugins in correct order
 4. **Security risk**: No security updates for archived dependency
+5. **Adoption visibility**: Consumers install both `remark-kroki-a11y` and `remark-kroki-plugin`, so usage is fragmented and setup remains leaky
 
 ### Code assessment
 
@@ -50,6 +51,23 @@ Fork and integrate the `remark-kroki-plugin` code directly into `remark-kroki-a1
 - Maintenance burden for Kroki API integration
 - Need to keep up with Kroki service changes
 - ~130 lines of additional code to maintain
+
+### Option D: Compose with internal dependency + adapter
+
+Use `remark-kroki-plugin` as an internal dependency of `remark-kroki-a11y`, exposed via an adapter layer.
+
+**Pros:**
+
+- Consumers install only `remark-kroki-a11y`
+- No code duplication
+- Single public API contract
+- Enables internal replacement later (`remark-kroki`, own fork) without consumer API changes
+
+**Cons:**
+
+- Short-term dependency on archived upstream remains
+- Requires adapter maintenance for API/AST compatibility
+- Security and maintenance risk remain until engine replacement
 
 ### Option B: Keep wrapping remark-kroki-plugin
 
@@ -107,20 +125,29 @@ Switch to the actively maintained [`remark-kroki`](https://github.com/show-docs/
 
 Status: *Pending - requires further evaluation*
 
-**Option C (switch to remark-kroki)** has emerged as a strong candidate:
+Primary direction under evaluation: **Option D (compose + adapter)**.
+
+Rationale:
+
+1. Consumers configure one package (`remark-kroki-a11y`)
+2. No duplication of archived plugin code
+3. Creates a migration seam for future engine replacement
+
+Secondary direction: **Option C (switch to `remark-kroki`)**.
+
+Rationale:
 
 1. Actively maintained with MDX 3.0 support already built-in
 2. Modern dependencies, no `rehype-raw` workaround needed
-3. Less maintenance burden than Option A
-4. Healthier community than archived Option B
+3. Healthier long-term posture than archived `remark-kroki-plugin`
 
-However, Option A (integrate) still has merit if:
+Option A remains valid if:
 
-- We need deep customization for a11y features
-- The remark-kroki API doesn't fit our wrapper pattern
-- We want full control over the Kroki integration
+- Deep customization is required for a11y behavior
+- Adapter-based compatibility is not sufficient
+- Full ownership is preferred over external engine dependency
 
-**Next step:** Prototype Option C to verify compatibility with our a11y wrapper approach.
+**Next step:** Prototype Option D first, then validate Option C behind the same adapter contract.
 
 ## Consequences
 
@@ -131,13 +158,21 @@ If Option A is chosen:
 - Can provide unified configuration for both Kroki and a11y options
 - Should consider making `rehype-raw` requirement explicit or automatic
 
+If Option D is chosen:
+
+- Minor (or patch) release if public API remains unchanged
+- Consumers can remove direct `remark-kroki-plugin` dependency
+- Requires adapter contract tests to keep behavior stable
+- Enables future engine swap without breaking consumers
+
 ## Actions
 
-1. [ ] Evaluate `remark-kroki-plugin` code in detail
-2. [ ] Prototype integration
-3. [ ] Assess test coverage needs
-4. [ ] Make final decision
-5. [ ] If proceeding: implement, test, document migration
+1. [ ] Define adapter contract (supported options + expected output)
+2. [ ] Prototype Option D (internal dependency + adapter)
+3. [ ] Add contract tests (fixtures for markdown -> AST/HTML)
+4. [ ] Prototype Option C behind same adapter seam
+5. [ ] Make final decision (D temporary vs direct C vs A)
+6. [ ] Implement, test, and document migration guidance
 
 ## References
 

@@ -29,8 +29,13 @@
  *       cssClass: 'diagram-expandable-source',
  *       languages: ['kroki'],
  *       locale: 'en',
+ *       kroki: {
+ *         krokiBase: 'https://kroki.io',
+ *         lang: 'kroki',
+ *         imgRefDir: '/img/kroki',
+ *         imgDir: 'static/img/kroki',
+ *       },
  *     }],
- *     [require('remark-kroki-plugin'), { ... }],  // Must come AFTER this plugin
  *   ],
  *
  * In markdown, use flags to control per-diagram:
@@ -41,12 +46,38 @@
  *   @enduml
  *   ```
  *
+ *   ```kroki hidePlantuml imgType="plantuml"
+ *   ...
+ *   ```
+ *
  *   ```kroki hideA11y imgType="plantuml"
  *   ...
  *   ```
  */
 
 const { visit } = require('unist-util-visit');
+
+function resolveRemarkKrokiPlugin() {
+  // 1) Standard resolution from this package context.
+  try {
+    return require('remark-kroki-plugin');
+  } catch (_err) {
+    // continue to fallback resolution
+  }
+
+  // 2) Fallback for local-source usage (e.g. require('../src/index.js') in a demo site)
+  // where host app dependencies live in its own node_modules tree.
+  try {
+    const resolved = require.resolve('remark-kroki-plugin', {
+      paths: [process.cwd(), __dirname],
+    });
+    return require(resolved);
+  } catch (_err) {
+    return null;
+  }
+}
+
+const remarkKrokiPlugin = resolveRemarkKrokiPlugin();
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
@@ -310,6 +341,13 @@ const defaultOptions = {
   languages: ['kroki'],
   locale: 'en',
   fallbackA11yText: defaultFallbackA11yText,
+  skipKrokiRender: false,
+  kroki: {
+    krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
+    lang: 'kroki',
+    imgRefDir: '/img/kroki',
+    imgDir: 'static/img/kroki',
+  },
 };
 
 // Export utility functions for testing and potential reuse
@@ -318,6 +356,16 @@ module.exports.extractTextContent = extractTextContent;
 
 // Main plugin export
 function remarkKrokiA11y(options = {}) {
+  const krokiOptions = {
+    ...defaultOptions.kroki,
+    ...(options.kroki || {}),
+    // Backward-compatible flat options support.
+    ...(options.krokiBase ? { krokiBase: options.krokiBase } : {}),
+    ...(options.lang ? { lang: options.lang } : {}),
+    ...(options.imgRefDir ? { imgRefDir: options.imgRefDir } : {}),
+    ...(options.imgDir ? { imgDir: options.imgDir } : {}),
+  };
+
   const opts = {
     ...defaultOptions,
     ...options,
@@ -329,16 +377,19 @@ function remarkKrokiA11y(options = {}) {
   };
   const languages = Array.isArray(opts.languages) ? opts.languages : [opts.languages];
 
-  return (tree) => {
+  return (tree, file) => {
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
 
       // Check for hide flags
-      const hideSource = node.meta && node.meta.includes('hideSource');
-      const hideA11y = node.meta && node.meta.includes('hideA11y');
-      const hideDiagram = node.meta && node.meta.includes('hideDiagram');
-      const hideSpeakButton = node.meta && node.meta.includes('hideSpeakButton');
+      const rawMeta = node.meta || '';
+      const imgTypeFromMeta = extractDiagramType(rawMeta);
+      const hidePlantuml = rawMeta.includes('hidePlantuml') && imgTypeFromMeta === 'plantuml';
+      const hideSource = rawMeta.includes('hideSource') || hidePlantuml;
+      const hideA11y = rawMeta.includes('hideA11y');
+      const hideDiagram = rawMeta.includes('hideDiagram');
+      const hideSpeakButton = rawMeta.includes('hideSpeakButton');
 
       // Extract description override BEFORE cleaning meta
       const descriptionOverride = extractDescriptionOverride(node.meta);
@@ -350,7 +401,7 @@ function remarkKrokiA11y(options = {}) {
         // Remove simple flags
         node.meta = node.meta
           .split(/\s+/)
-          .filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== 'hideSpeakButton' && m !== '')
+          .filter((m) => m !== 'hideSource' && m !== 'hidePlantuml' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== 'hideSpeakButton' && m !== '')
           .join(' ');
       }
 
@@ -503,6 +554,19 @@ ${speakButtonHtml}
         parent.children.splice(index + 1, 0, ...nodesToInsert);
       }
     });
+
+    // Run Kroki rendering in the same remark pass, so consumers only need this plugin.
+    // Tests may disable this behavior to validate only the a11y/source UI AST changes.
+    if (opts.skipKrokiRender) {
+      return;
+    }
+    if (!remarkKrokiPlugin) {
+      throw new Error('remark-kroki-plugin is missing. Install dependencies for remark-kroki-a11y.');
+    }
+    const krokiTransformer = remarkKrokiPlugin(krokiOptions);
+    if (typeof krokiTransformer === 'function') {
+      return krokiTransformer(tree, file);
+    }
   };
 }
 
