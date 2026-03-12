@@ -167,6 +167,8 @@ module.exports = {
               cssClass: 'diagram-expandable-source',
               languages: ['kroki'],
               locale: 'en',
+              showDiagramModeToggle: false,
+              showDiagramLegend: false,
               kroki: {
                 krokiBase: 'https://kroki.io',
                 lang: 'kroki',
@@ -357,7 +359,28 @@ export function onRouteDidUpdate() {
 | `languages` | string[] | `['kroki']` | Code block languages to process |
 | `locale` | string | `'en'` | Locale for generated descriptions (`'en'` or `'nl'`) |
 | `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
+| `showDiagramModeToggle` | boolean | `false` | For PlantUML class diagrams, also render a simplified visual variant and show a `For devs`/`Simpler` toggle |
+| `showDiagramLegend` | boolean | `false` | For PlantUML class diagrams with mode toggle: add an auto-generated relation legend in `For devs` mode only |
 | `kroki` | object | `{ krokiBase, lang, imgRefDir, imgDir }` | Kroki render settings passed to the internally used `remark-kroki-plugin` |
+
+When `showDiagramModeToggle` is enabled:
+
+- `For devs` mode uses an enriched PlantUML view:
+  - non-dependency relations are duplicated as attributes in the source class (based on arrow direction)
+- `Simpler` mode only simplifies/removes:
+  - all more advanced relation types like aggregation (`*--`), composition (`o--`), and inheritance/realization (`<|..`) collapse to simple association (`-->`)
+  - `id` attributes are removed
+  - attribute types are hidden (for example `+amount : Decimal` becomes `+amount`)
+  - custom stereotypes are hidden (for example `Entity` and `Value Object`)
+- Optional legend support:
+  - enable globally with `showDiagramLegend: true`
+  - override per diagram with `showDiagramLegend` / `hideDiagramLegend`
+  - legend is shown only in `For devs` mode
+  - legend content is filtered to only relation arrows that are actually used in that diagram
+
+Note: PlantUML itself already supports manual legends using `legend ... endlegend` in diagram source. The plugin option above is specifically for auto-generated legends in generated `For devs`/`Simpler` class-diagram variants.
+
+Rationale: this follows the spirit of Simon Brown's talk _The Lost Art of Software Design_, where explicit notation and design communication matter. Relation-arrow semantics are often assumed as shared knowledge, but in practice symbols like `*-->` and `o-->` are frequently mixed up. An optional, filtered legend helps make design intent explicit without forcing extra visual noise on every diagram.
 
 ## Markdown Flags
 
@@ -388,6 +411,42 @@ Control per-diagram behavior using flags in the code block meta:
 
 <!-- Override automatic description with custom text -->
 ```kroki a11yDescriptionOverride="Zie toelichting in tekst voor beschrijving van dit diagram" imgType="plantuml"
+@startuml
+...
+@enduml
+```
+
+<!-- Enable For devs / Simpler diagram visual toggle for this PlantUML class diagram -->
+```kroki showDiagramModeToggle imgType="plantuml"
+@startuml
+class Order {
+  +id: UUID
+  +total: Money
+}
+Order o-- OrderLine
+@enduml
+```
+
+<!-- Enable auto-generated legend for this diagram (when mode toggle is used) -->
+```kroki showDiagramModeToggle showDiagramLegend imgType="plantuml"
+@startuml
+class Order {
+  +id: UUID
+  +total: Money
+}
+Order o-- OrderLine
+@enduml
+```
+
+<!-- Explicitly disable mode toggle for this diagram -->
+```kroki hideDiagramModeToggle imgType="plantuml"
+@startuml
+...
+@enduml
+```
+
+<!-- Explicitly disable auto legend for this diagram -->
+```kroki showDiagramModeToggle hideDiagramLegend imgType="plantuml"
 @startuml
 ...
 @enduml

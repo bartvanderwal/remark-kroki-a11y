@@ -39,7 +39,8 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0011](0011-faithful-source-representation.md) | Faithful representation of diagram source | Accepted |
 | [0012](0012-integrate-remark-kroki-plugin.md) | Replace archived remark-kroki-plugin dependency | Pending |
 | [0013](0013-i18n-framework.md) | Internationalization (i18n) framework | Pending |
+| [0014](0014-optional-relation-legend-for-dev-mode.md) | Optional filtered relation legend for `For devs` mode | Accepted |
 
 ---
 
-*Last update*: 2026-02-09
+*Last update*: 2026-03-12
