@@ -318,8 +318,8 @@ const uiLabels = {
     summaryText: '{type} broncode voor "{title}"',
     a11ySummaryText: '"{title}" in natuurlijke taal',
     speakOutLoud: 'Spreek uit',
-    diagramModeForDevs: 'For devs',
-    diagramModeSimpler: 'Simpler',
+    diagramModeForDevs: 'Voor devs',
+    diagramModeSimpler: 'Simpeler',
   },
   en: {
     tabSource: 'Source',
