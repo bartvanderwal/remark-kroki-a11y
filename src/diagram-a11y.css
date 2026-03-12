@@ -89,6 +89,57 @@
 	display: block;
 }
 
+/* Diagram visualization mode toggle (For devs / Simpler) */
+.diagram-visual-toggle-marker {
+	display: none;
+}
+
+.diagram-visual-toggle-controls {
+	display: inline-flex;
+	gap: 0.25rem;
+	margin: 0.35rem 0 0.6rem 0;
+	padding: 0.2rem;
+	border: 1px solid var(--ifm-color-emphasis-300, #dadde1);
+	border-radius: 999px;
+	background: var(--ifm-background-surface-color, #ffffff);
+}
+
+.diagram-visual-toggle-stack {
+	display: grid;
+	align-items: start;
+	margin: 0;
+}
+
+.diagram-visual-toggle-pane {
+	grid-area: 1 / 1;
+}
+
+.diagram-visual-toggle-pane-hidden {
+	visibility: hidden;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.diagram-visual-toggle-btn {
+	border: none;
+	background: transparent;
+	color: var(--ifm-font-color-secondary, #525860);
+	font-size: 0.82rem;
+	font-weight: 600;
+	padding: 0.35rem 0.75rem;
+	border-radius: 999px;
+	cursor: pointer;
+}
+
+.diagram-visual-toggle-btn:hover {
+	color: var(--ifm-color-primary, #2e8555);
+}
+
+.diagram-visual-toggle-btn.active {
+	background: var(--ifm-color-primary, #2e8555);
+	color: #fff;
+}
+
 /* Speak button styling */
 .diagram-expandable-source-speak-btn {
 	display: inline-flex;

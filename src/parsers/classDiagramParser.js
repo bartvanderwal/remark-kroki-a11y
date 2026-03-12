@@ -305,6 +305,18 @@ function splitMultiplicityAndName(multStr) {
   }
 }
 
+function detectArrowInSeparator(separator) {
+  if (!separator) return null;
+  const raw = separator.trim();
+
+  for (const arrow of ARROWS) {
+    if (raw.includes(arrow.pattern)) {
+      return arrow;
+    }
+  }
+  return null;
+}
+
 /**
  * Parse a relation line using string functions (no regex)
  * Returns true if a relation was found and added
@@ -324,9 +336,10 @@ function parseRelationLine(line, result) {
         const fourthQuoteIdx = trimmed.indexOf('"', thirdQuoteIdx + 1);
         if (fourthQuoteIdx !== -1) {
           // We have 4 quotes: A "mult1" separator "mult2" B
-          const from = trimmed.slice(0, firstQuoteIdx).trim();
+          const leftClass = trimmed.slice(0, firstQuoteIdx).trim();
           const mult1Raw = trimmed.slice(firstQuoteIdx + 1, secondQuoteIdx);
           const mult2Raw = trimmed.slice(thirdQuoteIdx + 1, fourthQuoteIdx);
+          const separator = trimmed.slice(secondQuoteIdx + 1, thirdQuoteIdx).trim();
           const rest = trimmed.slice(fourthQuoteIdx + 1).trim();
 
           // Parse multiplicities - they may contain embedded relation names
@@ -334,11 +347,11 @@ function parseRelationLine(line, result) {
           const parsed2 = splitMultiplicityAndName(mult2Raw);
 
           // Rest might contain the target class and optionally a label after :
-          let to = rest;
+          let rightClass = rest;
           let label = null;
           const colonIdx = rest.indexOf(':');
           if (colonIdx !== -1) {
-            to = rest.slice(0, colonIdx).trim();
+            rightClass = rest.slice(0, colonIdx).trim();
             label = rest.slice(colonIdx + 1).trim();
           }
 
@@ -346,6 +359,15 @@ function parseRelationLine(line, result) {
           if (!label) {
             label = parsed2.name || parsed1.name;
           }
+
+          const arrow = detectArrowInSeparator(separator);
+          const relationType = arrow ? arrow.type : 'association';
+          const isReverse = arrow ? arrow.reverse : false;
+          const from = isReverse ? rightClass : leftClass;
+          const to = isReverse ? leftClass : rightClass;
+
+          const multiplicityFrom = isReverse ? parsed2.multiplicity : parsed1.multiplicity;
+          const multiplicityTo = isReverse ? parsed1.multiplicity : parsed2.multiplicity;
 
           // Ensure classes exist in result
           if (from && !result.classes[from]) {
@@ -358,11 +380,11 @@ function parseRelationLine(line, result) {
           result.relations.push({
             from: from,
             to: to,
-            type: 'association',
+            type: relationType,
             label: label,
-            multiplicityFrom: parsed1.multiplicity,
-            multiplicityTo: parsed2.multiplicity,
-            reverse: false
+            multiplicityFrom: multiplicityFrom,
+            multiplicityTo: multiplicityTo,
+            reverse: isReverse
           });
           return true;
         }
