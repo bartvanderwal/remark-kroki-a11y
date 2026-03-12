@@ -166,6 +166,9 @@ function renderPlantUMLClassDiagram(parsed, options = {}) {
   }
 
   const lines = ['@startuml'];
+  if (options.hideAttributeIcons) {
+    lines.push('skinparam classAttributeIconSize 0');
+  }
 
   for (const className of classNames) {
     const classData = parsed.classes[className];
@@ -187,6 +190,15 @@ function renderPlantUMLClassDiagram(parsed, options = {}) {
 
     for (const method of methods) {
       lines.push(`  ${renderMethod(method)}`);
+    }
+
+    // Add invisible padding lines to match height of the dev-mode variant,
+    // which has extra relation-attribute rows and keeps id attributes.
+    if (options.devModeExtraAttributeCounts) {
+      const paddingCount = options.devModeExtraAttributeCounts[className] || 0;
+      for (let i = 0; i < paddingCount; i++) {
+        lines.push('  <size:1> </size>');
+      }
     }
 
     lines.push('}');
@@ -219,11 +231,27 @@ function renderPlantUMLClassDiagram(parsed, options = {}) {
 
 function simplifyPlantUMLClassDiagram(source, options = {}) {
   const parsed = parsePlantUMLClassDiagram(source);
+
+  // Calculate how many extra attribute rows the dev-mode variant has per class,
+  // so the simpler variant can add invisible padding to keep class box heights equal.
+  const parsedWithDevAttrs = addRelationAttributesForDevMode(cloneParsed(parsed));
+  const devModeExtraAttributeCounts = {};
+  for (const className of Object.keys(parsed.classes)) {
+    const originalAttrs = parsed.classes[className].attributes || [];
+    const devAttrs = parsedWithDevAttrs.classes[className]?.attributes || [];
+    // dev mode keeps id attrs; simpler removes them — count both differences
+    const idCount = originalAttrs.filter(isIdAttribute).length;
+    const relationAttrCount = devAttrs.length - originalAttrs.length;
+    devModeExtraAttributeCounts[className] = idCount + relationAttrCount;
+  }
+
   return renderPlantUMLClassDiagram(parsed, {
     simplifyRelations: true,
     removeIdAttributes: true,
     hideAttributeTypes: true,
+    hideAttributeIcons: true,
     padSimplifiedAttributes: true,
+    devModeExtraAttributeCounts,
     showLegend: false,
     legendMode: 'simpler',
     locale: options.locale || 'en',

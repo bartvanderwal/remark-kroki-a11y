@@ -77,6 +77,55 @@ Order --> Customer
     expect(simplified).not.toContain('legend right');
     expect(simplified).not.toContain('endlegend');
   });
+
+  it('hides attribute icons (skinparam classAttributeIconSize 0) in simpler mode', () => {
+    const source = `@startuml
+class Order {
+  +id : UUID
+  +total : Money
+}
+Order --> Money
+@enduml`;
+
+    const simplified = simplifyPlantUMLClassDiagram(source);
+    expect(simplified).toContain('skinparam classAttributeIconSize 0');
+  });
+
+  it('does not hide attribute icons in dev mode', () => {
+    const source = `@startuml
+class Order {
+  +id : UUID
+  +total : Money
+}
+Order --> Money
+@enduml`;
+
+    const devMode = generateDevModePlantUMLClassDiagram(source);
+    expect(devMode).not.toContain('skinparam classAttributeIconSize 0');
+  });
+
+  it('adds invisible padding in simpler mode to compensate for dev-mode extra rows', () => {
+    // Order has: 1 id attr (stripped) + 1 relation attr added in dev mode = 2 padding lines
+    const source = `@startuml
+class Order {
+  +id : UUID
+  +total : Money
+}
+class Customer {
+  +name : String
+}
+Order --> Customer : forCustomer
+@enduml`;
+
+    const simplified = simplifyPlantUMLClassDiagram(source);
+    // Order loses id (1) and gains no relation attrs because Customer is the target;
+    // but dev mode adds -forCustomer : Customer to Order (1) + id stripped (1) = 2 padding lines
+    const paddingMatches = (simplified.match(/<size:1> <\/size>/g) || []).length;
+    expect(paddingMatches).toBeGreaterThan(0);
+    // Customer has no id and no outgoing relations in dev mode → no padding
+    const customerBlock = simplified.split('class Customer')[1]?.split('}')[0] || '';
+    expect(customerBlock).not.toContain('<size:1>');
+  });
 });
 
 describe('generateDevModePlantUMLClassDiagram', () => {

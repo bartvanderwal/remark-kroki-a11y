@@ -374,11 +374,13 @@ When `showDiagramModeToggle` is enabled:
 
 - `For devs` mode uses an enriched PlantUML view:
   - non-dependency relations are duplicated as attributes in the source class (based on arrow direction)
+  - attribute visibility icons (public `+` / private `-`) are shown — useful for distinguishing access modifiers
 - `Simpler` mode only simplifies/removes:
   - all more advanced relation types like aggregation (`*--`), composition (`o--`), and inheritance/realization (`<|..`) collapse to simple association (`-->`)
   - `id` attributes are removed
   - attribute types are hidden (for example `+amount : Decimal` becomes `+amount`)
   - custom stereotypes are hidden (for example `Entity` and `Value Object`)
+  - attribute visibility icons (the coloured circles for `+`/`-`/`#`) are hidden — reduces visual noise for domain experts
 - Optional legend support:
   - enable globally with `showDiagramLegend: true`
   - override per diagram with `showDiagramLegend` / `hideDiagramLegend`
