@@ -119,3 +119,84 @@ class WordList {
 }
 @enduml
 ```
+
+## Visual mode toggle with stereotypes and auto legend
+
+This test case validates three things for PlantUML class diagrams:
+
+- `For devs` / `Simpler` visual mode toggle
+- custom stereotypes (for example `Entity` and `Value Object`) are hidden in `Simpler` mode
+- auto-generated legend is shown when `showDiagramLegend` is enabled
+- advanced relation types are present for testing: inheritance, realization, dependency, composition, and aggregation
+
+```kroki imgType="plantuml" imgTitle="Domain model visual modes" lang="en" showDiagramModeToggle showDiagramLegend
+@startuml
+top to bottom direction
+
+interface PaymentPort
+
+abstract class Order <<Aggregate Root>> {
+  +id : UUID
+  +orderNumber : String
+  +total : Money
+}
+
+class SpecialOrder <<Entity>> {
+  +discountCode : String
+}
+
+class Customer <<Entity>> {
+  +id : UUID
+  +name : String
+}
+
+class OrderLine <<Entity>> {
+  +id : UUID
+  +quantity : int
+}
+
+class StripePaymentAdapter <<Service>> {
+  +authorize(amount : Money) : boolean
+}
+
+class Money <<Value Object>> {
+  +amount : Decimal
+  +currency : String
+}
+
+Order <|-- SpecialOrder : inheritance
+PaymentPort <|.. StripePaymentAdapter : realization
+Order ..> PaymentPort : dependency
+Order "1" *-- "*" OrderLine : composition
+Order "1" o-- "1" Customer : aggregation
+Order --> Money : totalAmount
+@enduml
+```
+
+## Reverse diamond notation (`--o` and `--*`)
+
+This example verifies that reverse-direction diamond syntax is parsed correctly and still shown as advanced relations in `For devs` mode.
+
+```kroki imgType="plantuml" imgTitle="Reverse diamond notation" lang="en" showDiagramModeToggle showDiagramLegend
+@startuml
+top to bottom direction
+
+class Warehouse <<Entity>> {
+  +id : UUID
+  +locationCode : String
+}
+
+class StorageBin <<Entity>> {
+  +id : UUID
+  +label : String
+}
+
+class Pallet <<Entity>> {
+  +id : UUID
+  +barcode : String
+}
+
+StorageBin "*" --o "1" Warehouse : partOfWarehouse
+Pallet "*" --* "1" StorageBin : packedInBin
+@enduml
+```
