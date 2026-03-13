@@ -42,6 +42,8 @@ pie showData
 
 - [PlantUML Class Diagrams (English)](/examples/plantuml-class-diagrams-en) - Test class diagrams with English A11y descriptions
 - [PlantUML Klassendiagrammen (Nederlands)](/examples/plantuml-class-diagrams-nl) - Test klassendiagrammen met Nederlandse A11y beschrijvingen
+- [PlantUML Visual Modes: For devs / Simpler](/examples/plantuml-class-diagrams-en#visual-mode-toggle-with-stereotypes-and-auto-legend) - Test mode toggle, stereotype hiding in Simpler mode, and auto legend
+- [PlantUML Visual Modes: Omgekeerde diamond-notatie (NL)](/examples/plantuml-class-diagrams-nl#omgekeerde-diamond-notatie---o-en---) - Test reverse `--o` en `--*` notatie met mode toggle en legend
 
 ### Mermaid
 

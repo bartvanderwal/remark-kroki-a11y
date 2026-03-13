@@ -90,3 +90,31 @@ Relaties:
 - QuickSort implementeert interface SorteerStrategie
 Notities:
 - Bij klasse Woordenlijst: "De methode sorteer roept huidigeStrategie punt sorteer aan met woorden als parameter"
+
+## Omgekeerde diamond-notatie (`--o` en `--*`)
+
+Dit voorbeeld controleert dat omgekeerde diamond-syntax goed geparsed wordt en als geavanceerde relatie zichtbaar blijft in `For devs` mode.
+
+```kroki imgType="plantuml" imgTitle="Omgekeerde diamond-notatie" lang="nl" showDiagramModeToggle showDiagramLegend
+@startuml
+top to bottom direction
+
+class Magazijn <<Entity>> {
+  +id : UUID
+  +locatieCode : String
+}
+
+class OpslagVak <<Entity>> {
+  +id : UUID
+  +label : String
+}
+
+class Pallet <<Entity>> {
+  +id : UUID
+  +barcode : String
+}
+
+OpslagVak "*" --o "1" Magazijn : onderdeelVanMagazijn
+Pallet "*" --* "1" OpslagVak : verpaktInVak
+@enduml
+```

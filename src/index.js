@@ -84,6 +84,7 @@ const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequ
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('./parsers/activityDiagramParser');
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('./parsers/c4DiagramParser');
 const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('./parsers/pieDiagramParser');
+const { generateDevModePlantUMLClassDiagram, simplifyPlantUMLClassDiagram } = require('./parsers/classDiagramSimplifier');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
 // Each parser entry has: { canParse, parse, generate }
@@ -315,15 +316,19 @@ const uiLabels = {
     tabSource: 'Bron',
     tabA11y: 'In natuurlijke taal',
     summaryText: '{type} broncode voor "{title}"',
-    a11ySummaryText: 'Beschrijving in natuurlijke taal voor "{title}"',
+    a11ySummaryText: '"{title}" in natuurlijke taal',
     speakOutLoud: 'Spreek uit',
+    diagramModeForDevs: 'Voor devs',
+    diagramModeSimpler: 'Simpeler',
   },
   en: {
     tabSource: 'Source',
     tabA11y: 'In natural language',
     summaryText: '{type} source for "{title}"',
-    a11ySummaryText: 'Natural language description for "{title}"',
+    a11ySummaryText: '"{title}" in natural language',
     speakOutLoud: 'Out loud',
+    diagramModeForDevs: 'For devs',
+    diagramModeSimpler: 'Simpler',
   },
 };
 
@@ -333,7 +338,7 @@ const defaultOptions = {
   showA11yDescription: true,
   defaultExpanded: false,
   summaryText: '{type} source code for "{title}"',
-  a11ySummaryText: 'Natural language description for "{title}"',
+  a11ySummaryText: '"{title}" in natural language',
   tabSourceLabel: 'Source',
   tabA11yLabel: 'Description',
   cssClass: 'diagram-expandable-source',
@@ -341,6 +346,8 @@ const defaultOptions = {
   languages: ['kroki'],
   locale: 'en',
   fallbackA11yText: defaultFallbackA11yText,
+  showDiagramModeToggle: false,
+  showDiagramLegend: false,
   skipKrokiRender: false,
   kroki: {
     krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
@@ -378,18 +385,25 @@ function remarkKrokiA11y(options = {}) {
   const languages = Array.isArray(opts.languages) ? opts.languages : [opts.languages];
 
   return (tree, file) => {
+    let diagramModeToggleCounter = 0;
+
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
 
       // Check for hide flags
       const rawMeta = node.meta || '';
+      if (rawMeta.includes('a11yGeneratedSimplerVariant')) return;
       const imgTypeFromMeta = extractDiagramType(rawMeta);
       const hidePlantuml = rawMeta.includes('hidePlantuml') && imgTypeFromMeta === 'plantuml';
       const hideSource = rawMeta.includes('hideSource') || hidePlantuml;
       const hideA11y = rawMeta.includes('hideA11y');
       const hideDiagram = rawMeta.includes('hideDiagram');
       const hideSpeakButton = rawMeta.includes('hideSpeakButton');
+      const showDiagramModeToggle = (opts.showDiagramModeToggle || rawMeta.includes('showDiagramModeToggle')) &&
+        !rawMeta.includes('hideDiagramModeToggle');
+      const showDiagramLegend = (opts.showDiagramLegend || rawMeta.includes('showDiagramLegend')) &&
+        !rawMeta.includes('hideDiagramLegend');
 
       // Extract description override BEFORE cleaning meta
       const descriptionOverride = extractDescriptionOverride(node.meta);
@@ -401,7 +415,9 @@ function remarkKrokiA11y(options = {}) {
         // Remove simple flags
         node.meta = node.meta
           .split(/\s+/)
-          .filter((m) => m !== 'hideSource' && m !== 'hidePlantuml' && m !== 'hideA11y' && m !== 'hideDiagram' && m !== 'hideSpeakButton' && m !== '')
+          .filter((m) => m !== 'hideSource' && m !== 'hidePlantuml' && m !== 'hideA11y' && m !== 'hideDiagram' &&
+            m !== 'hideSpeakButton' && m !== 'showDiagramModeToggle' && m !== 'hideDiagramModeToggle' &&
+            m !== 'showDiagramLegend' && m !== 'hideDiagramLegend' && m !== '')
           .join(' ');
       }
 
@@ -463,6 +479,9 @@ function remarkKrokiA11y(options = {}) {
       const ui = uiLabels[blockLocale] || uiLabels.en;
       const tabSourceLabel = ui.tabSource;
       const tabA11yLabel = ui.tabA11y;
+      const canShowDiagramModeToggle = showDiagramModeToggle &&
+        imgType === 'plantuml' &&
+        diagramType === 'classDiagram';
 
       if (showSourceTab && showA11yTab) {
         // Use tabs when both are available
@@ -551,7 +570,50 @@ ${speakButtonHtml}
       }
 
       if (nodesToInsert.length > 0) {
-        parent.children.splice(index + 1, 0, ...nodesToInsert);
+        if (!canShowDiagramModeToggle) {
+          parent.children.splice(index + 1, 0, ...nodesToInsert);
+        } else {
+          const devModeCode = generateDevModePlantUMLClassDiagram(node.value, {
+            showLegend: showDiagramLegend,
+            locale: blockLocale,
+          });
+          const simplifiedCode = simplifyPlantUMLClassDiagram(node.value, {
+            showLegend: false,
+            locale: blockLocale,
+          });
+          if (!devModeCode || !simplifiedCode) {
+            parent.children.splice(index + 1, 0, ...nodesToInsert);
+          } else {
+            node.value = devModeCode;
+            diagramModeToggleCounter += 1;
+            const toggleGroupId = `diagram-visual-mode-${diagramModeToggleCounter}`;
+            const modeForDevsLabel = escapeHtml(ui.diagramModeForDevs || 'For devs');
+            const modeSimplerLabel = escapeHtml(ui.diagramModeSimpler || 'Simpler');
+            const markerDev = {
+              type: 'html',
+              value: `<div class="diagram-visual-toggle-marker" data-diagram-group="${toggleGroupId}" data-mode="dev" aria-hidden="true"></div>`
+            };
+            const controls = {
+              type: 'html',
+              value: `<div class="diagram-visual-toggle-controls" data-diagram-group="${toggleGroupId}">
+<button type="button" class="diagram-visual-toggle-btn active" data-mode="dev" aria-pressed="true">${modeForDevsLabel}</button>
+<button type="button" class="diagram-visual-toggle-btn" data-mode="simpler" aria-pressed="false">${modeSimplerLabel}</button>
+</div>`
+            };
+            const simplifiedNode = {
+              type: 'code',
+              lang: node.lang,
+              meta: `${node.meta || ''} hideDiagram a11yGeneratedSimplerVariant="true"`.trim(),
+              value: simplifiedCode,
+            };
+            const markerSimpler = {
+              type: 'html',
+              value: `<div class="diagram-visual-toggle-marker" data-diagram-group="${toggleGroupId}" data-mode="simpler" aria-hidden="true"></div>`
+            };
+
+            parent.children.splice(index + 1, 0, markerDev, controls, ...nodesToInsert, simplifiedNode, markerSimpler);
+          }
+        }
       }
     });
 

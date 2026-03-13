@@ -18,6 +18,122 @@ if (typeof window !== 'undefined') {
 }
 
 export function onRouteDidUpdate() {
+  const measurePane = (container) => {
+    if (!container) return { width: 0, height: 0 };
+    const visual = container.querySelector('img, svg, object, canvas') || container;
+    const rect = visual.getBoundingClientRect();
+    return { width: rect.width || 0, height: rect.height || 0 };
+  };
+
+  // Handle dev/simpler diagram mode toggle
+  const diagramModeToggles = document.querySelectorAll('.diagram-visual-toggle-controls');
+
+  diagramModeToggles.forEach((controls) => {
+    if (controls.dataset.diagramModeToggleListener) return;
+    controls.dataset.diagramModeToggleListener = 'true';
+
+    const groupId = controls.dataset.diagramGroup;
+    if (!groupId) return;
+
+    const markerDev = document.querySelector(`.diagram-visual-toggle-marker[data-diagram-group="${groupId}"][data-mode="dev"]`);
+    const markerSimpler = document.querySelector(`.diagram-visual-toggle-marker[data-diagram-group="${groupId}"][data-mode="simpler"]`);
+    const devImageContainer = markerDev ? markerDev.previousElementSibling : null;
+    const simplerImageContainer = markerSimpler ? markerSimpler.previousElementSibling : null;
+    const buttons = controls.querySelectorAll('.diagram-visual-toggle-btn');
+    let stackElement = null;
+
+    if (!devImageContainer || !simplerImageContainer || buttons.length < 2) {
+      controls.style.display = 'none';
+      return;
+    }
+
+    // Keep both visual variants in one shared stack so the toggle position is stable.
+    const sharedParent = controls.parentElement;
+    if (sharedParent && devImageContainer.parentElement === sharedParent && simplerImageContainer.parentElement === sharedParent) {
+      let stack = sharedParent.querySelector(`.diagram-visual-toggle-stack[data-diagram-group="${groupId}"]`);
+
+      if (!stack) {
+        stack = document.createElement('div');
+        stack.className = 'diagram-visual-toggle-stack';
+        stack.dataset.diagramGroup = groupId;
+        sharedParent.insertBefore(stack, devImageContainer);
+      }
+
+      stackElement = stack;
+
+      if (devImageContainer.parentElement !== stack) {
+        stack.appendChild(devImageContainer);
+      }
+
+      if (simplerImageContainer.parentElement !== stack) {
+        stack.appendChild(simplerImageContainer);
+      }
+
+      // Keep controls anchored directly after the shared stack.
+      if (controls.previousElementSibling !== stack) {
+        sharedParent.insertBefore(controls, stack.nextSibling);
+      }
+
+      devImageContainer.classList.add('diagram-visual-toggle-pane');
+      simplerImageContainer.classList.add('diagram-visual-toggle-pane');
+    }
+
+    const lockStackSize = () => {
+      if (!stackElement) return;
+      const devSize = measurePane(devImageContainer);
+      const simplerSize = measurePane(simplerImageContainer);
+      const width = Math.max(devSize.width, simplerSize.width);
+      const height = Math.max(devSize.height, simplerSize.height);
+      if (width > 0) {
+        stackElement.style.minWidth = `${Math.ceil(width)}px`;
+      }
+      if (height > 0) {
+        stackElement.style.minHeight = `${Math.ceil(height)}px`;
+      }
+    };
+
+    const registerLoadSync = (container) => {
+      const media = container ? container.querySelector('img, object') : null;
+      if (!media) return;
+
+      if (media.tagName === 'IMG') {
+        if (media.complete) {
+          lockStackSize();
+        } else {
+          media.addEventListener('load', lockStackSize, { once: true });
+        }
+      } else {
+        media.addEventListener('load', lockStackSize, { once: true });
+      }
+    };
+
+    registerLoadSync(devImageContainer);
+    registerLoadSync(simplerImageContainer);
+
+    const setMode = (mode) => {
+      const showDev = mode !== 'simpler';
+      devImageContainer.classList.toggle('diagram-visual-toggle-pane-hidden', !showDev);
+      simplerImageContainer.classList.toggle('diagram-visual-toggle-pane-hidden', showDev);
+      devImageContainer.setAttribute('aria-hidden', showDev ? 'false' : 'true');
+      simplerImageContainer.setAttribute('aria-hidden', showDev ? 'true' : 'false');
+
+      buttons.forEach((button) => {
+        const isActive = button.dataset.mode === (showDev ? 'dev' : 'simpler');
+        button.classList.toggle('active', isActive);
+        button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+    };
+
+    buttons.forEach((button) => {
+      button.addEventListener('click', () => {
+        setMode(button.dataset.mode || 'dev');
+      });
+    });
+
+    setMode('dev');
+    requestAnimationFrame(lockStackSize);
+  });
+
   // Handle tab switching
   const tabContainers = document.querySelectorAll('.diagram-expandable-source-tabs');
 

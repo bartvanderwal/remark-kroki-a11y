@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.0] - 2026-03-12
+
+> **Headline feature for 0.5.0:** PlantUML class diagram visual mode toggle (`For devs` / `Simpler`).
+>
+> **Issue tracking:** [#24](https://github.com/bartvanderwal/remark-kroki-a11y/issues/24) - Class diagram visual modes (`For devs` / `Simpler`) + optional dev relation legend.
+
+### Added
+
+- **PlantUML class diagram visual mode toggle (For devs / Simpler)**:
+  - New `showDiagramModeToggle` option (global, default `false`)
+  - New per-diagram flags: `showDiagramModeToggle` and `hideDiagramModeToggle`
+  - New `showDiagramLegend` option (global, default `false`)
+  - New per-diagram flags: `showDiagramLegend` and `hideDiagramLegend`
+  - When enabled, the plugin generates two SVG variants during build and adds a client-side toggle:
+    - `For devs`: enriched diagram
+    - `Simpler`: transformed diagram for domain experts
+  - Optional auto-generated legend in `For devs` mode only
+  - In `For devs`, non-dependency relations are also duplicated as attributes in the source class (based on relation direction)
+
+### Changed
+
+- **Simpler mode transformation rules (PlantUML class diagrams)**:
+  - All more advanced relation types like aggregation (`*--`), composition (`o--`), and inheritance/realization (`<|..`) collapse to simple association (`-->`)
+  - Inheritance/implementation/aggregation/composition/dependency distinctions are removed in the visual
+  - Attributes named `id` are removed from classes in the simplified visual variant
+  - Custom stereotypes (such as Entity / Value Object) are hidden in the simplified visual variant
+
 ## [0.4.7] - 2026-02-22
 
 ### Fixed
