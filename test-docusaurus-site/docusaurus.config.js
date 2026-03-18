@@ -121,9 +121,9 @@ module.exports = async function createConfigAsync() {
         },
         {
           type: 'doc',
-          docId: 'examples/index',
+          docId: 'playground',
           position: 'left',
-          label: 'Examples',
+          label: 'Playground',
         },
         {
           href: 'https://github.com/bartvanderwal/remark-kroki-a11y',
@@ -150,6 +150,10 @@ module.exports = async function createConfigAsync() {
             {
               label: 'Examples',
               to: '/examples',
+            },
+            {
+              label: 'Playground',
+              to: '/playground',
             },
           ],
         },
