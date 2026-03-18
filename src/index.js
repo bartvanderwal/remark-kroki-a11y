@@ -259,66 +259,73 @@ function removeMetaAttribute(meta, attributeName) {
     .trim();
 }
 
-function normalizePlantUmlIncludeStatement(src) {
-  const trimmedSrc = src.trim();
-  if (/^https?:\/\//i.test(trimmedSrc)) {
-    return `!includeurl ${trimmedSrc}`;
-  }
-  return `!include ${trimmedSrc}`;
-}
-
 function hasPumlExtension(src) {
   const trimmedSrc = src.trim();
-  if (/^https?:\/\//i.test(trimmedSrc)) {
-    try {
-      const url = new URL(trimmedSrc);
-      return path.extname(url.pathname).toLowerCase() === '.puml';
-    } catch (_err) {
-      return false;
-    }
-  }
   return path.extname(trimmedSrc).toLowerCase() === '.puml';
 }
 
-function validateExternalSourceReference(src, opts) {
+function resolveMarkdownFilePath(file) {
+  if (!file) return null;
+  if (typeof file.path === 'string' && file.path.length > 0) return file.path;
+  if (Array.isArray(file.history) && file.history.length > 0) return file.history[file.history.length - 1];
+  return null;
+}
+
+function resolveExternalSourcePath(src, file) {
+  const markdownFilePath = resolveMarkdownFilePath(file);
+  const baseDir = markdownFilePath ? path.dirname(markdownFilePath) : process.cwd();
+  return path.isAbsolute(src.trim()) ? src.trim() : path.resolve(baseDir, src.trim());
+}
+
+function validateExternalSourceReference(src, file) {
   if (!hasPumlExtension(src)) {
     throw new Error(`remark-kroki-a11y: src="${src}" must point to a .puml file.`);
   }
 
-  if (!opts.validateSrcExists && !opts.validateSrcContent) return;
   if (/^https?:\/\//i.test(src.trim())) return;
 
-  const includeSourceDir = opts.kroki && opts.kroki.includeSourceDir;
-  if (!includeSourceDir) {
-    throw new Error('remark-kroki-a11y: validateSrcExists/validateSrcContent requires kroki.includeSourceDir to be configured.');
-  }
-
-  const resolvedPath = path.resolve(includeSourceDir, src.trim());
+  const resolvedPath = resolveExternalSourcePath(src, file);
   if (!fs.existsSync(resolvedPath)) {
-    throw new Error(`remark-kroki-a11y: src="${src}" was not found in includeSourceDir (resolved: "${resolvedPath}").`);
+    const markdownFilePath = resolveMarkdownFilePath(file);
+    const markdownContext = markdownFilePath ? ` in "${markdownFilePath}"` : '';
+    throw new Error(`remark-kroki-a11y: src="${src}" was not found (resolved: "${resolvedPath}")${markdownContext}.`);
   }
 
-  if (opts.validateSrcContent) {
-    const content = fs.readFileSync(resolvedPath, 'utf8').trim();
-    if (!content) {
-      throw new Error(`remark-kroki-a11y: src="${src}" points to an empty .puml file.`);
-    }
+  const content = fs.readFileSync(resolvedPath, 'utf8').trim();
+  if (!content) {
+    throw new Error(`remark-kroki-a11y: src="${src}" points to an empty .puml file.`);
   }
 }
 
-function loadExternalDiagramSourceIfConfigured(node, opts) {
+function normalizePlantUmlSourceForRender(source) {
+  const lower = source.toLowerCase();
+  const hasStart = lower.includes('@startuml');
+  const hasEnd = lower.includes('@enduml');
+  if (hasStart && hasEnd) return source;
+
+  const trimmed = source.replace(/\s+$/, '');
+  return `@startuml\n${trimmed}\n@enduml\n`;
+}
+
+function loadExternalDiagramSourceIfConfigured(node, file) {
   const src = extractMetaAttribute(node.meta, 'src');
-  if (!src) return;
+  if (!src) return null;
 
   const imgType = extractDiagramType(node.meta);
   if (imgType !== 'plantuml') {
     throw new Error(`remark-kroki-a11y: src="${src}" is only supported for imgType="plantuml".`);
   }
 
-  validateExternalSourceReference(src, opts);
-  const includeStatement = normalizePlantUmlIncludeStatement(src);
-  node.value = `@startuml\n${includeStatement}\n@enduml\n`;
+  if (/^https?:\/\//i.test(src.trim())) {
+    throw new Error(`remark-kroki-a11y: src="${src}" must be a local .puml path relative to the current Markdown file.`);
+  }
+
+  validateExternalSourceReference(src, file);
+  const resolvedPath = resolveExternalSourcePath(src, file);
+  const rawSource = fs.readFileSync(resolvedPath, 'utf8');
+  node.value = normalizePlantUmlSourceForRender(rawSource);
   node.meta = removeMetaAttribute(node.meta, 'src');
+  return { rawSource };
 }
 
 // Detect PlantUML diagram type from content
@@ -472,14 +479,11 @@ const defaultOptions = {
   showDiagramModeToggle: false,
   showDiagramLegend: false,
   skipKrokiRender: false,
-  validateSrcExists: false,
-  validateSrcContent: false,
   kroki: {
     krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
     lang: 'kroki',
     imgRefDir: '/img/kroki',
     imgDir: 'static/img/kroki',
-    includeSourceDir: null,
   },
 };
 
@@ -516,7 +520,8 @@ function remarkKrokiA11y(options = {}) {
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
-      loadExternalDiagramSourceIfConfigured(node, opts);
+      const externalSourceInfo = loadExternalDiagramSourceIfConfigured(node, file);
+      const sourceForUiAndA11y = (externalSourceInfo && externalSourceInfo.rawSource) || node.value;
 
       // Check for hide flags
       const rawMeta = node.meta || '';
@@ -559,16 +564,16 @@ function remarkKrokiA11y(options = {}) {
       const imgType = extractDiagramType(node.meta);
       const diagramType =
 				imgType === 'plantuml'
-				  ? detectPlantUMLDiagramType(node.value)
+				  ? detectPlantUMLDiagramType(sourceForUiAndA11y)
 				  : imgType === 'mermaid'
-				    ? detectMermaidDiagramType(node.value)
+				    ? detectMermaidDiagramType(sourceForUiAndA11y)
 				    : 'diagram';
       // Support per-block locale override via lang="nl" or lang="en"
       const blockLocale = extractLocale(node.meta) || opts.locale;
       const title = extractTitle(node.meta) || (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
       const langName = languageNames[imgType] || languageNames[node.lang] || node.lang;
 
-      const escapedCode = escapeHtml(node.value);
+      const escapedCode = escapeHtml(sourceForUiAndA11y);
       const openAttr = opts.defaultExpanded ? ' open' : '';
 
       // Generate A11y description if applicable
@@ -585,7 +590,7 @@ function remarkKrokiA11y(options = {}) {
 
       // Try registered parsers for a11y description
       if (shouldAttemptA11y && !a11yDescription) {
-        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, node.value, blockLocale);
+        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, sourceForUiAndA11y, blockLocale);
       }
 
       // Fallback: always show a generic message when no parser output is available
@@ -700,11 +705,11 @@ ${speakButtonHtml}
         if (!canShowDiagramModeToggle) {
           parent.children.splice(index + 1, 0, ...nodesToInsert);
         } else {
-          const devModeCode = generateDevModePlantUMLClassDiagram(node.value, {
+          const devModeCode = generateDevModePlantUMLClassDiagram(sourceForUiAndA11y, {
             showLegend: showDiagramLegend,
             locale: blockLocale,
           });
-          const simplifiedCode = simplifyPlantUMLClassDiagram(node.value, {
+          const simplifiedCode = simplifyPlantUMLClassDiagram(sourceForUiAndA11y, {
             showLegend: false,
             locale: blockLocale,
           });

@@ -299,7 +299,7 @@ export default function KrokiPlayground() {
         </label>
       </fieldset>
 
-      {previewSrc && showDetails && (
+      {showDetails && (
         <>
           <details className="diagram-expandable-source">
             <summary>{summaryText}</summary>

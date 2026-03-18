@@ -6,12 +6,12 @@ import KrokiPlayground from '@site/src/components/KrokiPlayground';
 
 # Kroki A11Y playground
 
-Gebruik deze pagina om snel diagrammen te testen zonder eerst docs-bestanden aan te passen.
-
-- `Diagram type`: kies `plantuml` of `mermaid`.
-- `Kroki base URL`: standaard `https://kroki.io`, lokaal meestal `http://localhost:8000`.
-- `Source`: plak of typ je diagramcode en klik op `Render preview`.
-
-> Tip: met lokale Docker Kroki (`docker compose -f docker-compose.kroki.yml up -d`) kun je ook offline of stabieler testen.
-
 <KrokiPlayground />
+
+Use this page to quickly test diagrams without editing documentation files first.
+
+- `Diagram type`: choose `plantuml` or `mermaid`.
+- `Kroki base URL`: default is `https://kroki.io`, local is usually `http://localhost:8000`.
+- `Source`: paste or type your diagram code and click `Render preview`.
+
+> Tip: with local Docker Kroki (`docker compose -f docker-compose.kroki.yml up -d`), you can also test offline or with more stable rendering.

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <style>
+      .w{stroke:#fff; fill:none; stroke-linecap:round; stroke-linejoin:round}
+      .k{stroke:#7C3AED; fill:none; stroke-linecap:round; stroke-linejoin:round}
+    </style>
+  </defs>
+
+  <!-- background -->
+  <circle cx="32" cy="32" r="30" fill="#0F766E"/>
+
+  <!-- vitruvian ring -->
+  <circle cx="32" cy="32" r="22.5" fill="none" stroke="#ffffff" stroke-width="2.5"/>
+
+  <!-- Kroki K: shorter stem, stronger diagonals -->
+  <path d="M18 19 L18 45" class="k" stroke-width="4.8"/>
+  <path d="M18 32 L31 20.5" class="k" stroke-width="4.8"/>
+  <path d="M18 32 L31 43.5" class="k" stroke-width="4.8"/>
+
+  <!-- Vitruvian person -->
+  <circle cx="37" cy="18.5" r="4.1" fill="#ffffff"/>
+
+  <!-- torso -->
+  <path d="M37 24 L37 38" class="w" stroke-width="3.5"/>
+
+  <!-- straight arms from top of torso -->
+  <path d="M28.5 26 L45.5 26" class="w" stroke-width="3.3"/>
+
+  <!-- secondary raised arms -->
+  <path d="M37 26 L28 20.5" class="w" stroke-width="3.1"/>
+  <path d="M37 26 L46 20.5" class="w" stroke-width="3.1"/>
+
+  <!-- legs -->
+  <path d="M37 38 L30 48.5" class="w" stroke-width="3.5"/>
+  <path d="M37 38 L44 48.5" class="w" stroke-width="3.5"/>
+</svg>

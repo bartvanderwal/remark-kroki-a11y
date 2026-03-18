@@ -1,3 +1,4 @@
+@startuml
 !include <C4/C4_Context>
 
 title Context diagram - Online Bookstore
@@ -11,3 +12,4 @@ Rel(customer, bookstore, "Browses and places orders")
 Rel(bookstore, payment, "Requests payment authorization")
 Rel(bookstore, warehouse, "Sends shipment requests")
 Rel(warehouse, customer, "Delivers books")
+@enduml

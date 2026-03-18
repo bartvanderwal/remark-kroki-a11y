@@ -24,7 +24,7 @@ module.exports = async function createConfigAsync() {
   url: 'https://bartvanderwal.github.io',
   baseUrl: '/remark-kroki-a11y/',
   // docs config must be under presets, not at the root
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
   organizationName: 'bartvanderwal',
   projectName: 'remark-kroki-a11y',
   trailingSlash: false,

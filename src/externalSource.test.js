@@ -1,7 +1,7 @@
-import { beforeAll, describe, expect, it } from 'vitest';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import { beforeAll, describe, expect, it } from 'vitest';
 
 let remarkKrokiA11y;
 
@@ -11,15 +11,20 @@ beforeAll(async () => {
 });
 
 describe('external source via src meta attribute', () => {
-  it('converts src into a PlantUML include wrapper', () => {
+  it('loads local .puml source relative to the markdown file', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'remark-kroki-a11y-src-relative-'));
+    const docsDir = path.join(tempDir, 'docs');
+    fs.mkdirSync(docsDir, { recursive: true });
+    fs.writeFileSync(path.join(docsDir, 'diagram.puml'), 'class Order\nOrder --> Customer\n', 'utf8');
+
     const tree = {
       type: 'root',
       children: [
         {
           type: 'code',
           lang: 'kroki',
-          meta: 'imgType="plantuml" imgTitle="External source" src="diagram.puml"',
-          value: 'this inline value should be replaced',
+          meta: 'imgType="plantuml" imgTitle="External source" src="./diagram.puml"',
+          value: 'should be replaced',
         },
       ],
     };
@@ -31,21 +36,31 @@ describe('external source via src meta attribute', () => {
       languages: ['kroki'],
     });
 
-    transformer(tree, {});
+    transformer(tree, { path: path.join(docsDir, 'page.md') });
 
-    const codeNode = tree.children[0];
-    expect(codeNode.value).toBe('@startuml\n!include diagram.puml\n@enduml\n');
+    const htmlNode = tree.children.find((node) => node.type === 'html');
+    const codeNode = tree.children.find((node) => node.type === 'code');
+
+    // Source panel must show expanded file content, not internal wrappers.
+    expect(htmlNode.value).toContain('class Order');
+    expect(htmlNode.value).toContain('Order --&gt; Customer');
+    expect(htmlNode.value).not.toContain('@startuml');
+    expect(htmlNode.value).not.toContain('!include');
+
+    // Render path may still be normalized to a full PlantUML document.
+    expect(codeNode.value).toContain('@startuml');
+    expect(codeNode.value).toContain('class Order');
     expect(codeNode.meta).not.toContain('src=');
   });
 
-  it('throws a clear error when src is used with a non-PlantUML imgType', () => {
+  it('throws when src is used with a non-PlantUML imgType', () => {
     const tree = {
       type: 'root',
       children: [
         {
           type: 'code',
           lang: 'kroki',
-          meta: 'imgType="mermaid" imgTitle="Wrong type" src="diagram.mmd"',
+          meta: 'imgType="mermaid" imgTitle="Wrong type" src="./diagram.mmd"',
           value: '',
         },
       ],
@@ -62,14 +77,14 @@ describe('external source via src meta attribute', () => {
       .toThrow(/only supported for imgType="plantuml"/i);
   });
 
-  it('throws a clear error when src does not end with .puml', () => {
+  it('throws when src does not end with .puml', () => {
     const tree = {
       type: 'root',
       children: [
         {
           type: 'code',
           lang: 'kroki',
-          meta: 'imgType="plantuml" imgTitle="Wrong ext" src="diagram.txt"',
+          meta: 'imgType="plantuml" imgTitle="Wrong extension" src="./diagram.txt"',
           value: '',
         },
       ],
@@ -86,8 +101,10 @@ describe('external source via src meta attribute', () => {
       .toThrow(/must point to a \.puml file/i);
   });
 
-  it('throws when validateSrcExists is enabled and file does not exist', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'remark-kroki-a11y-include-missing-'));
+  it('throws when src file does not exist', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'remark-kroki-a11y-src-missing-'));
+    const docsDir = path.join(tempDir, 'docs');
+    fs.mkdirSync(docsDir, { recursive: true });
 
     const tree = {
       type: 'root',
@@ -95,7 +112,7 @@ describe('external source via src meta attribute', () => {
         {
           type: 'code',
           lang: 'kroki',
-          meta: 'imgType="plantuml" imgTitle="Missing include" src="missing.puml"',
+          meta: 'imgType="plantuml" imgTitle="Missing file" src="./missing.puml"',
           value: '',
         },
       ],
@@ -105,21 +122,18 @@ describe('external source via src meta attribute', () => {
       skipKrokiRender: true,
       showSource: true,
       showA11yDescription: false,
-      validateSrcExists: true,
       languages: ['kroki'],
-      kroki: {
-        includeSourceDir: tempDir,
-      },
     });
 
-    expect(() => transformer(tree, {}))
-      .toThrow(/was not found in includeSourceDir/i);
+    expect(() => transformer(tree, { path: path.join(docsDir, 'page.md') }))
+      .toThrow(/was not found/i);
   });
 
-  it('throws when validateSrcContent is enabled and file is empty', () => {
-    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'remark-kroki-a11y-include-empty-'));
-    const emptyFile = path.join(tempDir, 'empty.puml');
-    fs.writeFileSync(emptyFile, '\n', 'utf8');
+  it('throws when src file is empty', () => {
+    const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'remark-kroki-a11y-src-empty-'));
+    const docsDir = path.join(tempDir, 'docs');
+    fs.mkdirSync(docsDir, { recursive: true });
+    fs.writeFileSync(path.join(docsDir, 'empty.puml'), ' \n', 'utf8');
 
     const tree = {
       type: 'root',
@@ -127,7 +141,7 @@ describe('external source via src meta attribute', () => {
         {
           type: 'code',
           lang: 'kroki',
-          meta: 'imgType="plantuml" imgTitle="Empty include" src="empty.puml"',
+          meta: 'imgType="plantuml" imgTitle="Empty file" src="./empty.puml"',
           value: '',
         },
       ],
@@ -137,14 +151,10 @@ describe('external source via src meta attribute', () => {
       skipKrokiRender: true,
       showSource: true,
       showA11yDescription: false,
-      validateSrcContent: true,
       languages: ['kroki'],
-      kroki: {
-        includeSourceDir: tempDir,
-      },
     });
 
-    expect(() => transformer(tree, {}))
-      .toThrow(/points to an empty \.puml file/i);
+    expect(() => transformer(tree, { path: path.join(docsDir, 'page.md') }))
+      .toThrow(/empty \.puml/i);
   });
 });
