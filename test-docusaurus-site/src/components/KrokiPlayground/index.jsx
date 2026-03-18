@@ -251,6 +251,23 @@ export default function KrokiPlayground() {
         />
       </label>
 
+      {error && (
+        <p className={styles.error} role="alert">
+          Render failed: {error}
+        </p>
+      )}
+
+      <figure className={styles.preview}>
+        {previewSrc ? (
+          <img src={previewSrc} alt={`Rendered ${diagramType} diagram`} />
+        ) : (
+          <p className={styles.previewPlaceholder}>
+            No diagram rendered yet. Click <strong>Render preview</strong>.
+          </p>
+        )}
+        <figcaption>Kroki render preview</figcaption>
+      </figure>
+
       <p className={styles.endpoint}>Endpoint: <code>{endpoint}</code></p>
 
       <fieldset className={styles.controls}>
@@ -282,18 +299,8 @@ export default function KrokiPlayground() {
         </label>
       </fieldset>
 
-      {error && (
-        <p className={styles.error} role="alert">
-          Render failed: {error}
-        </p>
-      )}
-
       {previewSrc && showDetails && (
         <>
-          <figure className={styles.preview}>
-            <img src={previewSrc} alt={`Rendered ${diagramType} diagram`} />
-            <figcaption>Kroki render preview</figcaption>
-          </figure>
           <details className="diagram-expandable-source">
             <summary>{summaryText}</summary>
             <section className={styles.tabsPanel}>

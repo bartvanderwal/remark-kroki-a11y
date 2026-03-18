@@ -4,7 +4,7 @@ description: Interactive Kroki test page for quick PlantUML and Mermaid renderin
 
 import KrokiPlayground from '@site/src/components/KrokiPlayground';
 
-# Kroki Playground
+# Kroki A11Y playground
 
 Gebruik deze pagina om snel diagrammen te testen zonder eerst docs-bestanden aan te passen.
 

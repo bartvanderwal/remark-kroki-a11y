@@ -146,6 +146,13 @@
   color: var(--ifm-color-emphasis-700);
 }
 
+.previewPlaceholder {
+  margin: 0;
+  padding: 1rem;
+  text-align: center;
+  color: var(--ifm-color-emphasis-700);
+}
+
 .tabsPanel {
   border: 1px solid var(--ifm-color-emphasis-300);
   border-radius: 10px;
