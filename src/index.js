@@ -56,6 +56,8 @@
  */
 
 const { visit } = require('unist-util-visit');
+const fs = require('fs');
+const path = require('path');
 
 function resolveRemarkKrokiPlugin() {
   // 1) Standard resolution from this package context.
@@ -84,6 +86,7 @@ const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequ
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('./parsers/activityDiagramParser');
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('./parsers/c4DiagramParser');
 const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('./parsers/pieDiagramParser');
+const { parseDomainStory, generateAccessibleDescription: generateDomainStoryDescription } = require('./parsers/domainStoryParser');
 const { generateDevModePlantUMLClassDiagram, simplifyPlantUMLClassDiagram } = require('./parsers/classDiagramSimplifier');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
@@ -112,6 +115,19 @@ const parserRegistry = [
     canParse: (imgType, diagramType, content) => imgType === 'mermaid' && (diagramType === 'pieDiagram' || /^\s*pie\b/i.test(content)),
     parse: parseMermaidPieChart,
     generate: generatePieDescription,
+  },
+  {
+    name: 'PlantUML Domain Story',
+    canParse: (imgType, diagramType, content) => {
+      if (imgType !== 'plantuml') return false;
+      if (diagramType === 'domainStory') return true;
+      const lower = content.toLowerCase();
+      return lower.includes('<domainstory/domainstory>') ||
+        lower.includes('!include domainstory.puml') ||
+        /\bactivity\s*\(/.test(content);
+    },
+    parse: parseDomainStory,
+    generate: generateDomainStoryDescription,
   },
   {
     name: 'PlantUML Sequence Diagram',
@@ -146,6 +162,29 @@ function tryGenerateA11yDescription(imgType, diagramType, content, locale) {
     }
   }
   return null;
+}
+
+// Shared runtime helper for environments outside remark AST processing
+// (e.g. the docs playground component).
+function generateA11yFromSource({ imgType, content, locale = 'en', fallbackA11yText = defaultFallbackA11yText }) {
+  const diagramType = imgType === 'plantuml'
+    ? detectPlantUMLDiagramType(content)
+    : imgType === 'mermaid'
+      ? detectMermaidDiagramType(content)
+      : 'diagram';
+
+  let a11yDescription = tryGenerateA11yDescription(imgType, diagramType, content, locale);
+  if (!a11yDescription) {
+    const fallbackTemplate = (fallbackA11yText && fallbackA11yText[locale]) || fallbackA11yText.en;
+    const diagramTypeName = (diagramTypeNames[locale] || diagramTypeNames.en)[diagramType] || diagramType;
+    a11yDescription = fallbackTemplate.replace('{diagramType}', diagramTypeName);
+  }
+
+  return {
+    diagramType,
+    a11yDescription,
+    a11yText: extractTextContent(a11yDescription),
+  };
 }
 
 // Escape HTML special characters to prevent XSS
@@ -204,9 +243,100 @@ function extractDescriptionOverride(meta) {
   return match ? match[1] : null;
 }
 
+function extractMetaAttribute(meta, attributeName) {
+  if (!meta) return null;
+  const escapedName = attributeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = meta.match(new RegExp(`${escapedName}="([^"]+)"`));
+  return match ? match[1] : null;
+}
+
+function removeMetaAttribute(meta, attributeName) {
+  if (!meta) return meta;
+  const escapedName = attributeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return meta
+    .replace(new RegExp(`\\s*${escapedName}="[^"]*"`, 'g'), ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function hasPumlExtension(src) {
+  const trimmedSrc = src.trim();
+  return path.extname(trimmedSrc).toLowerCase() === '.puml';
+}
+
+function resolveMarkdownFilePath(file) {
+  if (!file) return null;
+  if (typeof file.path === 'string' && file.path.length > 0) return file.path;
+  if (Array.isArray(file.history) && file.history.length > 0) return file.history[file.history.length - 1];
+  return null;
+}
+
+function resolveExternalSourcePath(src, file) {
+  const markdownFilePath = resolveMarkdownFilePath(file);
+  const baseDir = markdownFilePath ? path.dirname(markdownFilePath) : process.cwd();
+  return path.isAbsolute(src.trim()) ? src.trim() : path.resolve(baseDir, src.trim());
+}
+
+function validateExternalSourceReference(src, file) {
+  if (!hasPumlExtension(src)) {
+    throw new Error(`remark-kroki-a11y: src="${src}" must point to a .puml file.`);
+  }
+
+  if (/^https?:\/\//i.test(src.trim())) return;
+
+  const resolvedPath = resolveExternalSourcePath(src, file);
+  if (!fs.existsSync(resolvedPath)) {
+    const markdownFilePath = resolveMarkdownFilePath(file);
+    const markdownContext = markdownFilePath ? ` in "${markdownFilePath}"` : '';
+    throw new Error(`remark-kroki-a11y: src="${src}" was not found (resolved: "${resolvedPath}")${markdownContext}.`);
+  }
+
+  const content = fs.readFileSync(resolvedPath, 'utf8').trim();
+  if (!content) {
+    throw new Error(`remark-kroki-a11y: src="${src}" points to an empty .puml file.`);
+  }
+}
+
+function normalizePlantUmlSourceForRender(source) {
+  const lower = source.toLowerCase();
+  const hasStart = lower.includes('@startuml');
+  const hasEnd = lower.includes('@enduml');
+  if (hasStart && hasEnd) return source;
+
+  const trimmed = source.replace(/\s+$/, '');
+  return `@startuml\n${trimmed}\n@enduml\n`;
+}
+
+function loadExternalDiagramSourceIfConfigured(node, file) {
+  const src = extractMetaAttribute(node.meta, 'src');
+  if (!src) return null;
+
+  const imgType = extractDiagramType(node.meta);
+  if (imgType !== 'plantuml') {
+    throw new Error(`remark-kroki-a11y: src="${src}" is only supported for imgType="plantuml".`);
+  }
+
+  if (/^https?:\/\//i.test(src.trim())) {
+    throw new Error(`remark-kroki-a11y: src="${src}" must be a local .puml path relative to the current Markdown file.`);
+  }
+
+  validateExternalSourceReference(src, file);
+  const resolvedPath = resolveExternalSourcePath(src, file);
+  const rawSource = fs.readFileSync(resolvedPath, 'utf8');
+  node.value = normalizePlantUmlSourceForRender(rawSource);
+  node.meta = removeMetaAttribute(node.meta, 'src');
+  return { rawSource };
+}
+
 // Detect PlantUML diagram type from content
 function detectPlantUMLDiagramType(content) {
   const lowerContent = content.toLowerCase();
+  // Domain Story detection: explicit include or macro activity syntax.
+  if (lowerContent.includes('<domainstory/domainstory>') ||
+      lowerContent.includes('!include domainstory.puml') ||
+      /\bactivity\s*\(/.test(content)) {
+    return 'domainStory';
+  }
   // C4 diagram detection: look for C4-PlantUML include or C4 macros
   if (lowerContent.includes('c4_context') || lowerContent.includes('c4_component') ||
 	    lowerContent.includes('c4_container') || lowerContent.includes('c4-plantuml') ||
@@ -390,6 +520,8 @@ function remarkKrokiA11y(options = {}) {
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
+      const externalSourceInfo = loadExternalDiagramSourceIfConfigured(node, file);
+      const sourceForUiAndA11y = (externalSourceInfo && externalSourceInfo.rawSource) || node.value;
 
       // Check for hide flags
       const rawMeta = node.meta || '';
@@ -432,16 +564,16 @@ function remarkKrokiA11y(options = {}) {
       const imgType = extractDiagramType(node.meta);
       const diagramType =
 				imgType === 'plantuml'
-				  ? detectPlantUMLDiagramType(node.value)
+				  ? detectPlantUMLDiagramType(sourceForUiAndA11y)
 				  : imgType === 'mermaid'
-				    ? detectMermaidDiagramType(node.value)
+				    ? detectMermaidDiagramType(sourceForUiAndA11y)
 				    : 'diagram';
       // Support per-block locale override via lang="nl" or lang="en"
       const blockLocale = extractLocale(node.meta) || opts.locale;
       const title = extractTitle(node.meta) || (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
       const langName = languageNames[imgType] || languageNames[node.lang] || node.lang;
 
-      const escapedCode = escapeHtml(node.value);
+      const escapedCode = escapeHtml(sourceForUiAndA11y);
       const openAttr = opts.defaultExpanded ? ' open' : '';
 
       // Generate A11y description if applicable
@@ -458,7 +590,7 @@ function remarkKrokiA11y(options = {}) {
 
       // Try registered parsers for a11y description
       if (shouldAttemptA11y && !a11yDescription) {
-        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, node.value, blockLocale);
+        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, sourceForUiAndA11y, blockLocale);
       }
 
       // Fallback: always show a generic message when no parser output is available
@@ -573,11 +705,11 @@ ${speakButtonHtml}
         if (!canShowDiagramModeToggle) {
           parent.children.splice(index + 1, 0, ...nodesToInsert);
         } else {
-          const devModeCode = generateDevModePlantUMLClassDiagram(node.value, {
+          const devModeCode = generateDevModePlantUMLClassDiagram(sourceForUiAndA11y, {
             showLegend: showDiagramLegend,
             locale: blockLocale,
           });
-          const simplifiedCode = simplifyPlantUMLClassDiagram(node.value, {
+          const simplifiedCode = simplifyPlantUMLClassDiagram(sourceForUiAndA11y, {
             showLegend: false,
             locale: blockLocale,
           });
@@ -634,3 +766,4 @@ ${speakButtonHtml}
 
 // CommonJS export for Docusaurus compatibility
 module.exports = remarkKrokiA11y;
+module.exports.__internal = require('./runtime/a11yRuntime.cjs');

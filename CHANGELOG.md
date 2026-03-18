@@ -5,6 +5,41 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.5.2] - 2026-03-18
+
+> **Headline features for 0.5.2:** Interactive Kroki A11Y playground + external PlantUML source files via `src`.
+>
+> **Issue tracking:** _TBD (create issue for `src` architecture/follow-up)_.
+
+### Added
+
+- **Kroki A11Y playground** in the test Docusaurus site:
+  - Interactive rendering for PlantUML and Mermaid
+  - Server health check and endpoint switching
+  - Plugin-like UI toggles to simulate source/a11y tab visibility
+- **`src` attribute support for `kroki` code blocks (`imgType="plantuml"`)**:
+  - Load diagram source from local `.puml` files
+  - Resolve `src` relative to the current Markdown/MDX file
+  - Show loaded source content in the source tab (instead of internal wrapper text)
+- **Unit tests for external source behavior**:
+  - valid relative path
+  - invalid type/extension
+  - missing and empty `.puml` files
+
+### Changed
+
+- Playground page title updated to **Kroki A11Y playground**
+- Playground layout updated:
+  - `Plugin-like UI toggles` and `Endpoint` now appear below the diagram preview
+- Test docs/examples updated with external source samples for:
+  - class diagram
+  - C4 context diagram
+
+### Fixed
+
+- **`src` rendering reliability issue** where users could see PlantUML fallback/welcome output when include-based resolution failed on remote Kroki.
+- **Source tab fidelity for `src` diagrams**: now shows actual diagram source content from `.puml` file.
+
 ## [0.5.0] - 2026-03-12
 
 > **Headline feature for 0.5.0:** PlantUML class diagram visual mode toggle (`For devs` / `Simpler`).

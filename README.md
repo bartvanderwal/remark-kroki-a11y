@@ -373,7 +373,6 @@ When `showDiagramModeToggle` is enabled:
   - `id` attributes are removed
   - attribute types are hidden (for example `+amount : Decimal` becomes `+amount`)
   - custom stereotypes are hidden (for example `Entity` and `Value Object`)
-  - attribute visibility icons (the coloured circles for `+`/`-`/`#`) are hidden — reduces visual noise for domain experts
 - Optional legend support:
   - enable globally with `showDiagramLegend: true`
   - override per diagram with `showDiagramLegend` / `hideDiagramLegend`
@@ -418,6 +417,10 @@ Control per-diagram behavior using flags in the code block meta:
 @enduml
 ```
 
+<!-- Load diagram source from a local file -->
+```kroki imgType="plantuml" imgTitle="Order model" src="order-model.puml"
+```
+
 <!-- Enable For devs / Simpler diagram visual toggle for this PlantUML class diagram -->
 ```kroki showDiagramModeToggle imgType="plantuml"
 @startuml
@@ -454,6 +457,22 @@ Order o-- OrderLine
 @enduml
 ```
 
+~~~
+
+### External file source with `src`
+
+You can load diagram source from a local `.puml` file by setting `src="..."` on the `kroki` code block.
+
+- `src` is currently supported for `imgType="plantuml"`
+- `src` is resolved relative to the current Markdown/MDX file
+- only local `.puml` files are supported for `src`
+- the source tab shows the loaded file content (not internal wrapper code)
+
+Example:
+
+~~~markdown
+```kroki imgType="plantuml" imgTitle="Order model" src="order-model.puml"
+```
 ~~~
 
 The `a11yDescriptionOverride` attribute is useful when:

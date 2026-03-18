@@ -11,13 +11,12 @@ Each ADR contains the following sections:
 - Options (our addition)
 - Decision
 - Consequences
-- Actions (if applicable)
 - References (our addition, APA style per HAN)
 
 **Deviations from Nygard's original format:**
 
 1. *Options*: We explicitly add an 'Options' section to list and motivate alternatives considered, for clarity and traceability.
-2. *References*: We use a 'References' section at the end, formatted in APA style as prescribed by HAN guidelines ([HAN APA reference guide](https://factlearning.wordpress.com/wp-content/uploads/2016/02/controlekaart-documenten-ica.pdf)).
+2. *References*: References are optional, and only used when the ADR cites specific deep-link sources in the text; format follows HAN APA guidance ([HAN APA reference guide](https://factlearning.wordpress.com/wp-content/uploads/2016/02/controlekaart-documenten-ica.pdf)).
 
 See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.com/blog/2011/11/15/documenting-architecture-decisions.html).
 
@@ -40,7 +39,8 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0012](0012-integrate-remark-kroki-plugin.md) | Replace archived remark-kroki-plugin dependency | Pending |
 | [0013](0013-i18n-framework.md) | Internationalization (i18n) framework | Pending |
 | [0014](0014-optional-relation-legend-for-dev-mode.md) | Optional filtered relation legend for `For devs` mode | Accepted |
+| [0015](0015-src-attribute-resolution-and-source-tab-fidelity.md) | `src` attribute resolution and source-tab fidelity | Proposed |
 
 ---
 
-*Last update*: 2026-03-12
+*Last update*: 2026-03-18

@@ -1,0 +1,15 @@
+@startuml
+!include <C4/C4_Context>
+
+title Context diagram - Online Bookstore
+
+Person(customer, "Customer", "Places and tracks book orders")
+System(bookstore, "Online Bookstore", "Web application for ordering books")
+System_Ext(payment, "Payment Provider", "Processes online payments")
+System_Ext(warehouse, "Warehouse System", "Handles picking and shipping")
+
+Rel(customer, bookstore, "Browses and places orders")
+Rel(bookstore, payment, "Requests payment authorization")
+Rel(bookstore, warehouse, "Sends shipment requests")
+Rel(warehouse, customer, "Delivers books")
+@enduml

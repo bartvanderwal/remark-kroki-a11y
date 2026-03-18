@@ -3,6 +3,7 @@
 
 const { docs } = require("./sidebars");
 const rehypeRaw = require('rehype-raw').default;
+const rehypeKrokiA11yImg = require('../src/rehype-kroki-a11y-img');
 const { version: pluginVersion } = require('../package.json');
 
 // MDX node types to pass through (not processed by rehype-raw)
@@ -23,7 +24,7 @@ module.exports = async function createConfigAsync() {
   url: 'https://bartvanderwal.github.io',
   baseUrl: '/remark-kroki-a11y/',
   // docs config must be under presets, not at the root
-  favicon: 'img/favicon.ico',
+  favicon: 'img/favicon.svg',
   organizationName: 'bartvanderwal',
   projectName: 'remark-kroki-a11y',
   trailingSlash: false,
@@ -97,6 +98,8 @@ module.exports = async function createConfigAsync() {
           rehypePlugins: [
             // Enable raw HTML in MDX (needed for remark plugin HTML output)
             [rehypeRaw, { passThrough }],
+            // Fix hash alt text and connect images to generated a11y sections
+            rehypeKrokiA11yImg,
           ],
         },
         blog: false,

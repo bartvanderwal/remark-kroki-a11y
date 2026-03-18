@@ -24,11 +24,10 @@
     "react-loadable": "*",
     "rehype-raw": "^7.0.0",
     "remark-gfm": "^4.0.1",
-    "remark-kroki-a11y": "file:../",
-    "remark-kroki-plugin": "^0.1.1",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {
-    "@types/react": ">=16"
+    "@types/react": ">=16",
+    "remark-kroki-a11y": "file:../"
   }
 }

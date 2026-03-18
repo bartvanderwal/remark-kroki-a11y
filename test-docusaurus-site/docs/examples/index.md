@@ -42,6 +42,7 @@ pie showData
 
 - [PlantUML Class Diagrams (English)](/examples/plantuml-class-diagrams-en) - Test class diagrams with English A11y descriptions
 - [PlantUML Klassendiagrammen (Nederlands)](/examples/plantuml-class-diagrams-nl) - Test klassendiagrammen met Nederlandse A11y beschrijvingen
+- [External `.puml` via `src`](/examples/external-diagram-sources) - Load PlantUML class and C4 context diagrams from external files
 - [PlantUML Visual Modes: For devs / Simpler](/examples/plantuml-class-diagrams-en#visual-mode-toggle-with-stereotypes-and-auto-legend) - Test mode toggle, stereotype hiding in Simpler mode, and auto legend
 - [PlantUML Visual Modes: Omgekeerde diamond-notatie (NL)](/examples/plantuml-class-diagrams-nl#omgekeerde-diamond-notatie---o-en---) - Test reverse `--o` en `--*` notatie met mode toggle en legend
 
@@ -58,6 +59,7 @@ pie showData
 ## Domain Storytelling
 
 - [Domain Stories (PlantUML)](/examples/domain-stories) - Example of DomainStory-PlantUML notation for stakeholder-friendly process narratives
+- [User Story Map Roadmap (TextUSM)](/examples/user-story-map-roadmap-textusm) - Roadmap map with current features, Domain Stories expansion, online editor, and VS Code live-a11y wish
 
 ## Sequence Diagrams
 
