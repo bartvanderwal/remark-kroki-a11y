@@ -1,0 +1,13 @@
+[linters.severity]
+# Keep long prose and links readable in docs without hard wrapping.
+line-length = "off"
+no-bare-urls = "off"
+
+# Docusaurus docs intentionally use inline HTML blocks.
+no-inline-html = "off"
+
+# Allow both backtick and tilde fences in existing docs.
+code-fence-style = "off"
+
+# Preserve current writing style in docs.
+no-trailing-punctuation = "off"

@@ -368,6 +368,8 @@ export function onRouteDidUpdate() {
 | `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
 | `showDiagramModeToggle` | boolean | `false` | For PlantUML class diagrams, also render a simplified visual variant and show a `For devs`/`Simpler` toggle |
 | `showDiagramLegend` | boolean | `false` | For PlantUML class diagrams with mode toggle: add an auto-generated relation legend in `For devs` mode only |
+| `validateSrcExists` | boolean | `false` | When `src` is used: verify the referenced `.puml` file exists in `kroki.includeSourceDir` (local validation) |
+| `validateSrcContent` | boolean | `false` | When `src` is used: verify the referenced `.puml` file is not empty (requires `kroki.includeSourceDir`) |
 | `kroki` | object | `{ krokiBase, lang, imgRefDir, imgDir }` | Kroki render settings passed to the internally used `remark-kroki-plugin` |
 
 When `showDiagramModeToggle` is enabled:
@@ -380,7 +382,6 @@ When `showDiagramModeToggle` is enabled:
   - `id` attributes are removed
   - attribute types are hidden (for example `+amount : Decimal` becomes `+amount`)
   - custom stereotypes are hidden (for example `Entity` and `Value Object`)
-  - attribute visibility icons (the coloured circles for `+`/`-`/`#`) are hidden — reduces visual noise for domain experts
 - Optional legend support:
   - enable globally with `showDiagramLegend: true`
   - override per diagram with `showDiagramLegend` / `hideDiagramLegend`
@@ -425,6 +426,10 @@ Control per-diagram behavior using flags in the code block meta:
 @enduml
 ```
 
+<!-- Load diagram source via component-level src (expanded to PlantUML !include) -->
+```kroki imgType="plantuml" imgTitle="Order model" src="order-model.puml"
+```
+
 <!-- Enable For devs / Simpler diagram visual toggle for this PlantUML class diagram -->
 ```kroki showDiagramModeToggle imgType="plantuml"
 @startuml
@@ -461,6 +466,22 @@ Order o-- OrderLine
 @enduml
 ```
 
+~~~
+
+### External file source with `src`
+
+You can load diagram source via PlantUML include by setting `src="..."` on the `kroki` code block.
+
+- `src` is currently supported for `imgType="plantuml"`
+- the plugin expands it to a PlantUML wrapper with `!include`
+- this means the referenced include must be resolvable by the Kroki PlantUML runtime (for example via `KROKI_PLANTUML_INCLUDE_PATH` in local Docker Kroki)
+- for local early-fail validation, set `validateSrcExists`/`validateSrcContent` and `kroki.includeSourceDir`
+
+Example:
+
+~~~markdown
+```kroki imgType="plantuml" imgTitle="Order model" src="order-model.puml"
+```
 ~~~
 
 The `a11yDescriptionOverride` attribute is useful when:

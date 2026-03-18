@@ -166,9 +166,6 @@ function renderPlantUMLClassDiagram(parsed, options = {}) {
   }
 
   const lines = ['@startuml'];
-  if (options.hideAttributeIcons) {
-    lines.push('skinparam classAttributeIconSize 0');
-  }
 
   for (const className of classNames) {
     const classData = parsed.classes[className];
@@ -180,6 +177,7 @@ function renderPlantUMLClassDiagram(parsed, options = {}) {
       return !isIdAttribute(attribute);
     });
     const methods = classData.methods || [];
+    
 
     for (const attribute of attributes) {
       lines.push(`  ${renderAttribute(attribute, {
@@ -236,6 +234,7 @@ function simplifyPlantUMLClassDiagram(source, options = {}) {
   // so the simpler variant can add invisible padding to keep class box heights equal.
   const parsedWithDevAttrs = addRelationAttributesForDevMode(cloneParsed(parsed));
   const devModeExtraAttributeCounts = {};
+  const devModeAttributeLengths = {};
   for (const className of Object.keys(parsed.classes)) {
     const originalAttrs = parsed.classes[className].attributes || [];
     const devAttrs = parsedWithDevAttrs.classes[className]?.attributes || [];
@@ -243,15 +242,23 @@ function simplifyPlantUMLClassDiagram(source, options = {}) {
     const idCount = originalAttrs.filter(isIdAttribute).length;
     const relationAttrCount = devAttrs.length - originalAttrs.length;
     devModeExtraAttributeCounts[className] = idCount + relationAttrCount;
+    
+    // Bereken langste attribuut/type-string uit dev-modus
+    let maxLength = 0;
+    for (const attr of devAttrs) {
+      const withType = attr.type ? `${attr.visibility || '+'}${attr.name} : ${attr.type}` : `${attr.visibility || '+'}${attr.name}`;
+      if (withType.length > maxLength) maxLength = withType.length;
+    }
+    devModeAttributeLengths[className] = maxLength;
   }
 
   return renderPlantUMLClassDiagram(parsed, {
     simplifyRelations: true,
     removeIdAttributes: true,
     hideAttributeTypes: true,
-    hideAttributeIcons: true,
     padSimplifiedAttributes: true,
     devModeExtraAttributeCounts,
+    devModeAttributeLengths,
     showLegend: false,
     legendMode: 'simpler',
     locale: options.locale || 'en',

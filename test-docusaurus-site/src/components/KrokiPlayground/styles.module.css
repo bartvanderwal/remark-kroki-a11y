@@ -1,0 +1,180 @@
+.wrapper {
+  display: grid;
+  gap: 1rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.controls {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.controls label,
+.wrapper label {
+  display: grid;
+  gap: 0.35rem;
+  font-weight: 600;
+}
+
+.controls input,
+.controls select,
+.wrapper textarea {
+  width: 100%;
+  border: 1px solid var(--ifm-color-emphasis-400);
+  border-radius: 8px;
+  padding: 0.55rem 0.65rem;
+  font: inherit;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+}
+
+.wrapper textarea {
+  font-family: var(--ifm-font-family-monospace);
+  font-size: 0.92rem;
+  line-height: 1.5;
+  resize: vertical;
+}
+
+.controls button {
+  align-self: end;
+  border: 0;
+  border-radius: 8px;
+  padding: 0.65rem 0.9rem;
+  font-weight: 600;
+  background: var(--ifm-color-primary);
+  color: var(--ifm-color-white);
+  cursor: pointer;
+}
+
+.controls button:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+}
+
+.statusRow {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.statusLabel {
+  font-weight: 600;
+}
+
+.statusBadge {
+  border-radius: 999px;
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.statusOnline {
+  background: color-mix(in srgb, var(--ifm-color-success) 18%, transparent);
+  color: var(--ifm-color-success-darkest);
+}
+
+.statusOffline {
+  background: color-mix(in srgb, var(--ifm-color-danger) 18%, transparent);
+  color: var(--ifm-color-danger-darkest);
+}
+
+.statusChecking {
+  background: color-mix(in srgb, var(--ifm-color-warning) 18%, transparent);
+  color: var(--ifm-color-warning-darkest);
+}
+
+.statusUnknown {
+  background: color-mix(in srgb, var(--ifm-color-emphasis-500) 14%, transparent);
+  color: var(--ifm-color-emphasis-900);
+}
+
+.recheckButton {
+  border: 1px solid var(--ifm-color-emphasis-400);
+  background: var(--ifm-background-color);
+  border-radius: 8px;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+.recheckButton:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.statusMessage {
+  margin: -0.35rem 0 0;
+  color: var(--ifm-color-emphasis-700);
+  font-size: 0.9rem;
+}
+
+.endpoint {
+  margin: 0;
+  color: var(--ifm-color-emphasis-800);
+}
+
+.error {
+  margin: 0;
+  color: var(--ifm-color-danger-darkest);
+  border-left: 3px solid var(--ifm-color-danger);
+  padding-left: 0.65rem;
+}
+
+.preview {
+  margin: 0;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 10px;
+  padding: 1rem;
+  background: var(--ifm-color-emphasis-100);
+}
+
+.preview img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 auto;
+}
+
+.preview figcaption {
+  margin-top: 0.75rem;
+  font-size: 0.92rem;
+  text-align: center;
+  color: var(--ifm-color-emphasis-700);
+}
+
+.tabsPanel {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabsList {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--ifm-color-emphasis-300);
+  background: var(--ifm-color-emphasis-100);
+}
+
+.tabButton {
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 8px;
+  padding: 0.4rem 0.65rem;
+  background: var(--ifm-background-color);
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.tabButtonActive {
+  border-color: var(--ifm-color-primary);
+  color: var(--ifm-color-primary-darkest);
+}
+
+.tabContent {
+  margin: 0;
+  padding: 0.85rem;
+}

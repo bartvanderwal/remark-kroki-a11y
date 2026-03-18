@@ -14,12 +14,14 @@ more technical UML design models.
 
 ## DomainStory-PlantUML syntax (reference)
 
-The official macro-based notation uses an include from the DomainStory-PlantUML
-project:
+The official macro-based notation can be used in two ways:
+
+- portable (works with public `kroki.io`): `!include <DomainStory/domainStory>`
+- local include (works with local Docker Kroki include path): `!include domainStory.puml`
 
 ```plantuml
 @startuml
-!includeurl https://raw.githubusercontent.com/johthor/DomainStory-PlantUML/main/domainStory.puml
+!include <DomainStory/domainStory>
 
 !$Story_Layout = "left-to-right"
 Person(Customer, "Customer")
@@ -30,23 +32,23 @@ activity(1, Customer, selects, Info: Movie, at, TicketMachine)
 
 ## Example: Story flow (rendered in this test site)
 
-To keep this test site build-stable across environments, we render a plain
-PlantUML story-flow diagram here.
+This uses the actual DomainStory-PlantUML macros (not a plain sequence diagram),
+so the result visually matches the Domain Story style with icons and activity
+notation.
 
-```kroki imgType="plantuml" imgTitle="Domain Story: Cinema Visit" lang="en" a11yDescriptionOverride="Domain Story with actors Customer, TicketMachine, and CinemaStaff. The story shows the customer selecting a movie, paying, receiving a ticket, and entering the cinema."
+```kroki imgType="plantuml" imgTitle="Domain Story: Party" lang="en" a11yDescriptionOverride="Domain Story with Alice and Bob. Activity 1 shows Alice talking about the weather with Bob."
 @startuml
-title Cinema Visit Story Flow
-participant Customer
-participant "Ticket Machine" as TicketMachine
-participant "Cinema Staff" as Staff
+!include <DomainStory/domainStory>
 
-Customer -> TicketMachine : selects movie
-Customer -> TicketMachine : pays
-TicketMachine -> Customer : prints ticket
-Customer -> Staff : shows ticket
-Staff -> Customer : allows entry
+!$Story_Layout = "left-to-right"
+Person(Alice, "Alice")
+Person(Bob, "Bob")
+activity(1, Alice, talks about the, Info: weather, with, Bob)
 @enduml
 ```
+
+> Note: this local include requires Kroki with include path support (e.g. the
+> provided Docker setup with `docker-compose.kroki.yml`).
 
 ## Why this matters
 
@@ -54,3 +56,34 @@ Staff -> Customer : allows entry
 - Work objects (ticket, payment, request, etc.) become explicit in the model.
 - The flow can be validated early, before committing to technical class/method
   design details.
+
+## Example: Reis boeken (as-is)
+
+Onderstaande EGN-export is opgenomen als visuele referentie:
+
+![Reis boeken as-is domain story](./reis_boeken_as_is.egn.svg)
+
+En hieronder een PlantUML-achtige variant in deze testsite, zodat je dezelfde
+flow in text-as-code kunt onderhouden en reviewen:
+
+```kroki imgType="plantuml" imgTitle="Domain Story: Reis boeken (as-is)" lang="nl"
+@startuml
+!include <DomainStory/domainStory>
+!$Story_Layout = "top-to-bottom"
+scale 1.35
+
+Person(Reiziger, "Reiziger", "", "", "", "1.4")
+System(Site, "Triptop Site", "", "", "", "1.4")
+Person(Medewerker, "Medewerker", "", "", "", "1.4")
+System(Intern, "Intern Systeem", "", "", "", "1.4")
+
+activity(1, Reiziger, bekijkt, Info: reisvoorbeeelden, op, Site)
+activity(2, Reiziger, vult, Document: reisaanvraag, in, Site)
+activity(3, Site, stuurt, Document: reisaanvraag, naar, Medewerker)
+activity(4, Medewerker, stuurt, Info: reisvoorstel, naar, Reiziger)
+activity(5, Reiziger, stuurt, Info: wijzigingen, naar, Medewerker)
+activity(6, Reiziger, geeft, Info: reisbevestiging, aan, Medewerker)
+activity(7, Medewerker, Maakt, Info: Boeking, _, Intern)
+activity(8, Medewerker, genereert, Info: reis, voor, Reiziger)
+@enduml
+```

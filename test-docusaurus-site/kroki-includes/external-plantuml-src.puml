@@ -1,0 +1,20 @@
+class Order {
+  -id: UUID
+  -createdAt: LocalDateTime
+  -status: OrderStatus
+  +markAsPaid(): void
+}
+
+class OrderLine {
+  -productId: UUID
+  -quantity: int
+  -unitPrice: Money
+}
+
+class Customer {
+  -id: UUID
+  -name: String
+}
+
+Order "1" *-- "*" OrderLine : contains
+Order --> "1" Customer : placedBy

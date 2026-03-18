@@ -78,7 +78,7 @@ Order --> Customer
     expect(simplified).not.toContain('endlegend');
   });
 
-  it('hides attribute icons (skinparam classAttributeIconSize 0) in simpler mode', () => {
+  it('keeps attribute icons in simpler mode', () => {
     const source = `@startuml
 class Order {
   +id : UUID
@@ -88,10 +88,10 @@ Order --> Money
 @enduml`;
 
     const simplified = simplifyPlantUMLClassDiagram(source);
-    expect(simplified).toContain('skinparam classAttributeIconSize 0');
+    expect(simplified).not.toContain('skinparam classAttributeIconSize 0');
   });
 
-  it('does not hide attribute icons in dev mode', () => {
+  it('keeps attribute icons in dev mode', () => {
     const source = `@startuml
 class Order {
   +id : UUID

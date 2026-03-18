@@ -1,0 +1,873 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- created with diagram-js / http://bpmn.io -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="background-color:white" width="935" height="835" viewBox="147 -26 950 835" version="1.1"><defs><marker id="activity-black-black-25pkhq956pg98um8cwl3muvzm" viewBox="0 0 20 20" refX="11" refY="10" markerWidth="10" markerHeight="10" orient="auto"><path d="M 1 5 L 11 10 L 1 15 Z" style="fill: black; stroke-width: 1px; stroke-linecap: round; stroke-dasharray: 10000px, 1px; stroke: black;"/></marker></defs><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0333" transform="matrix(1, 0, 0, 1, 470, 94)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" height="48.75" viewBox="0 0 24 24" width="48.75" x="12.5" y="12.5"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM1 10.5h3v2H1zM11 .55h2V3.5h-2zm8.04 2.495l1.408 1.407-1.79 1.79-1.407-1.408zm-1.8 15.115l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5h3v2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm-1 4h2v2.95h-2zm-7.45-.96l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="0.20833206176757812" y="74.75">reistemplates</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0707" transform="matrix(1, 0, 0, 1, 167, 269)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="14.5" y="75">Reiziger</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_0802" transform="matrix(1, 0, 0, 1, 389, 313)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" height="48.75" viewBox="0 0 24 24" width="48.75" x="12.5" y="12.5"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="11.5" y="74.75">aanvraag</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_2203" transform="matrix(1, 0, 0, 1, 778, 313)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" height="48.75" viewBox="0 0 24 26" width="48.75" xmlns="http://www.w3.org/2000/svg" x="12.5" y="12.5"><path d="M0 0h24v24H0z" fill="none"/><path d="M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="5.791667938232422" y="74.75">bevestiging</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_2236" transform="matrix(1, 0, 0, 1, 804, 564)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill-rule="evenodd" clip-rule="evenodd" fill="none" d="M0 0h24v24H0z"/><g fill-rule="evenodd" clip-rule="evenodd"><path d="M9 17l3-2.94c-.39-.04-.68-.06-1-.06-2.67 0-8 1.34-8 4v2h9l-3-3zm2-5c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4"/><path d="M15.47 20.5L12 17l1.4-1.41 2.07 2.08 5.13-5.17 1.4 1.41z"/></g></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="15.625" y="74.75">boeking</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_4030" transform="matrix(1, 0, 0, 1, 346, 94)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="3.916667938232422" y="74.75">bouwstenen</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_4631" transform="matrix(1, 0, 0, 1, 684, 426)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path opacity=".87" fill="none" d="M0 0h24v24H0V0z"/><path d="M3 5v14h17V5H3zm4 2v2H5V7h2zm-2 6v-2h2v2H5zm0 2h2v2H5v-2zm13 2H9v-2h9v2zm0-4H9v-2h9v2zm0-4H9V7h9v2z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="27.333333015441895" y="74.75">reis</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_5745" transform="matrix(1, 0, 0, 1, 330, 564)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0zm0 0h24v24H0V0z"/><path d="M9 21h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.58 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2zM9 9l4.34-4.34L12 10h9v2l-3 7H9V9zM1 9h4v12H1z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="15.291666030883789" y="74.75">akkoord</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_6173" transform="matrix(1, 0, 0, 1, 791, 426)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="3.916667938232422" y="74.75">bouwstenen</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_6444" transform="matrix(1, 0, 0, 1, 452, 426)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path opacity=".87" fill="none" d="M0 0h24v24H0V0z"/><path d="M3 5v14h17V5H3zm4 2v2H5V7h2zm-2 6v-2h2v2H5zm0 2h2v2H5v-2zm13 2H9v-2h9v2zm0-4H9v-2h9v2zm0-4H9V7h9v2z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="27.333333015441895" y="74.75">reis</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7140" transform="matrix(1, 0, 0, 1, 759, -21)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="5.5583343505859375" y="75">Triptop Site</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_7255" transform="matrix(1, 0, 0, 1, 589, 313)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg" width="75" height="75"><path d="M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="5.349998474121094" y="75">Triptop App</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_8441" transform="matrix(1, 0, 0, 1, 330, 426)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="3.916667938232422" y="74.75">bouwstenen</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_8454" transform="matrix(1, 0, 0, 1, 346, 220)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 26" x="12.5" y="12.5"><path opacity=".87" fill="none" d="M0 0h24v24H0V0z"/><path d="M3 5v14h17V5H3zm4 2v2H5V7h2zm-2 6v-2h2v2H5zm0 2h2v2H5v-2zm13 2H9v-2h9v2zm0-4H9v-2h9v2zm0-4H9V7h9v2z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="27.333333015441895" y="74.75">reis</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9248" transform="matrix(1, 0, 0, 1, 1017, 461)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" viewBox="0 0 24 26" xmlns="http://www.w3.org/2000/svg" width="75" height="75"><path d="M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/><path d="M0 0h24v24H0z" fill="none"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="3.25" y="75">Medewerker</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_9292" transform="matrix(1, 0, 0, 1, 589, -21)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" height="48.75" viewBox="0 0 24 24" width="48.75" x="12.5" y="12.5"><path d="M0 0h24v24H0V0z" fill="none"/><path d="M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM1 10.5h3v2H1zM11 .55h2V3.5h-2zm8.04 2.495l1.408 1.407-1.79 1.79-1.407-1.408zm-1.8 15.115l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5h3v2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm-1 4h2v2.95h-2zm-7.45-.96l1.41 1.41 1.79-1.8-1.41-1.41z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="0.20833206176757812" y="74.75">reistemplates</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_0629" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M411,464L452,464"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="420.4" y="479">in</tspan></text></g><path d="M411,464L452,464" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="406" y="459" rx="4" width="51" height="10" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_0743" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M791,464L765,464"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="766.9" y="479">in</tspan></text></g><path d="M791,464L765,464" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="760" y="459" rx="4" width="36" height="10" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2917" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M1017,545L969,602L885,602"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="908.25" y="617">maakt</tspan></text><path d="
+      M 999.1773744239057 565
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="995.1773744239057" y="569">7</tspan></text></g><path d="M1017,545L969,602L885,602" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="880" y="540" rx="4" width="142" height="67" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_3190" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M470,351L589,351"/></g><path d="M470,351L589,351" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="465" y="346" rx="4" width="129" height="10" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_3391" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M506,438L534,393L589,368"/></g><path d="M506,438L534,393L589,368" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="501" y="363" rx="4" width="93" height="80" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_3648" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M670,17L759,17"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="703.4" y="32">op</tspan></text></g><path d="M670,17L759,17" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="665" y="12" rx="4" width="99" height="10" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4093" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M1017,499L945,499L869,476"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="924" y="514">wijzigt en </tspan><tspan x="924" y="528">bevestigt</tspan></text><path d="
+      M 997 499
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="993" y="503">5</tspan></text></g><path d="M1017,499L945,499L869,476" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="864" y="471" rx="4" width="158" height="33" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4248" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M216,276L312,17L589,17"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="426.65" y="32">bekijkt</tspan></text><path d="
+      M 222.7791818082451 256
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="218.7791818082451" y="260">1</tspan></text></g><path d="M216,276L312,17L589,17" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="211" y="12" rx="4" width="383" height="269" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4549" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M210,354L236,598L330,598"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="264.25" y="613">geeft</tspan></text><path d="
+      M 213.37907594071226 374
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="209.37907594071226" y="378">6</tspan></text></g><path d="M210,354L236,598L330,598" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="205" y="349" rx="4" width="130" height="254" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4676" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M408,239L483,179"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="458.0566986243183" y="217.55669862431833">op basis van</tspan></text></g><path d="M408,239L483,179" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="403" y="174" rx="4" width="85" height="70" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_4874" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M384,220L384,179"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="398" y="199.5">met</tspan></text></g><path d="M384,220L384,179" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="379" y="174" rx="4" width="10" height="51" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_5025" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M232,291L289,258L346,258"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="298.75" y="273">maakt</tspan></text><path d="
+      M 252 277.6361854125056
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="248" y="281.6361854125056">2</tspan></text></g><path d="M232,291L289,258L346,258" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="227" y="253" rx="4" width="124" height="43" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_5462" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M804,602L669,602L634,395"/></g><path d="M804,602L669,602L634,395" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="629" y="390" rx="4" width="180" height="217" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6600" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M1030,461L956,351L859,351"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="888.75" y="366">geeft</tspan></text><path d="
+      M 1014.9200900346398 441
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="1010.9200900346398" y="445">4</tspan></text></g><path d="M1030,461L956,351L859,351" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="854" y="346" rx="4" width="181" height="120" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_6822" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M708,426L698,401L657,372"/></g><path d="M708,426L698,401L657,372" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="652" y="367" rx="4" width="61" height="64" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_7666" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M411,602L533,602L613,398"/></g><path d="M411,602L533,602L613,398" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="406" y="393" rx="4" width="212" height="214" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_7674" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M427,258L512,258L589,320"/></g><path d="M427,258L512,258L589,320" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="422" y="253" rx="4" width="172" height="72" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_8192" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M778,351L670,351"/></g><path d="M778,351L670,351" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="665" y="346" rx="4" width="118" height="10" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_9250" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M225,349L281,430L330,449"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="266.2236075490798" y="385.6490716993865">wijzigt</tspan></text><path d="
+      M 244.2546415030673 369
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="240.2546415030673" y="373">5</tspan></text></g><path d="M225,349L281,430L330,449" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="220" y="344" rx="4" width="115" height="110" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_9835" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M241,323L307,351L389,351"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="331.8" y="366">doet</tspan></text><path d="
+      M 261 330.66290560069353
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="257" y="334.66290560069353">3</tspan></text></g><path d="M241,323L307,351L389,351" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="236" y="318" rx="4" width="158" height="38" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-shape" data-element-id="shape_8524" transform="matrix(1, 0, 0, 1, 346, 729)" style="display: block;"><g class="djs-visual"><svg fill=" #000000" xmlns="http://www.w3.org/2000/svg" width="48.75" height="48.75" viewBox="0 0 24 28" x="12.5" y="12.5"><path fill="none" d="M0 0h24v24H0V0z"/><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm12 6V9c0-.55-.45-1-1-1h-2v5h2c.55 0 1-.45 1-1zm-2-3h1v3h-1V9zm4 2h1v-1h-1V9h1V8h-2v5h1zm-8 0h1c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1H9v5h1v-2zm0-2h1v1h-1V9z"/></svg><text style="font-family: Arial, sans-serif; font-size: 12px; font-weight: normal; fill: rgb(0, 0, 0);" lineHeight="1.2" class="djs-label"><tspan x="27.333333015441895" y="74.75">reis</tspan></text></g><rect style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-all" x="0" y="0" width="75" height="75"/><rect x="-5" y="-5" rx="4" width="85" height="85" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_1124" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M190,354L190,767L346,767"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" wordWrap="break-word" overflowWrap="break-word" hyphens="auto" class="djs-label"><tspan x="239.05" y="782">genereert</tspan></text><path d="
+      M 190 374
+      m 11,0
+      a 11,11 0 1,0 -22,0
+      a 11,11 0 1,0 22,0
+      " style="fill: white; stroke: black;"/><text style="font-family: Arial, sans-serif; font-size: 11px; font-weight: normal; fill: black;" lineHeight="1.2" position="absolute" class="djs-labelNumber"><tspan x="186" y="378">8</tspan></text></g><path d="M190,354L190,767L346,767" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="185" y="349" rx="4" width="166" height="423" style="fill: none;" class="djs-outline"/></g></g><g class="djs-group"><g class="djs-element djs-connection" data-element-id="connection_2131" style="display: block;"><g class="djs-visual"><path style="stroke: black; fill: none; stroke-width: 1.5px; stroke-linejoin: round; marker-end: url('#activity-black-black-25pkhq956pg98um8cwl3muvzm');" d="M427,767L575,767L621,398"/></g><path d="M427,767L575,767L621,398" style="fill: none; stroke-opacity: 0; stroke: white; stroke-width: 15px;" class="djs-hit djs-hit-stroke"/><rect x="422" y="393" rx="4" width="204" height="379" style="fill: none;" class="djs-outline"/></g></g></svg>
+<!-- <DST>
+{
+  "domain": {
+    "name": "default",
+    "actors": {
+      "Person": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M12 5.9c1.16 0 2.1.94 2.1 2.1s-.94 2.1-2.1 2.1S9.9 9.16 9.9 8s.94-2.1 2.1-2.1m0 9c2.97 0 6.1 1.46 6.1 2.1v1.1H5.9V17c0-.64 3.13-2.1 6.1-2.1M12 4C9.79 4 8 5.79 8 8s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm0 9c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z\"/><path d=\"M0 0h24v24H0z\" fill=\"none\"/></svg>",
+      "Group": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"48\" viewBox=\"0 0 24 26\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M16.5 13c-1.2 0-3.07.34-4.5 1-1.43-.67-3.3-1-4.5-1C5.33 13 1 14.08 1 16.25V19h22v-2.75c0-2.17-4.33-3.25-6.5-3.25zm-4 4.5h-10v-1.25c0-.54 2.56-1.75 5-1.75s5 1.21 5 1.75v1.25zm9 0H14v-1.25c0-.46-.2-.86-.52-1.22.88-.3 1.96-.53 3.02-.53 2.44 0 5 1.21 5 1.75v1.25zM7.5 12c1.93 0 3.5-1.57 3.5-3.5S9.43 5 7.5 5 4 6.57 4 8.5 5.57 12 7.5 12zm0-5.5c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 5.5c1.93 0 3.5-1.57 3.5-3.5S18.43 5 16.5 5 13 6.57 13 8.5s1.57 3.5 3.5 3.5zm0-5.5c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2z\"/></svg>",
+      "System": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M20,18c1.1,0,2-0.9,2-2V6c0-1.1-0.9-2-2-2H4C2.9,4,2,4.9,2,6v10c0,1.1,0.9,2,2,2H0v2h24v-2H20z M4,6h16v10H4V6z\"/></svg>"
+    },
+    "workObjects": {
+      "Document": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M8 16h8v2H8zm0-4h8v2H8zm6-10H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z\"/></svg>",
+      "Folder": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" d=\"M0,0h24v24H0V0z\"/><path d=\"M9.17,6l2,2H20v10L4,18V6H9.17 M10,4H4C2.9,4,2.01,4.9,2.01,6L2,18c0,1.1,0.9,2,2,2h16c1.1,0,2-0.9,2-2V8c0-1.1-0.9-2-2-2 h-8L10,4L10,4z\"/></svg>",
+      "Call": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" d=\"M0,0h24v24H0V0z\"/><path d=\"M6.54,5C6.6,5.89,6.75,6.76,6.99,7.59l-1.2,1.2C5.38,7.59,5.12,6.32,5.03,5H6.54 M16.4,17.02c0.85,0.24,1.72,0.39,2.6,0.45 v1.49c-1.32-0.09-2.59-0.35-3.8-0.75L16.4,17.02 M7.5,3H4C3.45,3,3,3.45,3,4c0,9.39,7.61,17,17,17c0.55,0,1-0.45,1-1v-3.49\tc0-0.55-0.45-1-1-1c-1.24,0-2.45-0.2-3.57-0.57c-0.1-0.04-0.21-0.05-0.31-0.05c-0.26,0-0.51,0.1-0.71,0.29l-2.2,2.2 c-2.83-1.45-5.15-3.76-6.59-6.59l2.2-2.2C9.1,8.31,9.18,7.92,9.07,7.57C8.7,6.45,8.5,5.25,8.5,4C8.5,3.45,8.05,3,7.5,3L7.5,3z\"/></svg>",
+      "Email": "<svg viewBox=\"0 0 24 26\" xmlns=\"http://www.w3.org/2000/svg\"><path fill=\"none\" d=\"M0,0h24v24H0V0z\"/><path fill-opacity=\"0.9\" d=\"M12,1.95c-5.52,0-10,4.48-10,10s4.48,10,10,10h5v-2h-5c-4.34,0-8-3.66-8-8s3.66-8,8-8s8,3.66,8,8v1.43 c0,0.79-0.71,1.57-1.5,1.57S17,14.17,17,13.38v-1.43c0-2.76-2.24-5-5-5s-5,2.24-5,5s2.24,5,5,5c1.38,0,2.64-0.56,3.54-1.47 c0.65,0.89,1.77,1.47,2.96,1.47c1.97,0,3.5-1.6,3.5-3.57v-1.43C22,6.43,17.52,1.95,12,1.95z M12,14.95c-1.66,0-3-1.34-3-3 s1.34-3,3-3s3,1.34,3,3S13.66,14.95,12,14.95z\"/></svg>",
+      "Conversation": "<svg height=\"48\" viewBox=\"0 0 24 26\" width=\"24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z\"/></svg>",
+      "Info": "<svg height=\"48\" viewBox=\"0 0 24 26\" width=\"24\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M0 0h24v24H0z\" fill=\"none\"/><path d=\"M11 17h2v-6h-2v6zm1-15C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zM11 9h2V7h-2v2z\"/></svg>",
+      "Picture-as-PDF": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 28\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H8V4h12v12zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm12 6V9c0-.55-.45-1-1-1h-2v5h2c.55 0 1-.45 1-1zm-2-3h1v3h-1V9zm4 2h1v-1h-1V9h1V8h-2v5h1zm-8 0h1c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1H9v5h1v-2zm0-2h1v1h-1V9z\"/></svg>",
+      "Sun": "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 0 24 24\" width=\"24px\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M6.76 4.84l-1.8-1.79-1.41 1.41 1.79 1.79zM1 10.5h3v2H1zM11 .55h2V3.5h-2zm8.04 2.495l1.408 1.407-1.79 1.79-1.407-1.408zm-1.8 15.115l1.79 1.8 1.41-1.41-1.8-1.79zM20 10.5h3v2h-3zm-8-5c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm-1 4h2v2.95h-2zm-7.45-.96l1.41 1.41 1.79-1.8-1.41-1.41z\"/></svg>",
+      "View-List": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path opacity=\".87\" fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M3 5v14h17V5H3zm4 2v2H5V7h2zm-2 6v-2h2v2H5zm0 2h2v2H5v-2zm13 2H9v-2h9v2zm0-4H9v-2h9v2zm0-4H9V7h9v2z\"/></svg>",
+      "Help": "<svg xmlns=\"http://www.w3.org/2000/svg\" height=\"24px\" viewBox=\"0 0 24 24\" width=\"24px\"><path d=\"M0 0h24v24H0V0z\" fill=\"none\"/><path d=\"M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z\"/></svg>",
+      "Thumb-up": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0zm0 0h24v24H0V0z\"/><path d=\"M9 21h9c.83 0 1.54-.5 1.84-1.22l3.02-7.05c.09-.23.14-.47.14-.73v-2c0-1.1-.9-2-2-2h-6.31l.95-4.57.03-.32c0-.41-.17-.79-.44-1.06L14.17 1 7.58 7.59C7.22 7.95 7 8.45 7 9v10c0 1.1.9 2 2 2zM9 9l4.34-4.34L12 10h9v2l-3 7H9V9zM1 9h4v12H1z\"/></svg>",
+      "How-To-Reg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill-rule=\"evenodd\" clip-rule=\"evenodd\" fill=\"none\" d=\"M0 0h24v24H0z\"/><g fill-rule=\"evenodd\" clip-rule=\"evenodd\"><path d=\"M9 17l3-2.94c-.39-.04-.68-.06-1-.06-2.67 0-8 1.34-8 4v2h9l-3-3zm2-5c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4\"/><path d=\"M15.47 20.5L12 17l1.4-1.41 2.07 2.08 5.13-5.17 1.4 1.41z\"/></g></svg>",
+      "Dashboard": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\" viewBox=\"0 0 24 26\"><path fill=\"none\" d=\"M0 0h24v24H0V0z\"/><path d=\"M19 5v2h-4V5h4M9 5v6H5V5h4m10 8v6h-4v-6h4M9 17v2H5v-2h4M21 3h-8v6h8V3zM11 3H3v10h8V3zm10 8h-8v10h8V11zm-10 4H3v6h8v-6z\"/></svg>"
+    }
+  },
+  "dst": [
+    {
+      "type": "domainStory:activity",
+      "name": "in",
+      "id": "connection_0629",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 368,
+            "y": 464
+          },
+          "x": 411,
+          "y": 464
+        },
+        {
+          "original": {
+            "x": 490,
+            "y": 464
+          },
+          "x": 452,
+          "y": 464
+        }
+      ],
+      "source": "shape_8441",
+      "target": "shape_6444",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "in",
+      "id": "connection_0743",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 829,
+            "y": 464
+          },
+          "x": 791,
+          "y": 464
+        },
+        {
+          "original": {
+            "x": 722,
+            "y": 464
+          },
+          "x": 765,
+          "y": 464
+        }
+      ],
+      "source": "shape_6173",
+      "target": "shape_4631",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "genereert",
+      "id": "connection_1124",
+      "pickedColor": "black",
+      "number": 8,
+      "waypoints": [
+        {
+          "original": {
+            "x": 190,
+            "y": 339
+          },
+          "x": 190,
+          "y": 354
+        },
+        {
+          "x": 190,
+          "y": 767
+        },
+        {
+          "original": {
+            "x": 384,
+            "y": 767
+          },
+          "x": 346,
+          "y": 767
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_8524",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_2131",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 384,
+            "y": 767
+          },
+          "x": 427,
+          "y": 767
+        },
+        {
+          "x": 575,
+          "y": 767
+        },
+        {
+          "original": {
+            "x": 625,
+            "y": 367
+          },
+          "x": 621,
+          "y": 398
+        }
+      ],
+      "source": "shape_8524",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "maakt",
+      "id": "connection_2917",
+      "pickedColor": "black",
+      "number": 7,
+      "waypoints": [
+        {
+          "original": {
+            "x": 1055,
+            "y": 499
+          },
+          "x": 1017,
+          "y": 545
+        },
+        {
+          "x": 969,
+          "y": 602
+        },
+        {
+          "original": {
+            "x": 842,
+            "y": 602
+          },
+          "x": 885,
+          "y": 602
+        }
+      ],
+      "source": "shape_9248",
+      "target": "shape_2236",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_3190",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 427,
+            "y": 351
+          },
+          "x": 470,
+          "y": 351
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 589,
+          "y": 351
+        }
+      ],
+      "source": "shape_0802",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_3391",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 490,
+            "y": 464
+          },
+          "x": 506,
+          "y": 438
+        },
+        {
+          "x": 534,
+          "y": 393
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 589,
+          "y": 368
+        }
+      ],
+      "source": "shape_6444",
+      "target": "shape_7255",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "op",
+      "id": "connection_3648",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 627,
+            "y": 17
+          },
+          "x": 670,
+          "y": 17
+        },
+        {
+          "original": {
+            "x": 797,
+            "y": 17
+          },
+          "x": 759,
+          "y": 17
+        }
+      ],
+      "source": "shape_9292",
+      "target": "shape_7140",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "wijzigt en bevestigt",
+      "id": "connection_4093",
+      "pickedColor": "black",
+      "number": 5,
+      "waypoints": [
+        {
+          "original": {
+            "x": 1055,
+            "y": 499
+          },
+          "x": 1017,
+          "y": 499
+        },
+        {
+          "x": 945,
+          "y": 499
+        },
+        {
+          "original": {
+            "x": 829,
+            "y": 464
+          },
+          "x": 869,
+          "y": 476
+        }
+      ],
+      "source": "shape_9248",
+      "target": "shape_6173",
+      "multipleNumberAllowed": true
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "bekijkt",
+      "id": "connection_4248",
+      "pickedColor": "black",
+      "number": 1,
+      "waypoints": [
+        {
+          "original": {
+            "x": 205,
+            "y": 307
+          },
+          "x": 216,
+          "y": 276
+        },
+        {
+          "x": 312,
+          "y": 17
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 17
+          },
+          "x": 589,
+          "y": 17
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_9292",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "geeft",
+      "id": "connection_4549",
+      "pickedColor": "black",
+      "number": 6,
+      "waypoints": [
+        {
+          "original": {
+            "x": 205,
+            "y": 307
+          },
+          "x": 210,
+          "y": 354
+        },
+        {
+          "x": 236,
+          "y": 598
+        },
+        {
+          "original": {
+            "x": 369,
+            "y": 598
+          },
+          "x": 330,
+          "y": 598
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_5745",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "op basis van",
+      "id": "connection_4676",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 384,
+            "y": 258
+          },
+          "x": 408,
+          "y": 239
+        },
+        {
+          "original": {
+            "x": 517,
+            "y": 152
+          },
+          "x": 483,
+          "y": 179
+        }
+      ],
+      "source": "shape_8454",
+      "target": "shape_0333",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "met",
+      "id": "connection_4874",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 384,
+            "y": 258
+          },
+          "x": 384,
+          "y": 220
+        },
+        {
+          "original": {
+            "x": 384,
+            "y": 132
+          },
+          "x": 384,
+          "y": 179
+        }
+      ],
+      "source": "shape_8454",
+      "target": "shape_4030",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "maakt",
+      "id": "connection_5025",
+      "pickedColor": "black",
+      "number": 2,
+      "waypoints": [
+        {
+          "original": {
+            "x": 205,
+            "y": 307
+          },
+          "x": 232,
+          "y": 291
+        },
+        {
+          "x": 289,
+          "y": 258
+        },
+        {
+          "original": {
+            "x": 384,
+            "y": 258
+          },
+          "x": 346,
+          "y": 258
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_8454",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_5462",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 842,
+            "y": 602
+          },
+          "x": 804,
+          "y": 602
+        },
+        {
+          "x": 669,
+          "y": 602
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 634,
+          "y": 395
+        }
+      ],
+      "source": "shape_2236",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "geeft",
+      "id": "connection_6600",
+      "pickedColor": "black",
+      "number": 4,
+      "waypoints": [
+        {
+          "original": {
+            "x": 1055,
+            "y": 499
+          },
+          "x": 1030,
+          "y": 461
+        },
+        {
+          "x": 956,
+          "y": 351
+        },
+        {
+          "original": {
+            "x": 816,
+            "y": 351
+          },
+          "x": 859,
+          "y": 351
+        }
+      ],
+      "source": "shape_9248",
+      "target": "shape_2203",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_6822",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 722,
+            "y": 464
+          },
+          "x": 708,
+          "y": 426
+        },
+        {
+          "x": 698,
+          "y": 401
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 657,
+          "y": 372
+        }
+      ],
+      "source": "shape_4631",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_7666",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 368,
+            "y": 602
+          },
+          "x": 411,
+          "y": 602
+        },
+        {
+          "x": 533,
+          "y": 602
+        },
+        {
+          "original": {
+            "x": 624,
+            "y": 369
+          },
+          "x": 613,
+          "y": 398
+        }
+      ],
+      "source": "shape_5745",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_7674",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 384,
+            "y": 258
+          },
+          "x": 427,
+          "y": 258
+        },
+        {
+          "x": 512,
+          "y": 258
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 589,
+          "y": 320
+        }
+      ],
+      "source": "shape_8454",
+      "target": "shape_7255",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "",
+      "id": "connection_8192",
+      "pickedColor": "black",
+      "number": null,
+      "waypoints": [
+        {
+          "original": {
+            "x": 816,
+            "y": 351
+          },
+          "x": 778,
+          "y": 351
+        },
+        {
+          "original": {
+            "x": 627,
+            "y": 351
+          },
+          "x": 670,
+          "y": 351
+        }
+      ],
+      "source": "shape_2203",
+      "target": "shape_7255"
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "wijzigt",
+      "id": "connection_9250",
+      "pickedColor": "black",
+      "number": 5,
+      "waypoints": [
+        {
+          "original": {
+            "x": 205,
+            "y": 307
+          },
+          "x": 225,
+          "y": 349
+        },
+        {
+          "x": 281,
+          "y": 430
+        },
+        {
+          "original": {
+            "x": 368,
+            "y": 464
+          },
+          "x": 330,
+          "y": 449
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_8441",
+      "multipleNumberAllowed": true
+    },
+    {
+      "type": "domainStory:activity",
+      "name": "doet",
+      "id": "connection_9835",
+      "pickedColor": "black",
+      "number": 3,
+      "waypoints": [
+        {
+          "original": {
+            "x": 205,
+            "y": 307
+          },
+          "x": 241,
+          "y": 323
+        },
+        {
+          "x": 307,
+          "y": 351
+        },
+        {
+          "original": {
+            "x": 427,
+            "y": 351
+          },
+          "x": 389,
+          "y": 351
+        }
+      ],
+      "source": "shape_0707",
+      "target": "shape_0802",
+      "multipleNumberAllowed": false
+    },
+    {
+      "type": "domainStory:workObjectSun",
+      "name": "reistemplates",
+      "id": "shape_0333",
+      "x": 470,
+      "y": 94
+    },
+    {
+      "type": "domainStory:actorPerson",
+      "name": "Reiziger",
+      "id": "shape_0707",
+      "x": 167,
+      "y": 269
+    },
+    {
+      "type": "domainStory:workObjectHelp",
+      "name": "aanvraag",
+      "id": "shape_0802",
+      "x": 389,
+      "y": 313
+    },
+    {
+      "type": "domainStory:workObjectInfo",
+      "name": "bevestiging",
+      "id": "shape_2203",
+      "x": 778,
+      "y": 313
+    },
+    {
+      "type": "domainStory:workObjectHow-To-Reg",
+      "name": "boeking",
+      "id": "shape_2236",
+      "x": 804,
+      "y": 564
+    },
+    {
+      "type": "domainStory:workObjectDashboard",
+      "name": "bouwstenen",
+      "id": "shape_4030",
+      "x": 346,
+      "y": 94
+    },
+    {
+      "type": "domainStory:workObjectView-List",
+      "name": "reis",
+      "id": "shape_4631",
+      "x": 684,
+      "y": 426
+    },
+    {
+      "type": "domainStory:workObjectThumb-up",
+      "name": "akkoord",
+      "id": "shape_5745",
+      "x": 330,
+      "y": 564
+    },
+    {
+      "type": "domainStory:workObjectDashboard",
+      "name": "bouwstenen",
+      "id": "shape_6173",
+      "x": 791,
+      "y": 426
+    },
+    {
+      "type": "domainStory:workObjectView-List",
+      "name": "reis",
+      "id": "shape_6444",
+      "x": 452,
+      "y": 426
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Triptop Site",
+      "id": "shape_7140",
+      "x": 759,
+      "y": -21
+    },
+    {
+      "type": "domainStory:actorSystem",
+      "name": "Triptop App",
+      "id": "shape_7255",
+      "x": 589,
+      "y": 313
+    },
+    {
+      "type": "domainStory:workObjectDashboard",
+      "name": "bouwstenen",
+      "id": "shape_8441",
+      "x": 330,
+      "y": 426
+    },
+    {
+      "type": "domainStory:workObjectView-List",
+      "name": "reis",
+      "id": "shape_8454",
+      "x": 346,
+      "y": 220
+    },
+    {
+      "type": "domainStory:workObjectPicture-as-PDF",
+      "name": "reis",
+      "id": "shape_8524",
+      "x": 346,
+      "y": 729
+    },
+    {
+      "type": "domainStory:actorPerson",
+      "name": "Medewerker",
+      "id": "shape_9248",
+      "x": 1017,
+      "y": 461
+    },
+    {
+      "type": "domainStory:workObjectSun",
+      "name": "reistemplates",
+      "id": "shape_9292",
+      "x": 589,
+      "y": -21
+    },
+    {
+      "info": ""
+    },
+    {
+      "version": "3.0.0"
+    }
+  ]
+}
+ </DST> -->

@@ -6,6 +6,7 @@ const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequ
 const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateActivityDescription } = require('../../src/parsers/activityDiagramParser');
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('../../src/parsers/c4DiagramParser');
 const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('../../src/parsers/pieDiagramParser');
+const { parseDomainStory, generateAccessibleDescription: generateDomainStoryDescription } = require('../../src/parsers/domainStoryParser');
 
 const { generateUnsupportedDescription } = require('../../src/parsers/unsupportedDiagramParser');
 
@@ -101,6 +102,12 @@ Given('the following Mermaid pie chart:', function(diagramSource) {
   isPlantUML = false;
 });
 
+Given('the following PlantUML Domain Story:', function(diagramSource) {
+  currentDiagram = diagramSource;
+  currentDiagramType = 'domainstory';
+  isPlantUML = true;
+});
+
 // Step definitions for diagrams with explicit type (for unsupported diagram tests)
 Given('het volgende PlantUML diagram met type {string}:', function(diagramType, diagramSource) {
   currentDiagram = diagramSource;
@@ -154,6 +161,9 @@ When('I generate a description in English', function() {
   if (currentDiagramType === 'sequence') {
     const parsed = parseMermaidSequenceDiagram(currentDiagram);
     generatedDescription = generateSequenceDescription(parsed, 'en');
+  } else if (currentDiagramType === 'domainstory') {
+    const parsed = parseDomainStory(currentDiagram);
+    generatedDescription = generateDomainStoryDescription(parsed, 'en');
   } else if (currentDiagramType === 'activity') {
     // Activity diagram
     const parsed = parsePlantUMLActivityDiagram(currentDiagram);
@@ -189,6 +199,9 @@ When('I generate a description in Dutch', function() {
   if (currentDiagramType === 'sequence') {
     const parsed = parseMermaidSequenceDiagram(currentDiagram);
     generatedDescription = generateSequenceDescription(parsed, 'nl');
+  } else if (currentDiagramType === 'domainstory') {
+    const parsed = parseDomainStory(currentDiagram);
+    generatedDescription = generateDomainStoryDescription(parsed, 'nl');
   } else if (currentDiagramType === 'activity') {
     // Activity diagram
     const parsed = parsePlantUMLActivityDiagram(currentDiagram);

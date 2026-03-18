@@ -1,6 +1,7 @@
 module.exports = {
   docs: [
     'readme-github',
+    'playground',
     {
       type: 'category',
       label: 'Introduction to UML',
@@ -21,6 +22,7 @@ module.exports = {
           items: [
             'examples/plantuml-class-diagrams-en',
             'examples/plantuml-class-diagrams-nl',
+            'examples/external-diagram-sources',
             'examples/domain-model-larman-vs-fowler',
             'examples/domeinmodel-larman-vs-fowler',
           ],
@@ -46,6 +48,7 @@ module.exports = {
           label: 'Domain Storytelling',
           items: [
             'examples/domain-stories',
+            'examples/user-story-map-roadmap-textusm',
           ],
         },
       ],
