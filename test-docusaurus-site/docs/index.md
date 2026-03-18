@@ -12,6 +12,11 @@ description: The main README file from the GitHub repository
 [![Node.js](https://img.shields.io/node/v/remark-kroki-a11y.svg)](https://nodejs.org/)
 [![BDD Tests](https://img.shields.io/badge/BDD%20tests-38%20passing-brightgreen)](https://github.com/bartvanderwal/remark-kroki-a11y)
 
+<div style={{ display: 'flex', alignItems: 'center', gap: '1rem', margin: '1rem 0 1.5rem 0' }}>
+  <img src="/img/favicon.svg" alt="remark-kroki-a11y logo" width="150" />
+  <strong style={{ fontSize: '1.25rem' }}>Work in progress</strong>
+</div>
+
 A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible source code details and natural language descriptions to [Kroki](https://kroki.io/) diagrams.
 
 > **Note:** This plugin has only been tested with [Docusaurus](https://docusaurus.io/). It should work with other unified/remark-based systems, but this has not been verified.

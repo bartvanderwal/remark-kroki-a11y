@@ -126,6 +126,11 @@ module.exports = async function createConfigAsync() {
           label: 'Playground',
         },
         {
+          type: 'html',
+          value: '<a href="/remark-kroki-a11y/img/favicon.svg" aria-label="Open logo file"><img src="/remark-kroki-a11y/img/favicon.svg" alt="remark-kroki-a11y logo file" width="20" height="20" style="display:block" /></a>',
+          position: 'right',
+        },
+        {
           href: 'https://github.com/bartvanderwal/remark-kroki-a11y',
           label: 'GitHub',
           position: 'right',
