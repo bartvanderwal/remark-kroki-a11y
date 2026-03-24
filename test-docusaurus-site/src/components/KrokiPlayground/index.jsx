@@ -50,7 +50,6 @@ export default function KrokiPlayground() {
   const [serverMessage, setServerMessage] = useState('');
   const [activeTab, setActiveTab] = useState('source');
   const [hideSource, setHideSource] = useState(false);
-  const [hidePlantUML, setHidePlantUML] = useState(false);
   const [hideA11y, setHideA11y] = useState(false);
   const locale = 'en';
 
@@ -92,8 +91,14 @@ export default function KrokiPlayground() {
       .replace('{type}', langName)
       .replace('{title}', 'Playground preview');
   }, [diagramType, ui]);
-  const effectiveHideSource = hideSource || (diagramType === 'plantuml' && hidePlantUML);
-  const showSourceTab = !effectiveHideSource;
+  const sourceTabLabel = useMemo(() => {
+    const langName = languageNames[diagramType] || diagramType;
+    if (locale === 'nl') {
+      return `${langName} broncode`;
+    }
+    return `${langName} source`;
+  }, [diagramType, locale]);
+  const showSourceTab = !hideSource;
   const showA11yTab = !hideA11y;
   const showDetails = showSourceTab || showA11yTab;
 
@@ -283,15 +288,6 @@ export default function KrokiPlayground() {
         <label>
           <input
             type="checkbox"
-            checked={hidePlantUML}
-            disabled={diagramType !== 'plantuml'}
-            onChange={(event) => setHidePlantUML(event.target.checked)}
-          />
-          hidePlantUML (PlantUML only)
-        </label>
-        <label>
-          <input
-            type="checkbox"
             checked={hideA11y}
             onChange={(event) => setHideA11y(event.target.checked)}
           />
@@ -301,7 +297,7 @@ export default function KrokiPlayground() {
 
       {showDetails && (
         <>
-          <details className="diagram-expandable-source">
+          <details className={`diagram-expandable-source ${styles.playgroundDetails}`} open>
             <summary>{summaryText}</summary>
             <section className={styles.tabsPanel}>
               <div className={styles.tabsList} role="tablist" aria-label="Diagram details">
@@ -313,7 +309,7 @@ export default function KrokiPlayground() {
                     className={`${styles.tabButton} ${activeTab === 'source' ? styles.tabButtonActive : ''}`}
                     onClick={() => setActiveTab('source')}
                   >
-                    {ui.tabSource || 'Source'}
+                    {sourceTabLabel}
                   </button>
                 )}
                 {showA11yTab && (

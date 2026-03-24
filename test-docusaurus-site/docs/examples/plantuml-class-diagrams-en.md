@@ -107,11 +107,11 @@ class WordList {
 @enduml
 ```
 
-## Simple class diagram with hidden PlantUML source
+## Simple class diagram with hidden source
 
-This diagram uses the `hidePlantuml` flag. The PlantUML source tab is hidden, while the natural language tab (including the Out loud button) remains available.
+This diagram uses the `hideSource` flag. The source tab is hidden, while the natural language tab (including the Out loud button) remains available.
 
-```kroki imgType="plantuml" imgTitle="WordList class (hidden PlantUML source)" lang="en" hidePlantuml
+```kroki imgType="plantuml" imgTitle="WordList class (hidden source)" lang="en" hideSource
 @startuml
 class WordList {
   -words : String[]

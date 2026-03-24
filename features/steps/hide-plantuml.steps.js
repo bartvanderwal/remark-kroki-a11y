@@ -10,7 +10,7 @@ Before(function() {
   renderedHtml = '';
 });
 
-Given('a PlantUML kroki code block with hidePlantuml:', function(diagramSource) {
+Given('a PlantUML kroki code block with hideSource:', function(diagramSource) {
   codeValue = diagramSource;
 });
 
@@ -21,7 +21,7 @@ When('I transform the code block with remark-kroki-a11y and speak button enabled
       {
         type: 'code',
         lang: 'kroki',
-        meta: 'imgType="plantuml" imgTitle="WordList class" lang="en" hidePlantuml',
+        meta: 'imgType="plantuml" imgTitle="WordList class" lang="en" hideSource',
         value: codeValue,
       },
     ],

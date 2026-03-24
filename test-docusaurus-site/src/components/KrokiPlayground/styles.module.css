@@ -185,3 +185,23 @@
   margin: 0;
   padding: 0.85rem;
 }
+
+.playgroundDetails {
+  --docusaurus-details-decoration-color: var(--ifm-alert-border-color);
+  margin: 0 0 var(--ifm-spacing-vertical);
+  border: 1px solid var(--ifm-alert-border-color);
+  border-radius: var(--ifm-alert-border-radius);
+  overflow: hidden;
+  background: var(--ifm-alert-background-color);
+}
+
+.playgroundDetails summary {
+  color: var(--ifm-alert-foreground-color);
+  background: color-mix(in srgb, var(--ifm-alert-background-color) 82%, var(--ifm-alert-border-color));
+  font-weight: 600;
+  padding: var(--ifm-alert-padding-vertical) var(--ifm-alert-padding-horizontal);
+}
+
+.playgroundDetails summary:hover {
+  background: color-mix(in srgb, var(--ifm-alert-background-color) 72%, var(--ifm-alert-border-color));
+}

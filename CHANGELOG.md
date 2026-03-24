@@ -5,6 +5,26 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.1] - 2026-03-24
+
+### Changed
+
+- Standardized per-diagram source hiding on a single flag:
+  - removed `hidePlantuml` handling from plugin logic
+  - keep `hideSource` as the only source-hiding flag
+- Updated playground UX:
+  - source tab label is now diagram-type aware (for example `PlantUML source`)
+  - details block is open by default so tabs are immediately visible
+  - summary/details styling aligned with Docusaurus alert/detail tokens for clearer visual affordance
+- Updated installation docs to use devDependency commands (`npm --save-dev`, `yarn --dev`) for this build-time remark plugin.
+
+### Fixed
+
+- Packaged runtime dependencies correctly so consumers do not need to install transitive Kroki fetch dependencies themselves:
+  - removed accidental self-dependency on `remark-kroki-a11y`
+  - added `node-fetch@^2.7.0` as a direct runtime dependency
+- Improved Kroki loader error reporting to include the primary and fallback module resolution failure details for `remark-kroki-plugin`.
+
 ## [0.6.0] - 2026-03-18
 
 > **Headline features for 0.6.0:** Interactive Kroki A11Y playground + external PlantUML source files via `src`.

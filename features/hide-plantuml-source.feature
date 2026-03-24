@@ -1,11 +1,11 @@
 # language: en
-Feature: Hide PlantUML source while keeping A11y output
+Feature: Hide source while keeping A11y output
   As a content author
-  I want to hide PlantUML source tabs for specific diagrams
+  I want to hide source tabs for specific diagrams
   So that students cannot directly copy the solution while accessibility stays available
 
-  Scenario: hidePlantuml hides source tab but keeps a11y tab and speak button
-    Given a PlantUML kroki code block with hidePlantuml:
+  Scenario: hideSource hides source tab but keeps a11y tab and speak button
+    Given a PlantUML kroki code block with hideSource:
       """
       @startuml
       class WordList {

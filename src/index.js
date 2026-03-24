@@ -46,10 +46,6 @@
  *   @enduml
  *   ```
  *
- *   ```kroki hidePlantuml imgType="plantuml"
- *   ...
- *   ```
- *
  *   ```kroki hideA11y imgType="plantuml"
  *   ...
  *   ```
@@ -60,11 +56,13 @@ const fs = require('fs');
 const path = require('path');
 
 function resolveRemarkKrokiPlugin() {
+  let firstError = null;
   // 1) Standard resolution from this package context.
   try {
-    return require('remark-kroki-plugin');
-  } catch (_err) {
+    return { plugin: require('remark-kroki-plugin'), loadError: null };
+  } catch (err) {
     // continue to fallback resolution
+    firstError = err;
   }
 
   // 2) Fallback for local-source usage (e.g. require('../src/index.js') in a demo site)
@@ -73,13 +71,18 @@ function resolveRemarkKrokiPlugin() {
     const resolved = require.resolve('remark-kroki-plugin', {
       paths: [process.cwd(), __dirname],
     });
-    return require(resolved);
-  } catch (_err) {
-    return null;
+    return { plugin: require(resolved), loadError: null };
+  } catch (fallbackErr) {
+    const primaryMessage = firstError && firstError.message ? firstError.message : String(firstError);
+    const fallbackMessage = fallbackErr && fallbackErr.message ? fallbackErr.message : String(fallbackErr);
+    return {
+      plugin: null,
+      loadError: `primary resolution failed: ${primaryMessage}; fallback resolution failed: ${fallbackMessage}`,
+    };
   }
 }
 
-const remarkKrokiPlugin = resolveRemarkKrokiPlugin();
+const { plugin: remarkKrokiPlugin, loadError: remarkKrokiPluginLoadError } = resolveRemarkKrokiPlugin();
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
@@ -526,9 +529,7 @@ function remarkKrokiA11y(options = {}) {
       // Check for hide flags
       const rawMeta = node.meta || '';
       if (rawMeta.includes('a11yGeneratedSimplerVariant')) return;
-      const imgTypeFromMeta = extractDiagramType(rawMeta);
-      const hidePlantuml = rawMeta.includes('hidePlantuml') && imgTypeFromMeta === 'plantuml';
-      const hideSource = rawMeta.includes('hideSource') || hidePlantuml;
+      const hideSource = rawMeta.includes('hideSource');
       const hideA11y = rawMeta.includes('hideA11y');
       const hideDiagram = rawMeta.includes('hideDiagram');
       const hideSpeakButton = rawMeta.includes('hideSpeakButton');
@@ -547,7 +548,7 @@ function remarkKrokiA11y(options = {}) {
         // Remove simple flags
         node.meta = node.meta
           .split(/\s+/)
-          .filter((m) => m !== 'hideSource' && m !== 'hidePlantuml' && m !== 'hideA11y' && m !== 'hideDiagram' &&
+          .filter((m) => m !== 'hideSource' && m !== 'hideA11y' && m !== 'hideDiagram' &&
             m !== 'hideSpeakButton' && m !== 'showDiagramModeToggle' && m !== 'hideDiagramModeToggle' &&
             m !== 'showDiagramLegend' && m !== 'hideDiagramLegend' && m !== '')
           .join(' ');
@@ -755,7 +756,10 @@ ${speakButtonHtml}
       return;
     }
     if (!remarkKrokiPlugin) {
-      throw new Error('remark-kroki-plugin is missing. Install dependencies for remark-kroki-a11y.');
+      throw new Error(
+        `Failed to load remark-kroki-plugin. ${remarkKrokiPluginLoadError || 'No additional error details available.'} ` +
+        'Install dependencies for remark-kroki-a11y.'
+      );
     }
     const krokiTransformer = remarkKrokiPlugin(krokiOptions);
     if (typeof krokiTransformer === 'function') {
