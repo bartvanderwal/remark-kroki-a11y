@@ -1,6 +1,6 @@
 {
   "name": "remark-kroki-a11y-docs",
-  "version": "0.5.0",
+  "version": "0.6.2",
   "private": true,
   "description": "Documentation site for remark-kroki-a11y plugin - also serves as a live demo.",
   "scripts": {
