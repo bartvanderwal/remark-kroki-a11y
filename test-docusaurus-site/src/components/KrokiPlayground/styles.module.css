@@ -124,6 +124,27 @@
   padding-left: 0.65rem;
 }
 
+.storageActions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+.secondaryButton {
+  border: 1px solid var(--ifm-color-emphasis-400);
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  background: var(--ifm-background-color);
+  color: var(--ifm-font-color-base);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.secondaryButton:hover {
+  border-color: var(--ifm-color-primary);
+}
+
 .preview {
   margin: 0;
   border: 1px solid var(--ifm-color-emphasis-300);
@@ -151,6 +172,38 @@
   padding: 1rem;
   text-align: center;
   color: var(--ifm-color-emphasis-700);
+}
+
+.modeToggle {
+  display: inline-flex;
+  gap: 0.3rem;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid var(--ifm-color-emphasis-300);
+  border-radius: 999px;
+  padding: 0.2rem;
+  margin-top: -0.25rem;
+}
+
+.modeToggleBtn {
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--ifm-font-color-base);
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.86rem;
+  font-weight: 600;
+  line-height: 1.2;
+  cursor: pointer;
+}
+
+.modeToggleBtn:hover {
+  border-color: var(--ifm-color-emphasis-300);
+}
+
+.modeToggleBtnActive {
+  background: var(--ifm-color-primary);
+  color: var(--ifm-color-white);
 }
 
 .tabsPanel {

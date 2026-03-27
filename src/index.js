@@ -90,7 +90,7 @@ const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateAct
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('./parsers/c4DiagramParser');
 const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('./parsers/pieDiagramParser');
 const { parseDomainStory, generateAccessibleDescription: generateDomainStoryDescription } = require('./parsers/domainStoryParser');
-const { generateDevModePlantUMLClassDiagram, simplifyPlantUMLClassDiagram } = require('./parsers/classDiagramSimplifier');
+const { generateDevModePlantUMLClassDiagram, simplifyPlantUMLClassDiagram } = require('./parsers/classDiagramSimplifier.cjs');
 
 // Parser registry - maps (imgType, diagramType) to parser functions
 // Each parser entry has: { canParse, parse, generate }

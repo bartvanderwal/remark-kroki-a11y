@@ -1,16 +1,39 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import styles from './styles.module.css';
 import * as a11yRuntime from '../../../../src/runtime/a11yRuntime';
+import classDiagramSimplifier from '../../../../src/parsers/classDiagramSimplifier.js';
 
 const PLANTUML_EXAMPLE = `@startuml
-actor User
-participant "Web App" as App
-participant "API" as Api
+skinparam classAttributeIconSize 0
 
-User -> App: Open test tool
-App -> Api: POST /render
-Api --> App: SVG image
-App --> User: Show diagram
+class Order {
+  +id : OrderId
+  +status : OrderStatus
+  +customerId : CustomerId
+  +totalAmount : Money
+  +place() : void
+}
+
+class OrderLine {
+  +id : OrderLineId
+  +productId : ProductId
+  +quantity : int
+  +unitPrice : Money
+}
+
+class Customer {
+  +id : CustomerId
+  +email : EmailAddress
+  +name : Name
+}
+
+interface PaymentPort {
+  +authorize(amount : Money) : PaymentResult
+}
+
+Order *-- OrderLine : contains
+Order --> Customer : for
+Order ..> PaymentPort : uses
 @enduml`;
 
 const MERMAID_EXAMPLE = `sequenceDiagram
@@ -28,15 +51,24 @@ const SERVER_PRESETS = {
   localhost: 'http://localhost:8000',
 };
 
+const LS_LAST_ATTEMPTED_PLANTUML = 'krokiPlayground.lastAttemptedPlantuml';
+const LS_LAST_SUCCESSFUL_PLANTUML = 'krokiPlayground.lastSuccessfulPlantuml';
+
 function normalizeBaseUrl(url) {
   return (url || 'https://kroki.io').trim().replace(/\/$/, '');
 }
 
 const {
   generateA11yFromSource,
+  detectPlantUMLDiagramType,
   uiLabels = {},
   languageNames = {},
 } = a11yRuntime || {};
+
+const {
+  generateDevModePlantUMLClassDiagram,
+  simplifyPlantUMLClassDiagram,
+} = classDiagramSimplifier || {};
 
 export default function KrokiPlayground() {
   const [diagramType, setDiagramType] = useState('plantuml');
@@ -44,6 +76,9 @@ export default function KrokiPlayground() {
   const [customBaseUrl, setCustomBaseUrl] = useState('https://kroki.io');
   const [source, setSource] = useState(PLANTUML_EXAMPLE);
   const [previewSrc, setPreviewSrc] = useState('');
+  const [previewSrcDev, setPreviewSrcDev] = useState('');
+  const [previewSrcSimpler, setPreviewSrcSimpler] = useState('');
+  const [diagramMode, setDiagramMode] = useState('dev');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [serverStatus, setServerStatus] = useState('idle');
@@ -51,6 +86,10 @@ export default function KrokiPlayground() {
   const [activeTab, setActiveTab] = useState('source');
   const [hideSource, setHideSource] = useState(false);
   const [hideA11y, setHideA11y] = useState(false);
+  const [showDiagramModeToggle, setShowDiagramModeToggle] = useState(true);
+  const [showDiagramLegend, setShowDiagramLegend] = useState(true);
+  const [lastAttemptedPlantuml, setLastAttemptedPlantuml] = useState('');
+  const [lastSuccessfulPlantuml, setLastSuccessfulPlantuml] = useState('');
   const locale = 'en';
 
   const normalizedBaseUrl = useMemo(
@@ -72,6 +111,15 @@ export default function KrokiPlayground() {
     tabA11y: 'In natural language',
     summaryText: '{type} source for "{title}"',
   };
+  const isPlantUmlClassDiagram = useMemo(() => {
+    if (diagramType !== 'plantuml' || typeof detectPlantUMLDiagramType !== 'function') return false;
+    return detectPlantUMLDiagramType(source) === 'classDiagram';
+  }, [diagramType, source]);
+  const canShowDiagramModeToggle = Boolean(showDiagramModeToggle && isPlantUmlClassDiagram);
+  const previewImageSrc = useMemo(() => {
+    if (!canShowDiagramModeToggle) return previewSrc;
+    return diagramMode === 'simpler' ? previewSrcSimpler : previewSrcDev;
+  }, [canShowDiagramModeToggle, diagramMode, previewSrc, previewSrcDev, previewSrcSimpler]);
   const a11yResult = useMemo(() => {
     if (typeof generateA11yFromSource !== 'function') {
       return {
@@ -101,6 +149,17 @@ export default function KrokiPlayground() {
   const showSourceTab = !hideSource;
   const showA11yTab = !hideA11y;
   const showDetails = showSourceTab || showA11yTab;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const storedAttempted = window.localStorage.getItem(LS_LAST_ATTEMPTED_PLANTUML) || '';
+    const storedSuccessful = window.localStorage.getItem(LS_LAST_SUCCESSFUL_PLANTUML) || '';
+    setLastAttemptedPlantuml(storedAttempted);
+    setLastSuccessfulPlantuml(storedSuccessful);
+    if (storedAttempted) {
+      setSource(storedAttempted);
+    }
+  }, []);
 
   useEffect(() => {
     if (activeTab === 'source' && !showSourceTab && showA11yTab) {
@@ -134,28 +193,76 @@ export default function KrokiPlayground() {
     checkServerStatus();
   }, [healthEndpoint]);
 
+  async function renderSvg(sourceCode) {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        Accept: 'image/svg+xml',
+        'Content-Type': 'text/plain; charset=utf-8',
+      },
+      body: sourceCode,
+    });
+
+    if (!response.ok) {
+      const details = await response.text();
+      throw new Error(`${response.status} ${response.statusText}${details ? `: ${details}` : ''}`);
+    }
+
+    const svg = await response.text();
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`;
+  }
+
   async function renderDiagram() {
     setIsLoading(true);
     setError('');
     setPreviewSrc('');
+    setPreviewSrcDev('');
+    setPreviewSrcSimpler('');
 
     try {
-      const response = await fetch(endpoint, {
-        method: 'POST',
-        headers: {
-          Accept: 'image/svg+xml',
-          'Content-Type': 'text/plain; charset=utf-8',
-        },
-        body: source,
-      });
-
-      if (!response.ok) {
-        const details = await response.text();
-        throw new Error(`${response.status} ${response.statusText}${details ? `: ${details}` : ''}`);
+      if (diagramType === 'plantuml') {
+        setLastAttemptedPlantuml(source);
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(LS_LAST_ATTEMPTED_PLANTUML, source);
+        }
       }
 
-      const svg = await response.text();
-      setPreviewSrc(`data:image/svg+xml;charset=utf-8,${encodeURIComponent(svg)}`);
+      if (canShowDiagramModeToggle) {
+        if (typeof generateDevModePlantUMLClassDiagram !== 'function' || typeof simplifyPlantUMLClassDiagram !== 'function') {
+          throw new Error('Class diagram mode toggle is unavailable in this build.');
+        }
+
+        const devModeSource = generateDevModePlantUMLClassDiagram(source, {
+          showLegend: showDiagramLegend,
+          locale,
+        });
+        const simplerModeSource = simplifyPlantUMLClassDiagram(source, {
+          showLegend: false,
+          locale,
+        });
+
+        if (!devModeSource || !simplerModeSource) {
+          throw new Error('Could not generate class diagram variants. Check PlantUML class syntax.');
+        }
+
+        const [devSvg, simplerSvg] = await Promise.all([
+          renderSvg(devModeSource),
+          renderSvg(simplerModeSource),
+        ]);
+
+        setPreviewSrcDev(devSvg);
+        setPreviewSrcSimpler(simplerSvg);
+      } else {
+        const svg = await renderSvg(source);
+        setPreviewSrc(svg);
+      }
+
+      if (diagramType === 'plantuml') {
+        setLastSuccessfulPlantuml(source);
+        if (typeof window !== 'undefined') {
+          window.localStorage.setItem(LS_LAST_SUCCESSFUL_PLANTUML, source);
+        }
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown render error');
     } finally {
@@ -165,11 +272,46 @@ export default function KrokiPlayground() {
 
   function loadExample(nextType) {
     setDiagramType(nextType);
-    setSource(nextType === 'mermaid' ? MERMAID_EXAMPLE : PLANTUML_EXAMPLE);
+    if (nextType === 'mermaid') {
+      setSource(MERMAID_EXAMPLE);
+    } else {
+      setSource(lastAttemptedPlantuml || PLANTUML_EXAMPLE);
+    }
     setPreviewSrc('');
+    setPreviewSrcDev('');
+    setPreviewSrcSimpler('');
     setError('');
     setActiveTab('source');
+    setDiagramMode('dev');
   }
+
+  function clearPlantumlStorage() {
+    setLastAttemptedPlantuml('');
+    setLastSuccessfulPlantuml('');
+    if (typeof window !== 'undefined') {
+      window.localStorage.removeItem(LS_LAST_ATTEMPTED_PLANTUML);
+      window.localStorage.removeItem(LS_LAST_SUCCESSFUL_PLANTUML);
+    }
+    if (diagramType === 'plantuml') {
+      setSource(PLANTUML_EXAMPLE);
+      setError('');
+      setPreviewSrc('');
+      setPreviewSrcDev('');
+      setPreviewSrcSimpler('');
+      setDiagramMode('dev');
+    }
+  }
+
+  function restoreLastWorkingPlantuml() {
+    if (!lastSuccessfulPlantuml) return;
+    setSource(lastSuccessfulPlantuml);
+    setError('');
+  }
+
+  const canRestoreLastWorkingPlantuml = diagramType === 'plantuml' &&
+    Boolean(error) &&
+    Boolean(lastSuccessfulPlantuml) &&
+    lastSuccessfulPlantuml !== source;
 
   return (
     <section className={styles.wrapper}>
@@ -256,6 +398,27 @@ export default function KrokiPlayground() {
         />
       </label>
 
+      {diagramType === 'plantuml' && (
+        <div className={styles.storageActions}>
+          <button
+            type="button"
+            className={styles.secondaryButton}
+            onClick={clearPlantumlStorage}
+          >
+            Clear plantuml from localStorage
+          </button>
+          {canRestoreLastWorkingPlantuml && (
+            <button
+              type="button"
+              className={styles.secondaryButton}
+              onClick={restoreLastWorkingPlantuml}
+            >
+              Restore to last working plantuml
+            </button>
+          )}
+        </div>
+      )}
+
       {error && (
         <p className={styles.error} role="alert">
           Render failed: {error}
@@ -263,15 +426,42 @@ export default function KrokiPlayground() {
       )}
 
       <figure className={styles.preview}>
-        {previewSrc ? (
-          <img src={previewSrc} alt={`Rendered ${diagramType} diagram`} />
+        {previewImageSrc ? (
+          <img
+            src={previewImageSrc}
+            alt={canShowDiagramModeToggle ? `Rendered ${diagramType} class diagram (${diagramMode})` : `Rendered ${diagramType} diagram`}
+          />
         ) : (
           <p className={styles.previewPlaceholder}>
             No diagram rendered yet. Click <strong>Render preview</strong>.
           </p>
         )}
-        <figcaption>Kroki render preview</figcaption>
+        <figcaption>
+          Kroki render preview
+          {canShowDiagramModeToggle ? ` (${diagramMode === 'simpler' ? 'Simpler' : 'For devs'})` : ''}
+        </figcaption>
       </figure>
+
+      {canShowDiagramModeToggle && (
+        <div className={styles.modeToggle} data-diagram-group="playground-class-mode" aria-label="Class diagram visual mode">
+          <button
+            type="button"
+            className={`${styles.modeToggleBtn} ${diagramMode === 'dev' ? styles.modeToggleBtnActive : ''}`}
+            aria-pressed={diagramMode === 'dev'}
+            onClick={() => setDiagramMode('dev')}
+          >
+            For devs
+          </button>
+          <button
+            type="button"
+            className={`${styles.modeToggleBtn} ${diagramMode === 'simpler' ? styles.modeToggleBtnActive : ''}`}
+            aria-pressed={diagramMode === 'simpler'}
+            onClick={() => setDiagramMode('simpler')}
+          >
+            Simpler
+          </button>
+        </div>
+      )}
 
       <p className={styles.endpoint}>Endpoint: <code>{endpoint}</code></p>
 
@@ -292,6 +482,23 @@ export default function KrokiPlayground() {
             onChange={(event) => setHideA11y(event.target.checked)}
           />
           hideA11y
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showDiagramModeToggle}
+            onChange={(event) => setShowDiagramModeToggle(event.target.checked)}
+          />
+          showDiagramModeToggle (PlantUML class diagrams)
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            checked={showDiagramLegend}
+            onChange={(event) => setShowDiagramLegend(event.target.checked)}
+            disabled={!showDiagramModeToggle}
+          />
+          showDiagramLegend (For devs only)
         </label>
       </fieldset>
 
