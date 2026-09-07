@@ -254,6 +254,77 @@ function removeMetaAttribute(meta, attributeName) {
     .trim();
 }
 
+function findA11yPanelId(node) {
+  if (!node || typeof node.value !== 'string') return null;
+  const sectionMatch = node.value.match(/<section\b(?=[^>]*\bdata-tab="a11y")[^>]*\bid="([^"]+)"/);
+  if (sectionMatch) return sectionMatch[1];
+  const detailsMatch = node.value.match(/<div\b(?=[^>]*\bclass="[^"]*diagram-a11y-description-content[^"]*")[^>]*\bid="([^"]+)"/);
+  return detailsMatch ? detailsMatch[1] : null;
+}
+
+function addAriaDescribedByToHtmlImage(node, descriptionId) {
+  if (!node || typeof node.value !== 'string') return false;
+  if (!/<img\b[^>]*\bkroki-image\b/.test(node.value)) return false;
+  if (/\baria-describedby=/.test(node.value)) return true;
+  node.value = node.value.replace(/<img\b/, `<img aria-describedby="${descriptionId}"`);
+  return true;
+}
+
+function addAriaDescribedByToMdxImage(node, descriptionId) {
+  if (!node || node.type !== 'mdxJsxTextElement' || node.name !== 'img') return false;
+  const attributes = node.attributes || [];
+  const classAttribute = attributes.find((attribute) => attribute.name === 'className');
+  const dataTypeAttribute = attributes.find((attribute) => attribute.name === 'data-type');
+  const isKrokiImage = (classAttribute && String(classAttribute.value).includes('kroki-image')) || dataTypeAttribute;
+  if (!isKrokiImage) return false;
+  const describedBy = attributes.find((attribute) => attribute.name === 'aria-describedby');
+  if (describedBy) {
+    describedBy.value = descriptionId;
+  } else {
+    attributes.push({
+      type: 'mdxJsxAttribute',
+      name: 'aria-describedby',
+      value: descriptionId,
+    });
+  }
+  node.attributes = attributes;
+  return true;
+}
+
+function containsRenderedKrokiImage(node) {
+  if (!node) return false;
+  if (typeof node.value === 'string' && /<img\b[^>]*\bkroki-image\b/.test(node.value)) return true;
+  if (node.type === 'mdxJsxTextElement' && node.name === 'img') {
+    const attributes = node.attributes || [];
+    const classAttribute = attributes.find((attribute) => attribute.name === 'className');
+    const dataTypeAttribute = attributes.find((attribute) => attribute.name === 'data-type');
+    return (classAttribute && String(classAttribute.value).includes('kroki-image')) || !!dataTypeAttribute;
+  }
+  return Array.isArray(node.children) && node.children.some(containsRenderedKrokiImage);
+}
+
+function addAriaDescribedByToRenderedImage(node, descriptionId) {
+  if (!node) return false;
+  if (addAriaDescribedByToHtmlImage(node, descriptionId)) return true;
+  if (addAriaDescribedByToMdxImage(node, descriptionId)) return true;
+  if (!Array.isArray(node.children)) return false;
+  return node.children.some((child) => addAriaDescribedByToRenderedImage(child, descriptionId));
+}
+
+function linkRenderedKrokiImagesToA11yDescriptions(tree) {
+  if (!tree || !Array.isArray(tree.children)) return;
+
+  tree.children.forEach((node, index) => {
+    let descriptionId = null;
+    for (const sibling of tree.children.slice(index + 1)) {
+      if (containsRenderedKrokiImage(sibling)) break;
+      descriptionId = findA11yPanelId(sibling);
+      if (descriptionId) break;
+    }
+    if (descriptionId) addAriaDescribedByToRenderedImage(node, descriptionId);
+  });
+}
+
 function hasPumlExtension(src) {
   const trimmedSrc = src.trim();
   return path.extname(trimmedSrc).toLowerCase() === '.puml';
@@ -757,7 +828,8 @@ ${speakButtonHtml}
           output: krokiOptions.output,
           target: krokiOptions.target,
         });
-        return krokiTransformer(tree, file);
+        return krokiTransformer(tree, file)
+          .then(() => linkRenderedKrokiImagesToA11yDescriptions(tree));
       })
       .catch((error) => {
         throw new Error(`Failed to render diagrams with remark-kroki: ${error.message}`, { cause: error });

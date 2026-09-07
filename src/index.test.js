@@ -184,6 +184,41 @@ describe('function usage analysis', () => {
         await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
       }
     });
+
+    it('links rendered Kroki images to generated a11y descriptions', async () => {
+      const server = http.createServer((request, response) => {
+        expect(request.url).toBe('/plantuml/svg');
+        response.writeHead(200, { 'content-type': 'image/svg+xml' });
+        response.end('<svg xmlns="http://www.w3.org/2000/svg"><title>Test</title></svg>');
+      });
+      await new Promise((resolve) => server.listen(0, resolve));
+
+      try {
+        const { port } = server.address();
+        const tree = {
+          type: 'root',
+          children: [{
+            type: 'code',
+            lang: 'kroki',
+            meta: 'imgType="plantuml" imgTitle="Class diagram"',
+            value: '@startuml\nclass Order {\n  +submit() void\n}\n@enduml',
+          }],
+        };
+
+        await remarkKrokiA11y({
+          showA11yDescription: true,
+          kroki: { krokiBase: `http://127.0.0.1:${port}` },
+        })(tree, {});
+
+        const image = tree.children[0].children[0];
+        const details = tree.children[1];
+        expect(image.value).toContain('alt="Class diagram"');
+        expect(image.value).toContain('aria-describedby="diagram-tabs-0-panel-a11y"');
+        expect(details.value).toContain('id="diagram-tabs-0-panel-a11y"');
+      } finally {
+        await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+      }
+    });
   });
 
   it('clarifies the purpose: make HTML content safe for aria-label', () => {
