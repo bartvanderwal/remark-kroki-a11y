@@ -8,13 +8,15 @@
  */
 
 import { describe, it, expect, beforeAll } from 'vitest';
+import http from 'node:http';
 
-let escapeHtml, extractTextContent;
+let escapeHtml, extractTextContent, remarkKrokiA11y;
 
 beforeAll(async () => {
   const module = await import('./index.js');
   escapeHtml = module.escapeHtml;
   extractTextContent = module.extractTextContent;
+  remarkKrokiA11y = module.default || module;
 });
 
 describe('escapeHtml', () => {
@@ -145,6 +147,43 @@ describe('function usage analysis', () => {
     // Both for creating aria-label values
     // This is duplicate code that could be refactored
     expect(true).toBe(true); // Documentation test
+  });
+
+  describe('remark-kroki backend adapter', () => {
+    it('maps legacy imgType metadata to remark-kroki and embeds the SVG', async () => {
+      const server = http.createServer((request, response) => {
+        expect(request.url).toBe('/plantuml/svg');
+        response.writeHead(200, { 'content-type': 'image/svg+xml' });
+        response.end('<svg xmlns="http://www.w3.org/2000/svg"><title>Test</title></svg>');
+      });
+      await new Promise((resolve) => server.listen(0, resolve));
+
+      try {
+        const { port } = server.address();
+        const tree = {
+          type: 'root',
+          children: [{
+            type: 'code',
+            lang: 'kroki',
+            meta: 'imgType="plantuml" imgTitle="Test diagram"',
+            value: '@startuml\nAlice -> Bob\n@enduml',
+          }],
+        };
+
+        await remarkKrokiA11y({
+          showA11yDescription: false,
+          kroki: { krokiBase: `http://127.0.0.1:${port}` },
+        })(tree, {});
+
+        const image = tree.children[0].children[0];
+        expect(image.type).toBe('html');
+        expect(image.value).toContain('class="kroki-image"');
+        expect(image.value).toContain('alt="Test diagram"');
+        expect(image.value).toContain('data:image/svg+xml;base64,');
+      } finally {
+        await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+      }
+    });
   });
 
   it('clarifies the purpose: make HTML content safe for aria-label', () => {

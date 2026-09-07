@@ -2,7 +2,7 @@
 
 ## Status
 
-Pending
+Accepted
 
 ## Context
 
@@ -23,13 +23,8 @@ This creates problems:
 4. **Security risk**: No security updates for archived dependency
 5. **Adoption visibility**: Consumers install both `remark-kroki-a11y` and `remark-kroki-plugin`, so usage is fragmented and setup remains leaky
 
-### Code assessment
-
-The `remark-kroki-plugin` codebase is small and manageable:
-
-- ~130 lines of TypeScript core logic
-- Dependencies: `ts-md5`, `unist-util-visit`, `node-fetch`
-- Simple architecture: visits code blocks, POSTs to Kroki API, caches SVGs locally
+The replacement must preserve the existing `kroki` option names and the accessibility
+AST changes, while allowing the render backend to be asynchronous.
 
 ## Options
 
@@ -123,56 +118,24 @@ Switch to the actively maintained [`remark-kroki`](https://github.com/show-docs/
 
 ## Decision
 
-Status: *Pending - requires further evaluation*
+Use **Option C behind a compatibility adapter**. `remark-kroki-a11y` remains the
+single public plugin and dynamically loads the ESM-first `remark-kroki` package.
+The adapter maps `krokiBase` to `server`, maps legacy `imgType`/`imgTitle`
+metadata to `type`/`alt`, and selects `img-html-base64` output by default.
 
-Primary direction under evaluation: **Option D (compose + adapter)**.
-
-Rationale:
-
-1. Consumers configure one package (`remark-kroki-a11y`)
-2. No duplication of archived plugin code
-3. Creates a migration seam for future engine replacement
-
-Secondary direction: **Option C (switch to `remark-kroki`)**.
-
-Rationale:
-
-1. Actively maintained with MDX 3.0 support already built-in
-2. Modern dependencies, no `rehype-raw` workaround needed
-3. Healthier long-term posture than archived `remark-kroki-plugin`
-
-Option A remains valid if:
-
-- Deep customization is required for a11y behavior
-- Adapter-based compatibility is not sufficient
-- Full ownership is preferred over external engine dependency
-
-**Next step:** Prototype Option D first, then validate Option C behind the same adapter contract.
+The render request remains asynchronous, but no separate process is required:
+the adapter returns the promise from `remark-kroki`, so unified consumers can
+await the normal remark pipeline. `imgRefDir` and `imgDir` are retained as
+accepted legacy configuration but are no longer used because diagrams are
+embedded as data URLs.
 
 ## Consequences
 
-If Option A is chosen:
-
-- Major version bump required (breaking change to API)
-- Need to document migration path for existing users
-- Can provide unified configuration for both Kroki and a11y options
-- Should consider making `rehype-raw` requirement explicit or automatic
-
-If Option D is chosen:
-
-- Minor (or patch) release if public API remains unchanged
-- Consumers can remove direct `remark-kroki-plugin` dependency
-- Requires adapter contract tests to keep behavior stable
-- Enables future engine swap without breaking consumers
-
-## Actions
-
-1. [ ] Define adapter contract (supported options + expected output)
-2. [ ] Prototype Option D (internal dependency + adapter)
-3. [ ] Add contract tests (fixtures for markdown -> AST/HTML)
-4. [ ] Prototype Option C behind same adapter seam
-5. [ ] Make final decision (D temporary vs direct C vs A)
-6. [ ] Implement, test, and document migration guidance
+- Consumers can remove their direct `remark-kroki-plugin` dependency.
+- Existing accessibility/source HTML generation is unchanged.
+- Generated SVGs are no longer written to `imgDir`; builds do not need a
+  writable static image directory.
+- The adapter contract is covered by a local HTTP-server unit test.
 
 ## References
 

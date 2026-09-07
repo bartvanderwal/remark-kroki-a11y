@@ -183,8 +183,8 @@ module.exports = {
               kroki: {
                 krokiBase: 'https://kroki.io',
                 lang: 'kroki',
-                imgRefDir: '/img/kroki',
-                imgDir: 'static/img/kroki',
+                output: 'img-html-base64',
+                target: 'html',
               },
             }],
           ],
@@ -227,8 +227,8 @@ Use the local server in `docusaurus.config.js`:
   kroki: {
     krokiBase: 'http://localhost:8000',
     lang: 'kroki',
-    imgRefDir: '/img/kroki',
-    imgDir: 'static/img/kroki',
+    output: 'img-html-base64',
+    target: 'html',
   },
 }]
 ```
@@ -372,7 +372,7 @@ export function onRouteDidUpdate() {
 | `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
 | `showDiagramModeToggle` | boolean | `false` | For PlantUML class diagrams, also render a simplified visual variant and show a `For devs`/`Simpler` toggle |
 | `showDiagramLegend` | boolean | `false` | For PlantUML class diagrams with mode toggle: add an auto-generated relation legend in `For devs` mode only |
-| `kroki` | object | `{ krokiBase, lang, imgRefDir, imgDir }` | Kroki render settings passed to the internally used `remark-kroki-plugin` |
+| `kroki` | object | `{ krokiBase, lang, output, target }` | Kroki render settings passed to `remark-kroki` (`output` defaults to `img-html-base64`) |
 
 When `showDiagramModeToggle` is enabled:
 

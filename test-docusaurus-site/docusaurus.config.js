@@ -90,8 +90,8 @@ module.exports = async function createConfigAsync() {
               kroki: {
                 krokiBase,
                 lang: 'kroki',
-                imgRefDir: '/remark-kroki-a11y/img/kroki',
-                imgDir: 'static/img/kroki',
+                output: 'img-html-base64',
+                target: 'html',
               },
             }],
           ],

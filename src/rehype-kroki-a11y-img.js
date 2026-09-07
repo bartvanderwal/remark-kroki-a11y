@@ -5,7 +5,7 @@
  * 1. Replaces hash-based alt text with the title attribute value
  * 2. Adds aria-describedby pointing to the natural language description section
  *
- * This plugin runs AFTER remark-kroki-plugin has generated the images
+ * This plugin runs AFTER remark-kroki has generated the images
  * and AFTER rehype-raw has parsed the HTML into the AST.
  *
  * Usage in docusaurus.config.js:
@@ -39,7 +39,9 @@ module.exports = function rehypeKrokiA11yImg(options = {}) {
     visit(tree, 'element', (node) => {
       if (node.tagName === 'img' && node.properties) {
         const src = node.properties.src || '';
-        if (opts.imgPathPattern.test(src)) {
+        const className = node.properties.className || '';
+        const dataType = node.properties.dataType || node.properties['data-type'];
+        if (opts.imgPathPattern.test(src) || className.includes('kroki-image') || dataType) {
           images.push({ node });
         }
       }

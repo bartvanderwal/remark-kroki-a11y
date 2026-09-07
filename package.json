@@ -72,8 +72,7 @@
   },
   "homepage": "https://bartvanderwal.github.io/remark-kroki-a11y/",
   "dependencies": {
-    "node-fetch": "^2.7.0",
-    "remark-kroki-plugin": "^0.1.1",
+    "remark-kroki": "^0.3.8",
     "unist-util-visit": "^5.0.0"
   },
   "devDependencies": {

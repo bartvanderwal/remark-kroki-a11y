@@ -55,34 +55,26 @@ const { visit } = require('unist-util-visit');
 const fs = require('fs');
 const path = require('path');
 
-function resolveRemarkKrokiPlugin() {
-  let firstError = null;
-  // 1) Standard resolution from this package context.
-  try {
-    return { plugin: require('remark-kroki-plugin'), loadError: null };
-  } catch (err) {
-    // continue to fallback resolution
-    firstError = err;
-  }
+let remarkKrokiModulePromise;
 
-  // 2) Fallback for local-source usage (e.g. require('../src/index.js') in a demo site)
-  // where host app dependencies live in its own node_modules tree.
-  try {
-    const resolved = require.resolve('remark-kroki-plugin', {
-      paths: [process.cwd(), __dirname],
-    });
-    return { plugin: require(resolved), loadError: null };
-  } catch (fallbackErr) {
-    const primaryMessage = firstError && firstError.message ? firstError.message : String(firstError);
-    const fallbackMessage = fallbackErr && fallbackErr.message ? fallbackErr.message : String(fallbackErr);
-    return {
-      plugin: null,
-      loadError: `primary resolution failed: ${primaryMessage}; fallback resolution failed: ${fallbackMessage}`,
-    };
+function loadRemarkKroki() {
+  if (!remarkKrokiModulePromise) {
+    remarkKrokiModulePromise = import('remark-kroki');
   }
+  return remarkKrokiModulePromise;
 }
 
-const { plugin: remarkKrokiPlugin, loadError: remarkKrokiPluginLoadError } = resolveRemarkKrokiPlugin();
+function addModernKrokiMetadata(node) {
+  if (!node.meta || !node.meta.match(/(?:^|\s)imgType="[^"]+"/)) return;
+  if (!/(?:^|\s)type(?:=|\s)/.test(node.meta)) {
+    const imgType = extractMetaAttribute(node.meta, 'imgType');
+    node.meta += ` type="${imgType}"`;
+  }
+  if (!/(?:^|\s)alt(?:=|\s)/.test(node.meta)) {
+    const imgTitle = extractMetaAttribute(node.meta, 'imgTitle');
+    if (imgTitle) node.meta += ` alt="${imgTitle.replace(/"/g, '&quot;')}"`;
+  }
+}
 const { parsePlantUMLStateDiagram, generateAccessibleDescription: generateStateDescription } = require('./parsers/stateDiagramParser');
 const { parseMermaidClassDiagram, parsePlantUMLClassDiagram, generateAccessibleDescription: generateClassDescription } = require('./parsers/classDiagramParser');
 const { parseMermaidSequenceDiagram, generateAccessibleDescription: generateSequenceDescription } = require('./parsers/sequenceDiagramParser');
@@ -485,8 +477,8 @@ const defaultOptions = {
   kroki: {
     krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
     lang: 'kroki',
-    imgRefDir: '/img/kroki',
-    imgDir: 'static/img/kroki',
+    output: 'img-html-base64',
+    target: 'html',
   },
 };
 
@@ -523,6 +515,7 @@ function remarkKrokiA11y(options = {}) {
     visit(tree, 'code', (node, index, parent) => {
       if (!parent || !parent.children) return;
       if (!languages.includes(node.lang)) return;
+      addModernKrokiMetadata(node);
       const externalSourceInfo = loadExternalDiagramSourceIfConfigured(node, file);
       const sourceForUiAndA11y = (externalSourceInfo && externalSourceInfo.rawSource) || node.value;
 
@@ -755,16 +748,20 @@ ${speakButtonHtml}
     if (opts.skipKrokiRender) {
       return;
     }
-    if (!remarkKrokiPlugin) {
-      throw new Error(
-        `Failed to load remark-kroki-plugin. ${remarkKrokiPluginLoadError || 'No additional error details available.'} ` +
-        'Install dependencies for remark-kroki-a11y.'
-      );
-    }
-    const krokiTransformer = remarkKrokiPlugin(krokiOptions);
-    if (typeof krokiTransformer === 'function') {
-      return krokiTransformer(tree, file);
-    }
+    return loadRemarkKroki()
+      .then(({ remarkKroki }) => {
+        const krokiTransformer = remarkKroki({
+          server: krokiOptions.krokiBase,
+          headers: krokiOptions.headers,
+          alias: krokiOptions.alias || languages.filter((language) => language !== 'kroki'),
+          output: krokiOptions.output,
+          target: krokiOptions.target,
+        });
+        return krokiTransformer(tree, file);
+      })
+      .catch((error) => {
+        throw new Error(`Failed to render diagrams with remark-kroki: ${error.message}`, { cause: error });
+      });
   };
 }
 
