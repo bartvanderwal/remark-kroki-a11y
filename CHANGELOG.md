@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.6.2] - 2026-09-07
+
+### Backend
+
+- Switched the internal Kroki rendering backend from the archived
+  `remark-kroki-plugin` package to the maintained `remark-kroki` package while
+  preserving the public `remark-kroki-a11y` plugin API.
+- Kept legacy Kroki configuration compatibility through an adapter:
+  - `krokiBase` maps to `remark-kroki`'s `server` option
+  - legacy `imgType` and `imgTitle` metadata maps to `type` and `alt`
+  - `imgDir` and `imgRefDir` remain accepted but are no longer used because diagrams are embedded as data URLs by default
+- Removed the dependency on the archived Kroki remark backend and its older
+  dependency chain.
+- Updated the local Kroki Docker Compose setup to include the Mermaid companion
+  container required for local Mermaid rendering.
+- Documented the local Kroki setup needed to avoid Mermaid `503` fallback images
+  during local docs testing.
+
 ## [0.6.1] - 2026-03-24
 
 ### Changed
