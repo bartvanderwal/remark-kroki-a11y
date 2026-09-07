@@ -194,7 +194,9 @@ module.exports = {
 
 ### Local Kroki via Docker (recommended for stable local builds)
 
-If `kroki.io` is unavailable or blocked, run a local Kroki server:
+If `kroki.io` is unavailable or blocked, run a local Kroki server. The
+development Compose setup includes the Mermaid companion service, which is
+required for Mermaid diagrams:
 
 ```bash
 docker compose -f docker-compose.kroki.yml up -d

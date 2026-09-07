@@ -6,6 +6,16 @@ services:
       - "8000:8000"
     environment:
       - KROKI_PLANTUML_INCLUDE_PATH=/opt/kroki/includes
+      - KROKI_MERMAID_HOST=mermaid
     volumes:
       - ./test-docusaurus-site/kroki-includes:/opt/kroki/includes:ro
+    depends_on:
+      - mermaid
+    restart: unless-stopped
+
+  mermaid:
+    image: yuzutech/kroki-mermaid:latest
+    container_name: kroki-mermaid-local
+    expose:
+      - "8002"
     restart: unless-stopped
