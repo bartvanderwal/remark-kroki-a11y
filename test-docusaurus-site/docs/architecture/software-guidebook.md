@@ -397,7 +397,7 @@ Architecture decisions are recorded as ADRs (Architecture Decision Records). The
 
 | ADR | Title | Status |
 |-----|-------|--------|
-| [ADR-0000](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/docs/adr/0000-deterministic-parsing-vs-live-llm.md) | Deterministic Parsing vs Live LLM | Accepted |
+| [ADR-0000](/adr/deterministic-parsing-vs-live-llm) | Deterministic Parsing vs Live LLM | Accepted |
 | [ADR-0001](/adr/ondersteuning-relatie-richtingen) | Ondersteuning relatie richtingen | Accepted |
 | [ADR-0002](/adr/plugin-architectuur) | Plugin architectuur | Accepted |
 | [ADR-0003](/adr/project-language) | Project language | Accepted |
