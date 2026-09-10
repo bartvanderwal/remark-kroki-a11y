@@ -393,23 +393,16 @@ The plugin contributes to WCAG 2.1 compliance:
 
 ## 12. Decisions
 
-Architecture decisions are recorded as ADRs (Architecture Decision Records). The table below is a selected list of ADRs referenced or especially relevant to this guidebook; for the full numbered sequence, use the ADR index:
+Architecture decisions are recorded as ADRs (Architecture Decision Records). This guidebook especially relies on the following decisions:
 
-| ADR | Title | Status |
-|-----|-------|--------|
-| [ADR-0000](/adr/deterministic-parsing-vs-live-llm) | Deterministic Parsing vs Live LLM | Accepted |
-| [ADR-0001](/adr/ondersteuning-relatie-richtingen) | Ondersteuning relatie richtingen | Accepted |
-| [ADR-0002](/adr/plugin-architectuur) | Plugin architectuur | Accepted |
-| [ADR-0003](/adr/project-language) | Project language | Accepted |
-| [ADR-0004](/adr/integrated-test-docusaurus-site) | Integrated test Docusaurus site | Accepted |
-| [ADR-0005](/adr/navigeerbare-a11y-beschrijvingen) | Navigeerbare A11y beschrijvingen | Accepted |
-| [ADR-0006](/adr/plantuml-als-interne-standaard) | PlantUML als interne standaard | Accepted |
-| [ADR-0007](/adr/single-source-documentation) | Single source documentation | Accepted |
-| [ADR-0011](/adr/faithful-source-representation) | Faithful source representation | Accepted |
-| [ADR-0012](/adr/integrate-remark-kroki-plugin) | Integrate remark-kroki-plugin | Accepted |
-| [ADR-0013](/adr/i18n-framework) | i18n framework | Accepted |
+- **ADR-0000** explains why descriptions are generated deterministically instead of with live LLM calls.
+- **[ADR-0006](/adr/plantuml-als-interne-standaard)** explains why PlantUML structures are used as the internal architectural representation.
+- **[ADR-0007](/adr/single-source-documentation)** explains the documentation sync approach between repository sources and the published Docusaurus site.
+- **[ADR-0011](/adr/faithful-source-representation)** explains why authored source details must remain faithfully represented, including when authors use `a11yDescriptionOverride`.
+- **[ADR-0012](/adr/integrate-remark-kroki-plugin)** explains the integration boundary with the upstream Kroki remark plugin.
+- **[ADR-0013](/adr/i18n-framework)** explains the locale strategy for generated accessibility descriptions.
 
-For the complete list, see the source ADR index at `docs/adr/README.md` and the published [ADR index](/adr/).
+For the complete ADR catalog, see the source ADR index at `docs/adr/README.md` and the published [ADR index](/adr/).
 
 ---
 
