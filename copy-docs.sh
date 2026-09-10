@@ -21,14 +21,12 @@ GITHUB_BASE="https://github.com/bartvanderwal/remark-kroki-a11y/blob/main"
 
 # Function to fix links in markdown files
 fix_links() {
-    local content="$1"
-
     # Transform links for Docusaurus compatibility:
     # 1. Internal doc links: remove .md extension
     # 2. docs/adr/ and docs/img/ paths: make relative to docs folder
     # 3. External dirs (features/, src/, .github/): convert to GitHub URLs
 
-    echo "$content" | sed -E \
+    sed -E \
         -e 's|\(contributing\.md\)|(./contributing)|g' \
         -e 's|\(definition-of-done\.md\)|(./definition-of-done)|g' \
         -e 's|\(CONTRIBUTING\.md\)|(./contributing)|g' \
@@ -45,7 +43,7 @@ echo ""
 
 # Copy README.md
 echo "📄 Copying README.md to docs/index.md and docs/readme-github.md..."
-README_CONTENT="$(fix_links "$(cat "$SCRIPT_DIR/README.md")")"
+README_CONTENT="$(fix_links < "$SCRIPT_DIR/README.md")"
 cat > "$DOCS_CONTENT_DIR/index.md" << 'FRONTMATTER'
 ---
 id: readme-github
@@ -101,7 +99,7 @@ description: How to contribute to remark-kroki-a11y
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/CONTRIBUTING.md")" >> "$DOCS_CONTENT_DIR/contributing.md"
+fix_links < "$SCRIPT_DIR/CONTRIBUTING.md" >> "$DOCS_CONTENT_DIR/contributing.md"
 cat >> "$DOCS_CONTENT_DIR/contributing.md" << 'FOOTER'
 
 ---
@@ -124,7 +122,7 @@ description: Quality criteria for completed features and fixes
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/definition-of-done.md")" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
+fix_links < "$SCRIPT_DIR/definition-of-done.md" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
 cat >> "$DOCS_CONTENT_DIR/definition-of-done.md" << 'FOOTER'
 
 ---
@@ -213,7 +211,7 @@ if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
         target_file="$ARCHITECTURE_TARGET_DIR/$relative_path"
         mkdir -p "$(dirname "$target_file")"
         if [[ "$source_file" == *.md ]]; then
-            fix_links "$(cat "$source_file")" > "$target_file"
+            fix_links < "$source_file" > "$target_file"
         else
             cp "$source_file" "$target_file"
         fi
