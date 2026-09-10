@@ -21,14 +21,12 @@ GITHUB_BASE="https://github.com/bartvanderwal/remark-kroki-a11y/blob/main"
 
 # Function to fix links in markdown files
 fix_links() {
-    local content="$1"
-
     # Transform links for Docusaurus compatibility:
     # 1. Internal doc links: remove .md extension
     # 2. docs/adr/ and docs/img/ paths: make relative to docs folder
     # 3. External dirs (features/, src/, .github/): convert to GitHub URLs
 
-    echo "$content" | sed -E \
+    sed -E \
         -e 's|\(contributing\.md\)|(./contributing)|g' \
         -e 's|\(definition-of-done\.md\)|(./definition-of-done)|g' \
         -e 's|\(CONTRIBUTING\.md\)|(./contributing)|g' \
@@ -40,11 +38,26 @@ fix_links() {
         -e "s|\(\.github/|\($GITHUB_BASE/.github/|g"
 }
 
+# Function to rewrite repository-style links inside Docusaurus-authored
+# architecture docs without touching existing site-local links.
+fix_architecture_links() {
+    sed -E \
+        -e 's|\(CONTRIBUTING\.md\)|('"$GITHUB_BASE"'/CONTRIBUTING.md)|g' \
+        -e 's|\(README\.md\)|('"$GITHUB_BASE"'/README.md)|g' \
+        -e 's|\(definition-of-done\.md\)|('"$GITHUB_BASE"'/definition-of-done.md)|g' \
+        -e 's|\(docs/adr/README\.md\)|(/adr/)|g' \
+        -e 's|\(docs/img/|(/img/|g' \
+        -e "s|\(features/|\($GITHUB_BASE/features/|g" \
+        -e "s|\(src/|\($GITHUB_BASE/src/|g" \
+        -e "s|\(\.github/|\($GITHUB_BASE/.github/|g"
+}
+
 echo "📚 Copying documentation files to Docusaurus..."
 echo ""
 
 # Copy README.md
-echo "📄 Copying README.md to docs/index.md..."
+echo "📄 Copying README.md to docs/index.md and docs/readme-github.md..."
+README_CONTENT="$(fix_links < "$SCRIPT_DIR/README.md")"
 cat > "$DOCS_CONTENT_DIR/index.md" << 'FRONTMATTER'
 ---
 id: readme-github
@@ -54,8 +67,31 @@ description: The main README file from the GitHub repository
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/README.md")" >> "$DOCS_CONTENT_DIR/index.md"
+printf '%s
+' "$README_CONTENT" >> "$DOCS_CONTENT_DIR/index.md"
 cat >> "$DOCS_CONTENT_DIR/index.md" << 'FOOTER'
+
+---
+
+:::info Single Source of Truth
+This page is automatically copied from the repository root `README.md` file.
+The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
+Edit the root `README.md` to update this page.
+:::
+FOOTER
+
+cat > "$DOCS_CONTENT_DIR/readme-github.md" << 'FRONTMATTER'
+---
+id: readme-github-alias
+slug: /readme-github
+title: README (GitHub)
+description: Stable published route for the repository README page
+---
+
+FRONTMATTER
+printf '%s
+' "$README_CONTENT" >> "$DOCS_CONTENT_DIR/readme-github.md"
+cat >> "$DOCS_CONTENT_DIR/readme-github.md" << 'FOOTER'
 
 ---
 
@@ -77,7 +113,7 @@ description: How to contribute to remark-kroki-a11y
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/CONTRIBUTING.md")" >> "$DOCS_CONTENT_DIR/contributing.md"
+fix_links < "$SCRIPT_DIR/CONTRIBUTING.md" >> "$DOCS_CONTENT_DIR/contributing.md"
 cat >> "$DOCS_CONTENT_DIR/contributing.md" << 'FOOTER'
 
 ---
@@ -100,7 +136,7 @@ description: Quality criteria for completed features and fixes
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/definition-of-done.md")" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
+fix_links < "$SCRIPT_DIR/definition-of-done.md" >> "$DOCS_CONTENT_DIR/definition-of-done.md"
 cat >> "$DOCS_CONTENT_DIR/definition-of-done.md" << 'FOOTER'
 
 ---
@@ -175,6 +211,25 @@ fi
 if [ -d "$ADR_SOURCE_DIR/images" ]; then
     echo "   - Copying ADR images/ folder"
     cp -r "$ADR_SOURCE_DIR/images" "$ADR_TARGET_DIR/"
+fi
+
+# Copy architecture docs
+ARCHITECTURE_SOURCE_DIR="$SCRIPT_DIR/docs/architecture"
+ARCHITECTURE_TARGET_DIR="$DOCS_CONTENT_DIR/architecture"
+if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
+    echo "📄 Syncing docs/architecture/ to docs/architecture/..."
+    rm -rf "$ARCHITECTURE_TARGET_DIR"
+    mkdir -p "$ARCHITECTURE_TARGET_DIR"
+    while IFS= read -r -d '' source_file; do
+        relative_path="${source_file#$ARCHITECTURE_SOURCE_DIR/}"
+        target_file="$ARCHITECTURE_TARGET_DIR/$relative_path"
+        mkdir -p "$(dirname "$target_file")"
+        if [[ "$source_file" == *.md ]]; then
+            fix_architecture_links < "$source_file" > "$target_file"
+        else
+            cp "$source_file" "$target_file"
+        fi
+    done < <(find "$ARCHITECTURE_SOURCE_DIR" -type f -print0)
 fi
 
 # Copy docs/img/
