@@ -181,7 +181,8 @@ fi
 ARCHITECTURE_SOURCE_DIR="$SCRIPT_DIR/docs/architecture"
 ARCHITECTURE_TARGET_DIR="$DOCS_CONTENT_DIR/architecture"
 if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
-    echo "📄 Copying docs/architecture/ to docs/architecture/..."
+    echo "📄 Syncing docs/architecture/ to docs/architecture/..."
+    rm -rf "$ARCHITECTURE_TARGET_DIR"
     mkdir -p "$ARCHITECTURE_TARGET_DIR"
     cp -r "$ARCHITECTURE_SOURCE_DIR/." "$ARCHITECTURE_TARGET_DIR/"
 fi
