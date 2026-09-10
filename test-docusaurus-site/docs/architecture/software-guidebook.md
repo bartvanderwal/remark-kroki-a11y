@@ -409,7 +409,7 @@ Architecture decisions are recorded as ADRs (Architecture Decision Records). The
 | [ADR-0012](/adr/integrate-remark-kroki-plugin) | Integrate remark-kroki-plugin | Accepted |
 | [ADR-0013](/adr/i18n-framework) | i18n framework | Accepted |
 
-For the complete list, see the [ADR index](/adr/).
+For the complete list, see the source ADR index at `docs/adr/README.md` and the published [ADR index](/adr/).
 
 ---
 
