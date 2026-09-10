@@ -405,6 +405,7 @@ Architecture decisions are recorded as ADRs (Architecture Decision Records):
 | [ADR-0005](/adr/navigeerbare-a11y-beschrijvingen) | Navigeerbare A11y beschrijvingen | Accepted |
 | [ADR-0006](/adr/plantuml-als-interne-standaard) | PlantUML als interne standaard | Accepted |
 | [ADR-0007](/adr/single-source-documentation) | Single source documentation | Accepted |
+| [ADR-0011](/adr/faithful-source-representation) | Faithful source representation | Accepted |
 | [ADR-0012](/adr/integrate-remark-kroki-plugin) | Integrate remark-kroki-plugin | Accepted |
 | [ADR-0013](/adr/i18n-framework) | i18n framework | Accepted |
 
