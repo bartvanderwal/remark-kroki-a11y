@@ -272,7 +272,7 @@ Each parser:
 2. Parses it into a structured representation
 3. Generates natural language description in the requested locale
 
-For implementation details, see the source files on GitHub. The parser registry in `src/index.js` is the authoritative list for currently wired diagram support.
+For implementation details, see [`src/index.js`](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/src/index.js) and [`src/parsers/`](https://github.com/bartvanderwal/remark-kroki-a11y/tree/main/src/parsers). The parser registry in `src/index.js` is the authoritative list for currently wired diagram support.
 
 ## 8. Containers
 
@@ -393,7 +393,7 @@ The plugin contributes to WCAG 2.1 compliance:
 
 ## 12. Decisions
 
-Architecture decisions are recorded as ADRs (Architecture Decision Records):
+Architecture decisions are recorded as ADRs (Architecture Decision Records). The table below is a selected list of ADRs referenced or especially relevant to this guidebook; for the full numbered sequence, use the ADR index:
 
 | ADR | Title | Status |
 |-----|-------|--------|
