@@ -177,6 +177,15 @@ if [ -d "$ADR_SOURCE_DIR/images" ]; then
     cp -r "$ADR_SOURCE_DIR/images" "$ADR_TARGET_DIR/"
 fi
 
+# Copy architecture docs
+ARCHITECTURE_SOURCE_DIR="$SCRIPT_DIR/docs/architecture"
+ARCHITECTURE_TARGET_DIR="$DOCS_CONTENT_DIR/architecture"
+if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
+    echo "📄 Copying docs/architecture/ to docs/architecture/..."
+    mkdir -p "$ARCHITECTURE_TARGET_DIR"
+    cp -r "$ARCHITECTURE_SOURCE_DIR/"* "$ARCHITECTURE_TARGET_DIR/"
+fi
+
 # Copy docs/img/
 IMG_SOURCE_DIR="$SCRIPT_DIR/docs/img"
 IMG_TARGET_DIR="$DOCS_CONTENT_DIR/img"
