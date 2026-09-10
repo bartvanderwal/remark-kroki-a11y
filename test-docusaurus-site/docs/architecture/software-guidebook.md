@@ -395,7 +395,7 @@ The plugin contributes to WCAG 2.1 compliance:
 
 Architecture decisions are recorded as ADRs (Architecture Decision Records). This guidebook especially relies on the following decisions:
 
-- **ADR-0000** explains why descriptions are generated deterministically instead of with live LLM calls.
+- **[ADR-0000](/adr/deterministic-parsing-vs-live-llm)** explains why descriptions are generated deterministically instead of with live LLM calls.
 - **[ADR-0006](/adr/plantuml-als-interne-standaard)** explains why PlantUML structures are used as the internal architectural representation.
 - **[ADR-0007](/adr/single-source-documentation)** explains the documentation sync approach between repository sources and the published Docusaurus site.
 - **[ADR-0011](/adr/faithful-source-representation)** explains why authored source details must remain faithfully represented, including when authors use `a11yDescriptionOverride`.
