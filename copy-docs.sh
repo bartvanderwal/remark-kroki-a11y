@@ -49,8 +49,7 @@ fix_architecture_links() {
         -e 's|\(docs/img/|(/img/|g' \
         -e "s|\(features/|\($GITHUB_BASE/features/|g" \
         -e "s|\(src/|\($GITHUB_BASE/src/|g" \
-        -e "s|\(\.github/|\($GITHUB_BASE/.github/|g" \
-        -e 's|`docs/adr/README\.md`|[source ADR index on GitHub]('"$GITHUB_BASE"'/docs/adr/README.md)|g'
+        -e "s|\(\.github/|\($GITHUB_BASE/.github/|g"
 }
 
 echo "📚 Copying documentation files to Docusaurus..."

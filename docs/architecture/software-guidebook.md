@@ -402,7 +402,7 @@ Architecture decisions are recorded as ADRs (Architecture Decision Records). Thi
 - **[ADR-0012](/adr/integrate-remark-kroki-plugin)** explains the integration boundary with the upstream Kroki remark plugin.
 - **[ADR-0013](/adr/i18n-framework)** explains the locale strategy for generated accessibility descriptions.
 
-For the complete ADR catalog, see the source ADR index at `docs/adr/README.md` and the published [ADR index](/adr/).
+For the complete ADR catalog, see the [source ADR index on GitHub](https://github.com/bartvanderwal/remark-kroki-a11y/blob/main/docs/adr/README.md) and the published [ADR index](/adr/).
 
 ---
 
