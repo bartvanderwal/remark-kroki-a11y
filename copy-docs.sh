@@ -38,6 +38,21 @@ fix_links() {
         -e "s|\(\.github/|\($GITHUB_BASE/.github/|g"
 }
 
+# Function to rewrite repository-style links inside Docusaurus-authored
+# architecture docs without touching existing site-local links.
+fix_architecture_links() {
+    sed -E \
+        -e 's|\(CONTRIBUTING\.md\)|('"$GITHUB_BASE"'/CONTRIBUTING.md)|g' \
+        -e 's|\(README\.md\)|('"$GITHUB_BASE"'/README.md)|g' \
+        -e 's|\(definition-of-done\.md\)|('"$GITHUB_BASE"'/definition-of-done.md)|g' \
+        -e 's|\(docs/adr/README\.md\)|(/adr/)|g' \
+        -e 's|\(docs/img/|(/img/|g' \
+        -e "s|\(features/|\($GITHUB_BASE/features/|g" \
+        -e "s|\(src/|\($GITHUB_BASE/src/|g" \
+        -e "s|\(\.github/|\($GITHUB_BASE/.github/|g" \
+        -e 's|`docs/adr/README\.md`|[source ADR index on GitHub]('"$GITHUB_BASE"'/docs/adr/README.md)|g'
+}
+
 echo "📚 Copying documentation files to Docusaurus..."
 echo ""
 
@@ -210,7 +225,11 @@ if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
         relative_path="${source_file#$ARCHITECTURE_SOURCE_DIR/}"
         target_file="$ARCHITECTURE_TARGET_DIR/$relative_path"
         mkdir -p "$(dirname "$target_file")"
-        cp "$source_file" "$target_file"
+        if [[ "$source_file" == *.md ]]; then
+            fix_architecture_links < "$source_file" > "$target_file"
+        else
+            cp "$source_file" "$target_file"
+        fi
     done < <(find "$ARCHITECTURE_SOURCE_DIR" -type f -print0)
 fi
 
