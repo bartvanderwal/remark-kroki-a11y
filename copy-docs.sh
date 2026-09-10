@@ -210,11 +210,7 @@ if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
         relative_path="${source_file#$ARCHITECTURE_SOURCE_DIR/}"
         target_file="$ARCHITECTURE_TARGET_DIR/$relative_path"
         mkdir -p "$(dirname "$target_file")"
-        if [[ "$source_file" == *.md ]]; then
-            fix_links < "$source_file" > "$target_file"
-        else
-            cp "$source_file" "$target_file"
-        fi
+        cp "$source_file" "$target_file"
     done < <(find "$ARCHITECTURE_SOURCE_DIR" -type f -print0)
 fi
 
