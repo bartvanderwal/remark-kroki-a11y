@@ -208,7 +208,16 @@ if [ -d "$ARCHITECTURE_SOURCE_DIR" ]; then
     echo "📄 Syncing docs/architecture/ to docs/architecture/..."
     rm -rf "$ARCHITECTURE_TARGET_DIR"
     mkdir -p "$ARCHITECTURE_TARGET_DIR"
-    cp -r "$ARCHITECTURE_SOURCE_DIR/." "$ARCHITECTURE_TARGET_DIR/"
+    while IFS= read -r -d '' source_file; do
+        relative_path="${source_file#$ARCHITECTURE_SOURCE_DIR/}"
+        target_file="$ARCHITECTURE_TARGET_DIR/$relative_path"
+        mkdir -p "$(dirname "$target_file")"
+        if [[ "$source_file" == *.md ]]; then
+            fix_links "$(cat "$source_file")" > "$target_file"
+        else
+            cp "$source_file" "$target_file"
+        fi
+    done < <(find "$ARCHITECTURE_SOURCE_DIR" -type f -print0)
 fi
 
 # Copy docs/img/
