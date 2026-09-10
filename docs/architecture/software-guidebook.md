@@ -38,7 +38,7 @@ reader --> browser : views documentation
 @enduml
 ```
 
-For detailed context including stakeholders and external systems, see the [top-level README page](/).
+For detailed context including stakeholders and external systems, see the [README page](/readme-github).
 
 ## 2. Functional Overview
 

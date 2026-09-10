@@ -44,7 +44,8 @@ echo "📚 Copying documentation files to Docusaurus..."
 echo ""
 
 # Copy README.md
-echo "📄 Copying README.md to docs/index.md..."
+echo "📄 Copying README.md to docs/index.md and docs/readme-github.md..."
+README_CONTENT="$(fix_links "$(cat "$SCRIPT_DIR/README.md")")"
 cat > "$DOCS_CONTENT_DIR/index.md" << 'FRONTMATTER'
 ---
 id: readme-github
@@ -54,8 +55,31 @@ description: The main README file from the GitHub repository
 ---
 
 FRONTMATTER
-fix_links "$(cat "$SCRIPT_DIR/README.md")" >> "$DOCS_CONTENT_DIR/index.md"
+printf '%s
+' "$README_CONTENT" >> "$DOCS_CONTENT_DIR/index.md"
 cat >> "$DOCS_CONTENT_DIR/index.md" << 'FOOTER'
+
+---
+
+:::info Single Source of Truth
+This page is automatically copied from the repository root `README.md` file.
+The original file is maintained for GitHub and does not contain Docusaurus-specific markup.
+Edit the root `README.md` to update this page.
+:::
+FOOTER
+
+cat > "$DOCS_CONTENT_DIR/readme-github.md" << 'FRONTMATTER'
+---
+id: readme-github-alias
+slug: /readme-github
+title: README (GitHub)
+description: Stable published route for the repository README page
+---
+
+FRONTMATTER
+printf '%s
+' "$README_CONTENT" >> "$DOCS_CONTENT_DIR/readme-github.md"
+cat >> "$DOCS_CONTENT_DIR/readme-github.md" << 'FOOTER'
 
 ---
 

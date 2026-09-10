@@ -1,8 +1,8 @@
 ---
-id: readme-github
+id: readme-github-alias
+slug: /readme-github
 title: README (GitHub)
-sidebar_label: README
-description: The main README file from the GitHub repository
+description: Stable published route for the repository README page
 ---
 
 # remark-kroki-a11y
