@@ -127,7 +127,7 @@ end note
 note right of UC_OVERRIDE
   Escape hatch when automatic
   generation is not suitable.
-  See ADR-0000.
+  See ADR-0011.
 end note
 @enduml
 ```
@@ -251,13 +251,18 @@ SSG -> SSG: Write to build folder
 
 ```
 src/
-├── index.js                 # Main plugin entry point
+├── index.js                     # Main plugin entry point and parser registry
 ├── parsers/
-│   ├── classDiagramParser.js    # PlantUML/Mermaid class diagrams
+│   ├── classDiagramParser.js    # PlantUML and Mermaid class diagrams
 │   ├── stateDiagramParser.js    # PlantUML state diagrams
-│   └── sequenceDiagramParser.js # Sequence diagram parsing
-├── diagramTabs.js           # Client-side tab switching
-└── diagram-a11y.css         # Styling for the tabs and accessibility UI
+│   ├── sequenceDiagramParser.js # PlantUML and Mermaid sequence diagrams
+│   ├── activityDiagramParser.js # PlantUML activity diagrams
+│   ├── c4DiagramParser.js       # PlantUML C4 context/container/component diagrams
+│   ├── pieDiagramParser.js      # Mermaid pie charts
+│   ├── domainStoryParser.js     # PlantUML Domain Story diagrams
+│   └── unsupportedDiagramParser.js # Fallback descriptions for unsupported diagrams
+├── diagramTabs.js               # Client-side tab switching
+└── diagram-a11y.css             # Styling for the tabs and accessibility UI
 ```
 
 ### Parser Architecture
@@ -267,7 +272,7 @@ Each parser:
 2. Parses it into a structured representation
 3. Generates natural language description in the requested locale
 
-For implementation details, see the source files on GitHub.
+For implementation details, see the source files on GitHub. The parser registry in `src/index.js` is the authoritative list for currently wired diagram support.
 
 ## 8. Containers
 
@@ -320,12 +325,14 @@ rectangle "remark-kroki-a11y Plugin" {
     rectangle "classDiagramParser.js" as classParser
     rectangle "stateDiagramParser.js" as stateParser
     rectangle "sequenceDiagramParser.js" as seqParser
+    rectangle "activity/c4/pie/domainStory parsers" as extraParsers
     rectangle "diagramTabs.js" as tabsGen
 }
 
 index --> classParser : delegates class diagrams
 index --> stateParser : delegates state diagrams
 index --> seqParser : delegates sequence diagrams
+index --> extraParsers : delegates activity, C4, pie, and Domain Story diagrams
 index --> tabsGen : uses for UI generation
 @enduml
 ```
@@ -368,11 +375,13 @@ npm run start:strict  # Recommended: validates broken links
 
 | Diagram Type | PlantUML | Mermaid | A11y Status |
 |--------------|----------|---------|-------------|
-| Class diagrams | ✅ Full | ⚠️ To test | Partial |
+| Class diagrams | ✅ Full | ⚠️ Beta | Partial |
 | State diagrams | ✅ Full | ❌ | Partial |
 | Sequence diagrams | ⚠️ Beta | ⚠️ Beta | Partial |
 | Activity diagrams | ⚠️ Beta | ❌ | Partial |
 | C4 diagrams | ⚠️ Beta | N/A | Partial |
+| Domain Story diagrams | ⚠️ Beta | N/A | Partial |
+| Pie charts | N/A | ⚠️ Beta | Partial |
 
 ### Accessibility Compliance
 
