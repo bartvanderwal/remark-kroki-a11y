@@ -135,6 +135,8 @@ npm install --save-dev remark-kroki-a11y
 yarn add --dev remark-kroki-a11y
 ```
 
+Package page: [remark-kroki-a11y on npm](https://www.npmjs.com/package/remark-kroki-a11y).
+
 Note: When using this plugin for build in pipeline ensure CI installs devDependencies, because this plugin runs at build time.
 
 ## Usage with Docusaurus
