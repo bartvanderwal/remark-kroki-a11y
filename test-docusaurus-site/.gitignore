@@ -8,8 +8,9 @@ build
 # Generated documentation files (copied from repo root by start-docs.sh)
 # These are single-source-of-truth files maintained in the repo root for GitHub
 # Do not edit these directly - edit the source files instead
-docs/readme.md
+docs/index.md
 docs/contributing.md
+docs/definition-of-done.md
 docs/adr/
 
 # The GitHub Actions CI/CD pipeline uses yarn, so we any npm lock file generated 'by mistakenly' using npm build instead of yarn build.
