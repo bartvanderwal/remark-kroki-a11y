@@ -219,6 +219,81 @@ describe('function usage analysis', () => {
         await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
       }
     });
+
+    it('throws a typed diagram error when remark-kroki returns its fail SVG', async () => {
+      const server = http.createServer((request, response) => {
+        expect(request.url).toBe('/plantuml/svg');
+        response.writeHead(400, { 'content-type': 'text/plain' });
+        response.end('PlantUML syntax error on line 2');
+      });
+      await new Promise((resolve) => server.listen(0, resolve));
+
+      try {
+        const { port } = server.address();
+        const tree = {
+          type: 'root',
+          children: [{
+            type: 'code',
+            lang: 'kroki',
+            meta: 'imgType="plantuml" imgTitle="Broken diagram"',
+            value: '@startuml\nAlice ->\n@enduml',
+          }],
+        };
+
+        await expect(remarkKrokiA11y({
+          showA11yDescription: false,
+          kroki: { krokiBase: `http://127.0.0.1:${port}` },
+        })(tree, {})).rejects.toMatchObject({
+          name: 'DiagramRenderError',
+          code: 'ERR_DIAGRAM_RENDER',
+          diagramType: 'plantuml',
+          title: 'Broken diagram',
+          renderMessage: expect.stringContaining('PlantUML syntax error on line 2'),
+        });
+      } finally {
+        await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+      }
+    });
+
+    it('can report diagram render errors through a callback without throwing', async () => {
+      const server = http.createServer((request, response) => {
+        expect(request.url).toBe('/plantuml/svg');
+        response.writeHead(400, { 'content-type': 'text/plain' });
+        response.end('PlantUML syntax error on line 2');
+      });
+      await new Promise((resolve) => server.listen(0, resolve));
+
+      try {
+        const { port } = server.address();
+        const tree = {
+          type: 'root',
+          children: [{
+            type: 'code',
+            lang: 'kroki',
+            meta: 'imgType="plantuml" imgTitle="Broken diagram"',
+            value: '@startuml\nAlice ->\n@enduml',
+          }],
+        };
+        const renderErrors = [];
+
+        await remarkKrokiA11y({
+          showA11yDescription: false,
+          throwOnDiagramError: false,
+          onDiagramError: (error) => renderErrors.push(error),
+          kroki: { krokiBase: `http://127.0.0.1:${port}` },
+        })(tree, {});
+
+        expect(renderErrors).toHaveLength(1);
+        expect(renderErrors[0]).toMatchObject({
+          name: 'DiagramRenderError',
+          code: 'ERR_DIAGRAM_RENDER',
+          diagramType: 'plantuml',
+          title: 'Broken diagram',
+        });
+      } finally {
+        await new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve()));
+      }
+    });
   });
 
   it('clarifies the purpose: make HTML content safe for aria-label', () => {
