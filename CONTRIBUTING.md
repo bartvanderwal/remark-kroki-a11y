@@ -6,7 +6,7 @@ For complete quality standards and acceptance criteria, see the [Definition of D
 
 ## Prerequisites
 
-- Node.js >= 16
+- Node.js >= 20 for development (see `.nvmrc`; the pre-commit hook enforces this). The published package itself supports Node >= 16.
 - npm or yarn
 
 ## Local development
@@ -186,11 +186,24 @@ Before submitting a PR, ensure your changes meet the following criteria:
 
 ### Pre-commit Checks
 
-The pre-commit hook (Husky) automatically runs:
+Git hooks are managed with [Husky](https://typicode.github.io/husky/). The hooks
+live in `.husky/` and are installed automatically by the `prepare` script when
+you run `yarn install`, so no manual setup is needed.
 
-1. Check for `package-lock.json` (warning - we use yarn)
-2. Check for `yarn.lock` presence (warning)
-3. **BDD tests** (blocking - must pass to commit)
+`.husky/pre-commit` runs, in order:
+
+| # | Check | Blocking? |
+| - | ----- | --------- |
+| 1 | Node.js 20+ is available (switches via `nvm` when `.nvmrc` is present) | Yes |
+| 2 | No `package-lock.json` in the repo (we use yarn) | No — warning |
+| 3 | `yarn.lock` present in root and `test-docusaurus-site/` | No — warning |
+| 4 | ESLint (`yarn lint:js`) | No — warning |
+| 5 | Quickmark (`yarn lint:md`) | No — warning |
+| 6 | BDD tests (`yarn test`) | Yes |
+
+Only the Node version check and the BDD tests abort a commit; the linters print a warning so you can still commit work in progress. Fix lint warnings before opening a PR — see the [Definition of Done](definition-of-done.md).
+
+To skip the hook in an emergency, commit with `--no-verify`. Use this sparingly and never for code that ends up in a PR.
 
 ## Issues and PRs
 
