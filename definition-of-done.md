@@ -47,11 +47,16 @@ See existing examples in the `features/` folder:
 
 ## Pre-commit Checks
 
-The pre-commit hook (Husky) automatically runs:
+The [Husky](https://typicode.github.io/husky/) pre-commit hook in `.husky/pre-commit` runs:
 
-1. Check for `package-lock.json` (warning - we use yarn)
-2. Check for `yarn.lock` presence (warning)
-3. **BDD tests** (blocking - must pass before commit)
+1. Node.js 20+ check (blocking)
+2. Check for `package-lock.json` (warning - we use yarn)
+3. Check for `yarn.lock` presence (warning)
+4. ESLint via `yarn lint:js` (warning)
+5. Quickmark via `yarn lint:md` (warning)
+6. **BDD tests** (blocking - must pass before commit)
+
+The linters only warn, so a green commit does not mean the Code Quality criteria above are met. Run `yarn lint` yourself before opening a PR.
 
 ## Checklist for Specific Changes
 
