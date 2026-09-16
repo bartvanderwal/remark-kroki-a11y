@@ -53,6 +53,20 @@ You can copy or import this file into your test Docusaurus site to verify plugin
 
 See the README for more info on plugin configuration.
 
+## Generated documentation files
+
+`copy-docs.sh` (run automatically by `yarn start` and `yarn build`) copies the canonical docs into the Docusaurus site. The generated copies are git-ignored, so always edit the source file:
+
+| Source (edit this)     | Generated (do not edit)                    |
+| ---------------------- | ------------------------------------------ |
+| `README.md`            | `test-docusaurus-site/docs/index.md`        |
+| `CONTRIBUTING.md`      | `test-docusaurus-site/docs/contributing.md` |
+| `definition-of-done.md`| `test-docusaurus-site/docs/definition-of-done.md` |
+| `docs/adr/`            | `test-docusaurus-site/docs/adr/`            |
+| `docs/img/`            | `test-docusaurus-site/docs/img/`            |
+
+See [ADR-0007](docs/adr/0007-single-source-documentation.md) for the rationale.
+
 ## Testing in a Docusaurus site
 
 You can link the plugin into a local Docusaurus project to verify behavior:

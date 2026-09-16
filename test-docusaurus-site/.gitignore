@@ -5,12 +5,17 @@ build
 # Commented out to use generated images in local build beacause kroki.io online server is not (always?) accessible from pipeline build.
 #static/img/kroki/
 
-# Generated documentation files (copied from repo root by start-docs.sh)
+# Generated documentation files (copied from repo root by copy-docs.sh)
 # These are single-source-of-truth files maintained in the repo root for GitHub
 # Do not edit these directly - edit the source files instead
-docs/readme.md
+docs/index.md
+docs/readme-github.md
 docs/contributing.md
+docs/CONTRIBUTING.md
+docs/definition-of-done.md
 docs/adr/
+docs/architecture/
+docs/img/
 
 # The GitHub Actions CI/CD pipeline uses yarn, so we any npm lock file generated 'by mistakenly' using npm build instead of yarn build.
 package-lock.json

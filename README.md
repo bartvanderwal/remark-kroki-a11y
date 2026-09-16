@@ -135,6 +135,8 @@ npm install --save-dev remark-kroki-a11y
 yarn add --dev remark-kroki-a11y
 ```
 
+Package page: [remark-kroki-a11y on npm](https://www.npmjs.com/package/remark-kroki-a11y).
+
 Note: When using this plugin for build in pipeline ensure CI installs devDependencies, because this plugin runs at build time.
 
 ## Usage with Docusaurus
@@ -367,7 +369,15 @@ export function onRouteDidUpdate() {
 | `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
 | `showDiagramModeToggle` | boolean | `false` | For PlantUML class diagrams, also render a simplified visual variant and show a `For devs`/`Simpler` toggle |
 | `showDiagramLegend` | boolean | `false` | For PlantUML class diagrams with mode toggle: add an auto-generated relation legend in `For devs` mode only |
+| `throwOnDiagramError` | boolean | `true` | Throw a `DiagramRenderError` when Kroki rendering returns the known `remark-kroki` fail SVG |
+| `onDiagramError` | function | `null` | Callback invoked with `DiagramRenderError` before throwing, or without throwing when `throwOnDiagramError` is `false` |
 | `kroki` | object | `{ krokiBase, lang, output, target }` | Kroki render settings passed to `remark-kroki` (`output` defaults to `img-html-base64`) |
+
+When Kroki rendering fails, `remark-kroki` currently returns a generated fail SVG
+instead of throwing. `remark-kroki-a11y` detects that SVG and exposes it as a
+typed `DiagramRenderError` with `code`, `diagramType`, `title`, `renderMessage`,
+and `renderedOutput` fields. This keeps downstream projects from parsing
+`remark-kroki` fallback SVGs themselves.
 
 When `showDiagramModeToggle` is enabled:
 

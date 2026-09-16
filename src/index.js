@@ -325,6 +325,103 @@ function linkRenderedKrokiImagesToA11yDescriptions(tree) {
   });
 }
 
+class DiagramRenderError extends Error {
+  constructor(message, context = {}) {
+    super(message);
+    this.name = 'DiagramRenderError';
+    this.code = 'ERR_DIAGRAM_RENDER';
+    this.diagramType = context.diagramType || null;
+    this.title = context.title || null;
+    this.renderMessage = context.renderMessage || null;
+    this.renderedOutput = context.renderedOutput || null;
+  }
+}
+
+function decodeSvgDataUrl(dataUrl) {
+  if (typeof dataUrl !== 'string') return null;
+  const base64Match = dataUrl.match(/^data:image\/svg\+xml(?:;[^,]*)?;base64,([a-zA-Z0-9+/=]+)$/);
+  if (base64Match) return Buffer.from(base64Match[1], 'base64').toString('utf8');
+  return null;
+}
+
+function getHtmlImgAttribute(html, attributeName) {
+  if (typeof html !== 'string' || !/<img\b/i.test(html)) return null;
+  const escapedName = attributeName.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = html.match(new RegExp(`\\b${escapedName}="([^"]*)"`, 'i'));
+  return match ? match[1] : null;
+}
+
+function isRemarkKrokiFailSvg(svg) {
+  return typeof svg === 'string' &&
+    svg.includes('Fail, please check your input.') &&
+    svg.includes('<foreignObject');
+}
+
+function extractRemarkKrokiFailMessage(svg) {
+  const foreignObjectMatch = svg.match(/<foreignObject\b[\s\S]*?<\/foreignObject>/i);
+  const message = foreignObjectMatch ? extractTextContent(foreignObjectMatch[0]) : '';
+  return message || 'Kroki failed to render the diagram.';
+}
+
+function createDiagramRenderErrorFromSvg(svg, context = {}) {
+  const renderMessage = extractRemarkKrokiFailMessage(svg);
+  const titlePart = context.title ? ` "${context.title}"` : '';
+  const typePart = context.diagramType ? ` (${context.diagramType})` : '';
+  return new DiagramRenderError(
+    `Kroki failed to render diagram${titlePart}${typePart}: ${renderMessage}`,
+    {
+      ...context,
+      renderMessage,
+      renderedOutput: svg,
+    },
+  );
+}
+
+function findRenderedDiagramErrors(node, errors = []) {
+  if (!node) return errors;
+
+  if (node.type === 'image' || node.name === 'img') {
+    const attributes = node.attributes || [];
+    const srcAttribute = attributes.find((attribute) => attribute.name === 'src');
+    const typeAttribute = attributes.find((attribute) => attribute.name === 'data-type');
+    const titleAttribute = attributes.find((attribute) => attribute.name === 'alt');
+    const svg = decodeSvgDataUrl(node.url);
+    const mdxSvg = decodeSvgDataUrl(srcAttribute && srcAttribute.value);
+    const failSvg = isRemarkKrokiFailSvg(svg) ? svg : mdxSvg;
+
+    if (isRemarkKrokiFailSvg(failSvg)) {
+      errors.push(createDiagramRenderErrorFromSvg(failSvg, {
+        diagramType: (node._meta && node._meta.type) || (typeAttribute && typeAttribute.value),
+        title: node.alt || (titleAttribute && titleAttribute.value),
+      }));
+    }
+  }
+
+  if (typeof node.value === 'string') {
+    const svg = decodeSvgDataUrl(getHtmlImgAttribute(node.value, 'src'));
+    if (isRemarkKrokiFailSvg(svg)) {
+      errors.push(createDiagramRenderErrorFromSvg(svg, {
+        diagramType: getHtmlImgAttribute(node.value, 'data-type'),
+        title: getHtmlImgAttribute(node.value, 'alt'),
+      }));
+    }
+  }
+
+  if (Array.isArray(node.children)) {
+    node.children.forEach((child) => findRenderedDiagramErrors(child, errors));
+  }
+
+  return errors;
+}
+
+function handleRenderedDiagramErrors(tree, opts) {
+  const errors = findRenderedDiagramErrors(tree);
+  errors.forEach((error) => {
+    if (typeof opts.onDiagramError === 'function') opts.onDiagramError(error);
+  });
+  if (opts.throwOnDiagramError && errors.length > 0) throw errors[0];
+}
+
 function hasPumlExtension(src) {
   const trimmedSrc = src.trim();
   return path.extname(trimmedSrc).toLowerCase() === '.puml';
@@ -545,6 +642,8 @@ const defaultOptions = {
   showDiagramModeToggle: false,
   showDiagramLegend: false,
   skipKrokiRender: false,
+  throwOnDiagramError: true,
+  onDiagramError: null,
   kroki: {
     krokiBase: process.env.KROKI_BASE_URL || 'https://kroki.io',
     lang: 'kroki',
@@ -829,9 +928,13 @@ ${speakButtonHtml}
           target: krokiOptions.target,
         });
         return krokiTransformer(tree, file)
-          .then(() => linkRenderedKrokiImagesToA11yDescriptions(tree));
+          .then(() => {
+            handleRenderedDiagramErrors(tree, opts);
+            linkRenderedKrokiImagesToA11yDescriptions(tree);
+          });
       })
       .catch((error) => {
+        if (error instanceof DiagramRenderError) throw error;
         throw new Error(`Failed to render diagrams with remark-kroki: ${error.message}`, { cause: error });
       });
   };
@@ -839,4 +942,5 @@ ${speakButtonHtml}
 
 // CommonJS export for Docusaurus compatibility
 module.exports = remarkKrokiA11y;
+module.exports.DiagramRenderError = DiagramRenderError;
 module.exports.__internal = require('./runtime/a11yRuntime.cjs');
