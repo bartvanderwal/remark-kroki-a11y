@@ -46,11 +46,26 @@ jobs:
       - name: Copy root docs to Docusaurus (single source of truth)
         run: ./copy-docs.sh
 
+      - name: Start local Kroki stack
+        run: docker compose -f docker-compose.kroki.yml up -d
+
+      - name: Wait for local Kroki
+        run: |
+          for attempt in {1..30}; do
+            if curl --silent --show-error http://127.0.0.1:8000/ >/dev/null; then
+              exit 0
+            fi
+            sleep 2
+          done
+          docker compose -f docker-compose.kroki.yml logs
+          exit 1
+
       - name: Build documentation site
         working-directory: test-docusaurus-site
         run: yarn build
         env:
           NODE_ENV: production
+          KROKI_BASE_URL: http://127.0.0.1:8000
 
       - name: Build Storybook
         run: yarn build:storybook
