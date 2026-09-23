@@ -9,7 +9,6 @@ build
 # These are single-source-of-truth files maintained in the repo root for GitHub
 # Do not edit these directly - edit the source files instead
 docs/index.md
-docs/readme-github.md
 docs/contributing.md
 docs/CONTRIBUTING.md
 docs/definition-of-done.md
