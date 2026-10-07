@@ -67,7 +67,7 @@ Feature: English class diagram descriptions
     When I generate a description in English
     Then the first line should be:
       """
-      Class diagram with 3 class(es) and 2 relation(s).
+      Class diagram with 3 classes and 2 relations.
       """
     And the description should contain "Car has an association-relationship with Wheel, multiplicity 1 to 4"
     And the description should contain "Car has an association-relationship with Engine, multiplicity 1 to 1"

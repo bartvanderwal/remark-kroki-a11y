@@ -121,7 +121,7 @@ Functionaliteit: Klassediagram met relaties
     Als ik een beschrijving genereer
     Dan zou de eerste regel moeten zijn:
       """
-      Klassendiagram met 3 klasse(n) en 2 relatie(s).
+      Klassendiagram met 3 klassen en 2 relaties.
       """
     En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Wheel, multipliciteit 1 naar 4"
     En zou de beschrijving moeten bevatten "Car heeft een associatie-relatie met Engine, multipliciteit 1 naar 1"
@@ -162,7 +162,7 @@ Functionaliteit: Klassediagram met relaties
     Als ik een beschrijving genereer
     Dan zou de eerste regel moeten zijn:
       """
-      Klassendiagram met 2 klasse(n) en 2 relatie(s).
+      Klassendiagram met 2 klassen en 2 relaties.
       """
     En zou de beschrijving moeten bevatten "Project heeft een associatie-relatie met naam 'medewerkers' met Werknemer, multipliciteit 0..* naar 0..*"
     En zou de beschrijving moeten bevatten "Project heeft een associatie-relatie met naam 'projectleider' met Werknemer, multipliciteit 0..* naar 0..1"

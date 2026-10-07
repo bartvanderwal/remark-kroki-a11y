@@ -1,0 +1,10 @@
+{
+  "tabSource": "Source",
+  "tabA11y": "In natural language",
+  "summaryText": "{type} source for \"{title}\"",
+  "a11ySummaryText": "\"{title}\" in natural language",
+  "speakOutLoud": "Out loud",
+  "diagramModeForDevs": "For devs",
+  "diagramModeSimpler": "Simpler",
+  "fallbackA11yText": "Natural language description not yet available for {diagramType}."
+}

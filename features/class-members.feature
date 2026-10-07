@@ -102,7 +102,7 @@ Functionaliteit: Klassen met alleen attributen of methoden
       @enduml
       """
     Als ik een beschrijving genereer
-    Dan zou de beschrijving moeten bevatten "publieke methode 'add', met parameter(s) 'a' van type int, 'b' van type int, return type int"
+    Dan zou de beschrijving moeten bevatten "publieke methode 'add', met parameters 'a' van type int, 'b' van type int, return type int"
     Dan zou de beschrijving moeten bevatten "'a' van type int"
     Dan zou de beschrijving moeten bevatten "return type int"
     Dan zou de beschrijving moeten bevatten "private methode 'validate'"

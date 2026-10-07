@@ -12,37 +12,8 @@
  * ..."
  */
 
-// Localization strings
-const i18n = {
-  nl: {
-    sequenceDiagram: 'Sequentiediagram',
-    withParticipants: 'met {count} deelnemers',
-    withParticipant: 'met {count} deelnemer',
-    participants: 'Deelnemers',
-    interactions: 'Interacties',
-    ofType: 'van het type',
-    instanceOf: 'instantie van',
-    calls: 'roept',
-    methodCall: 'aan',
-    responds: 'antwoordt',
-    and: 'en',
-    receives: 'ontvangt',
-  },
-  en: {
-    sequenceDiagram: 'Sequence diagram',
-    withParticipants: 'with {count} participants',
-    withParticipant: 'with {count} participant',
-    participants: 'Participants',
-    interactions: 'Interactions',
-    ofType: 'of type',
-    instanceOf: 'instance of',
-    calls: 'calls',
-    methodCall: '',
-    responds: 'responds to',
-    and: 'and',
-    receives: 'receives',
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('sequence');
 
 /**
  * Parse participant line
@@ -279,11 +250,11 @@ function parseMermaidSequenceDiagram(code) {
 /**
  * Format participant name for description
  */
-function formatParticipantName(participant, locale) {
-  const t = i18n[locale] || i18n.nl;
+function formatParticipantName(participant, locale, translations = {}) {
+  const t = createTranslator('sequence', locale, translations);
 
   if (participant.type) {
-    return `${participant.alias} ${t.ofType} ${participant.type}`;
+    return `${participant.alias} ${t('ofType')} ${participant.type}`;
   }
   return participant.alias || participant.id;
 }
@@ -291,29 +262,29 @@ function formatParticipantName(participant, locale) {
 /**
  * Format participant list for first line
  */
-function formatParticipantList(participants, locale) {
-  const t = i18n[locale] || i18n.nl;
+function formatParticipantList(participants, locale, translations = {}) {
+  const t = createTranslator('sequence', locale, translations);
 
   if (participants.length === 0) return '';
   if (participants.length === 1) {
-    return formatParticipantName(participants[0], locale);
+    return formatParticipantName(participants[0], locale, translations);
   }
 
-  const names = participants.map(p => formatParticipantName(p, locale));
+  const names = participants.map(p => formatParticipantName(p, locale, translations));
   const lastTwo = names.slice(-2);
   const rest = names.slice(0, -2);
 
   if (rest.length > 0) {
-    return rest.join(', ') + ', ' + lastTwo.join(` ${t.and} `);
+    return rest.join(', ') + ', ' + lastTwo.join(` ${t('and')} `);
   }
-  return lastTwo.join(` ${t.and} `);
+  return lastTwo.join(` ${t('and')} `);
 }
 
 /**
  * Format a message/interaction for description
  */
-function formatMessage(message, participantMap, locale) {
-  const t = i18n[locale] || i18n.nl;
+function formatMessage(message, participantMap, locale, translations = {}) {
+  const t = createTranslator('sequence', locale, translations);
 
   const fromParticipant = participantMap.get(message.from);
   const toParticipant = participantMap.get(message.to);
@@ -324,9 +295,9 @@ function formatMessage(message, participantMap, locale) {
   // External call (from outside the system)
   if (message.isExternal) {
     if (message.isMethodCall) {
-      return `${toName} ${t.receives} ${message.message}`;
+      return `${toName} ${t('receives')} ${message.message}`;
     }
-    return `${toName} ${t.receives} ${message.message}()`;
+    return `${toName} ${t('receives')} ${message.message}()`;
   }
 
   if (message.type === 'response') {
@@ -337,44 +308,33 @@ function formatMessage(message, participantMap, locale) {
     // Single words without spaces are treated as type returns (Groet, void, String, etc.)
     const looksLikeTextMessage = msg.includes(' ');
     if (looksLikeTextMessage) {
-      return `${fromName} ${t.responds} ${toName}: '${msg}'`;
+      return `${fromName} ${t('responds')} ${toName}: '${msg}'`;
     }
     // Type return or simple identifier - no quotes
-    return `${fromName} ${t.responds} ${toName}: ${msg}`;
+    return `${fromName} ${t('responds')} ${toName}: ${msg}`;
   }
 
-  if (message.isMethodCall) {
-    // Method call: "Alice roept Bob.method() aan"
-    if (locale === 'nl') {
-      return `${fromName} ${t.calls} ${toName}.${message.message} ${t.methodCall}`;
-    }
-    // English: "Alice calls Bob.method()"
-    return `${fromName} ${t.calls} ${toName}.${message.message}`;
-  }
-
-  // Simple message (treat as method call without parens)
-  if (locale === 'nl') {
-    return `${fromName} ${t.calls} ${toName}.${message.message}() ${t.methodCall}`;
-  }
-  return `${fromName} ${t.calls} ${toName}.${message.message}()`;
+  return t('call', {
+    from: fromName,
+    to: toName,
+    message: message.isMethodCall ? message.message : `${message.message}()`
+  });
 }
 
 /**
  * Generate accessible description from parsed sequence diagram
  */
-function generateAccessibleDescription(parsed, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
+function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
+  const t = createTranslator('sequence', locale, translations);
   const parts = [];
 
   const participantCount = parsed.participants.length;
 
   // First line: summary with participant list (wrapped in <p> for proper HTML)
-  const countText = participantCount === 1
-    ? t.withParticipant.replace('{count}', participantCount)
-    : t.withParticipants.replace('{count}', participantCount);
+  const countText = t('withParticipants', { count: participantCount });
 
-  const participantList = formatParticipantList(parsed.participants, locale);
-  parts.push(`<p>${t.sequenceDiagram} ${countText}: ${participantList}.</p>`);
+  const participantList = formatParticipantList(parsed.participants, locale, translations);
+  parts.push(`<p>${t('sequenceDiagram')} ${countText}: ${participantList}.</p>`);
 
   // Build participant map for message formatting
   const participantMap = new Map();
@@ -384,13 +344,13 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
   // Interactions - use HTML lists for proper rendering
   if (parsed.messages.length > 0) {
-    parts.push(`<p><strong>${t.interactions}:</strong></p>`);
+    parts.push(`<p><strong>${t('interactions')}:</strong></p>`);
 
     if (parsed.hasAutonumber) {
       // Ordered list - screenreaders announce numbers automatically
       parts.push('<ol>');
       for (const message of parsed.messages) {
-        const formattedMessage = formatMessage(message, participantMap, locale);
+        const formattedMessage = formatMessage(message, participantMap, locale, translations);
         parts.push(`<li>${formattedMessage}</li>`);
       }
       parts.push('</ol>');
@@ -398,7 +358,7 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
       // Unordered list
       parts.push('<ul>');
       for (const message of parsed.messages) {
-        const formattedMessage = formatMessage(message, participantMap, locale);
+        const formattedMessage = formatMessage(message, participantMap, locale, translations);
         parts.push(`<li>${formattedMessage}</li>`);
       }
       parts.push('</ul>');

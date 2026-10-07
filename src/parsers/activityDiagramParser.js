@@ -14,61 +14,8 @@
  * Stop"
  */
 
-// Localization strings
-const i18n = {
-  nl: {
-    activityDiagram: 'Activiteitendiagram',
-    withActivities: 'met {count} activiteiten',
-    withActivity: 'met {count} activiteit',
-    andDecisionPoints: 'en {count} beslispunten',
-    andDecisionPoint: 'en {count} beslispunt',
-    withPartitions: 'met {count} partities',
-    withPartition: 'met {count} partitie',
-    flow: 'Flow',
-    step: 'Stap',
-    start: 'Start',
-    stop: 'Stop',
-    end: 'Einde',
-    decision: 'Beslissing',
-    yes: 'Ja',
-    no: 'Nee',
-    partition: 'Partitie',
-    endPartition: 'Einde partitie',
-    repeatWhile: 'Herhaal zolang',
-    repeatDoWhile: 'Herhaal zolang',
-    endRepeat: 'Einde herhaling',
-    parallelExecution: 'Parallelle uitvoering',
-    endParallelExecution: 'Einde parallelle uitvoering',
-    branch: 'Tak',
-    consistingOf: 'bestaande uit',
-  },
-  en: {
-    activityDiagram: 'Activity diagram',
-    withActivities: 'with {count} activities',
-    withActivity: 'with {count} activity',
-    andDecisionPoints: 'and {count} decision points',
-    andDecisionPoint: 'and {count} decision point',
-    withPartitions: 'with {count} partitions',
-    withPartition: 'with {count} partition',
-    flow: 'Flow',
-    step: 'Step',
-    start: 'Start',
-    stop: 'Stop',
-    end: 'End',
-    decision: 'Decision',
-    yes: 'Yes',
-    no: 'No',
-    partition: 'Partition',
-    endPartition: 'End partition',
-    repeatWhile: 'Repeat while',
-    repeatDoWhile: 'Repeat while',
-    endRepeat: 'End repeat',
-    parallelExecution: 'Parallel execution',
-    endParallelExecution: 'End parallel execution',
-    branch: 'Branch',
-    consistingOf: 'consisting of',
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('activity');
 
 /**
  * Parse PlantUML activity diagram
@@ -397,37 +344,28 @@ function extractPartitionTitle(name) {
  * @param {string} locale - Locale for output ('nl' or 'en')
  * @returns {string} HTML description
  */
-function generateAccessibleDescription(parsed, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
+function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
+  const t = createTranslator('activity', locale, translations);
   const parts = [];
 
   // First line: summary
-  let summary = t.activityDiagram;
+  let summary = t('activityDiagram');
 
   if (parsed.partitionCount > 0) {
-    summary += ' ' + (parsed.partitionCount === 1
-      ? t.withPartition.replace('{count}', parsed.partitionCount)
-      : t.withPartitions.replace('{count}', parsed.partitionCount));
-    summary += ' ' + (locale === 'nl' ? 'en' : 'and');
-    summary += ` ${parsed.activityCount} ` + (parsed.activityCount === 1
-      ? (locale === 'nl' ? 'activiteit' : 'activity')
-      : (locale === 'nl' ? 'activiteiten' : 'activities'));
+    summary += ' ' + t('withPartitions', { count: parsed.partitionCount });
+    summary += ' ' + t('andActivities', { count: parsed.activityCount });
   } else {
-    summary += ' ' + (parsed.activityCount === 1
-      ? t.withActivity.replace('{count}', parsed.activityCount)
-      : t.withActivities.replace('{count}', parsed.activityCount));
+    summary += ' ' + t('withActivities', { count: parsed.activityCount });
   }
 
   if (parsed.decisionCount > 0) {
-    summary += ' ' + (parsed.decisionCount === 1
-      ? t.andDecisionPoint.replace('{count}', parsed.decisionCount)
-      : t.andDecisionPoints.replace('{count}', parsed.decisionCount));
+    summary += ' ' + t('andDecisionPoints', { count: parsed.decisionCount });
   }
 
   parts.push(`<p>${summary}.</p>`);
 
   // Flow section
-  parts.push(`<p><strong>${t.flow}:</strong></p>`);
+  parts.push(`<p><strong>${t('flow')}:</strong></p>`);
 
   // Global counter for parallel execution numbering (to disambiguate nested forks)
   let forkCounter = 0;
@@ -442,47 +380,47 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
     for (const el of elements) {
       if (el.type === 'start') {
-        result.push(t.start);
+        result.push(t('start'));
       } else if (el.type === 'stop') {
-        result.push(t.stop);
+        result.push(t('stop'));
       } else if (el.type === 'end') {
-        result.push(t.end);
+        result.push(t('end'));
       } else if (el.type === 'activity') {
-        result.push(`${t.step}. ${el.text}`);
+        result.push(`${t('step')}. ${el.text}`);
       } else if (el.type === 'decision') {
-        result.push(`${t.decision}: ${el.condition}`);
+        result.push(`${t('decision')}: ${el.condition}`);
         if (el.yesBranch.length > 0) {
           const yesText = el.yesBranch
             .filter(e => e.type === 'activity')
-            .map(e => `${t.step}. ${e.text}`)
+            .map(e => `${t('step')}. ${e.text}`)
             .join(', ') || '';
           if (yesText) {
-            result.push(`   - ${t.yes}: ${yesText}`);
+            result.push(`   - ${t('yes')}: ${yesText}`);
           }
         }
         if (el.noBranch.length > 0) {
           const noText = el.noBranch
             .filter(e => e.type === 'activity')
-            .map(e => `${t.step}. ${e.text}`)
+            .map(e => `${t('step')}. ${e.text}`)
             .join(', ') || '';
           if (noText) {
-            result.push(`   - ${t.no}: ${noText}`);
+            result.push(`   - ${t('no')}: ${noText}`);
           }
         }
       } else if (el.type === 'partition') {
         const letter = extractPartitionLetter(el.name);
         const title = extractPartitionTitle(el.name);
         if (letter) {
-          result.push(`${t.partition} ${letter}: ${title}, ${t.consistingOf}:`);
+          result.push(`${t('partition')} ${letter}: ${title}, ${t('consistingOf')}:`);
         } else {
-          result.push(`${t.partition}: ${el.name}, ${t.consistingOf}:`);
+          result.push(`${t('partition')}: ${el.name}, ${t('consistingOf')}:`);
         }
         const subElements = formatElements(el.elements);
         result.push(...subElements.map(line => `   ${line}`));
         if (letter) {
-          result.push(`${t.endPartition} ${letter}.`);
+          result.push(`${t('endPartition')} ${letter}.`);
         } else {
-          result.push(`${t.endPartition}.`);
+          result.push(`${t('endPartition')}.`);
         }
       } else if (el.type === 'while') {
         let conditionText;
@@ -493,27 +431,27 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
         } else {
           conditionText = el.exitCondition || el.conditionValue || '';
         }
-        result.push(`${t.repeatWhile} ${conditionText}, ${t.consistingOf}:`);
+        result.push(`${t('repeatWhile')} ${conditionText}, ${t('consistingOf')}:`);
         const subElements = formatElements(el.elements);
         result.push(...subElements.map(line => `   ${line}`));
-        result.push(`${t.endRepeat}.`);
+        result.push(`${t('endRepeat')}.`);
       } else if (el.type === 'repeat') {
-        result.push(`${t.repeatDoWhile} ${el.condition}, ${t.consistingOf}:`);
+        result.push(`${t('repeatDoWhile')} ${el.condition}, ${t('consistingOf')}:`);
         const subElements = formatElements(el.elements);
         result.push(...subElements.map(line => `   ${line}`));
-        result.push(`${t.endRepeat}.`);
+        result.push(`${t('endRepeat')}.`);
       } else if (el.type === 'fork') {
         forkCounter++;
         const forkNumber = forkCounter;
-        result.push(`${t.parallelExecution} ${forkNumber}, ${t.consistingOf}:`);
+        result.push(`${t('parallelExecution')} ${forkNumber}, ${t('consistingOf')}:`);
         let branchNumber = 0;
         for (const branch of el.branches) {
           branchNumber++;
-          result.push(`   ${t.branch} ${branchNumber}:`);
+          result.push(`   ${t('branch')} ${branchNumber}:`);
           const branchElements = formatElements(branch);
           result.push(...branchElements.map(line => `      ${line}`));
         }
-        result.push(`${t.endParallelExecution} ${forkNumber}.`);
+        result.push(`${t('endParallelExecution')} ${forkNumber}.`);
       }
     }
     return result;

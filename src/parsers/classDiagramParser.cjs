@@ -14,130 +14,21 @@
  * - Woordenlijst heeft een associatie naar SorteerStrategie..."
  */
 
-// Localization strings
-const i18n = {
-  nl: {
-    classDiagram: 'Klassendiagram',
-    withClasses: 'met {count} klasse(n)',
-    andRelations: 'en {count} relatie(s)',
-    classes: 'Klassen',
-    class: 'Klasse',
-    interface: 'Interface',
-    abstractClass: 'Abstracte klasse',
-    enumeration: 'Enumeratie',
-    with: 'met',
-    relations: 'Relaties',
-    notes: 'Notities',
-    noteFor: 'Bij klasse {class}',
-    // Visibility
-    public: 'publieke',
-    private: 'private',
-    protected: 'beschermde',
-    packagePrivate: 'package-private',
-    // Members
-    attribute: 'attribuut',
-    method: 'methode',
-    ofType: 'van type',
-    returnType: 'return type',
-    withParameters: 'met parameter(s)',
-    withoutParameters: 'zonder parameters',
-    parameter: 'parameter',
-    // Relation types (format: "A heeft een associatie-relatie met naam 'x' met B")
-    inheritance: 'erft over van',
-    implementation: 'implementeert interface',
-    association: 'heeft een associatie-relatie',
-    aggregation: 'heeft een aggregatie-relatie',
-    composition: 'heeft een compositie-relatie',
-    dependency: 'heeft een afhankelijkheid naar',
-    dependencyFrom: 'heeft een afhankelijkheid vanaf',
-    withNamedRelation: "met naam '{name}' met",
-    withUnnamedRelation: 'met',
-    multiplicity: 'multipliciteit',
-    multiplicityTo: 'naar',
-    withStereotype: 'met stereotype',
-    // Empty members
-    noAttributes: 'geen attributen',
-    noMethods: 'geen methoden',
-    noMethodsAndAttributes: 'zonder methoden en attributen',
-    // Array types
-    array: 'Array',
-    // Generic types
-    of: 'van',
-    // Packages/namespaces
-    packages: 'Packages',
-    package: 'Package',
-    namespace: 'Namespace',
-    inPackage: 'in package',
-    containingClasses: 'bevat klassen',
-  },
-  en: {
-    classDiagram: 'Class diagram',
-    withClasses: 'with {count} class(es)',
-    andRelations: 'and {count} relation(s)',
-    classes: 'Classes',
-    class: 'Class',
-    interface: 'Interface',
-    abstractClass: 'Abstract class',
-    enumeration: 'Enumeration',
-    with: 'with',
-    relations: 'Relations',
-    notes: 'Notes',
-    noteFor: 'Note for class {class}',
-    // Visibility
-    public: 'public',
-    private: 'private',
-    protected: 'protected',
-    packagePrivate: 'package-private',
-    // Members
-    attribute: 'attribute',
-    method: 'method',
-    ofType: 'of type',
-    returnType: 'return type',
-    withParameters: 'with parameter(s)',
-    withoutParameters: 'without parameters',
-    parameter: 'parameter',
-    // Relation types (format: "A has an association-relationship named 'x' with B")
-    inheritance: 'extends',
-    implementation: 'implements interface',
-    association: 'has an association-relationship',
-    aggregation: 'has an aggregation-relationship',
-    composition: 'has a composition-relationship',
-    dependency: 'has a dependency to',
-    dependencyFrom: 'has a dependency from',
-    withNamedRelation: "named '{name}' with",
-    withUnnamedRelation: 'with',
-    multiplicity: 'multiplicity',
-    multiplicityTo: 'to',
-    withStereotype: 'with stereotype',
-    // Empty members
-    noAttributes: 'no attributes',
-    noMethods: 'no methods',
-    noMethodsAndAttributes: 'without methods and attributes',
-    // Array types
-    array: 'Array',
-    // Generic types
-    of: 'of',
-    // Packages/namespaces
-    packages: 'Packages',
-    package: 'Package',
-    namespace: 'Namespace',
-    inPackage: 'in package',
-    containingClasses: 'containing classes',
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('class');
 
 /**
  * Parse visibility symbol to readable text
  */
-function parseVisibility(symbol, locale) {
-  const t = i18n[locale] || i18n.nl;
+function parseVisibility(symbol, locale, translations = {}) {
+  const t = createTranslator('class', locale, translations);
   const visibilityMap = {
-    '+': t.public,
-    '-': t.private,
-    '#': t.protected,
-    '~': t.packagePrivate,
+    '+': t('public'),
+    '-': t('private'),
+    '#': t('protected'),
+    '~': t('packagePrivate'),
   };
-  return visibilityMap[symbol] || t.public;
+  return visibilityMap[symbol] || t('public');
 }
 
 /**
@@ -147,13 +38,13 @@ function parseVisibility(symbol, locale) {
  *   List<String> -> "List of String"
  *   Map<String, Integer> -> "Map of String, Integer"
  */
-function parseType(typeStr, locale) {
-  const t = i18n[locale] || i18n.nl;
+function parseType(typeStr, locale, translations = {}) {
+  const t = createTranslator('class', locale, translations);
   if (!typeStr) return null;
 
   // Handle array notations: String[]
   if (typeStr.endsWith('[]')) {
-    return typeStr.slice(0, -2) + ' ' + t.array;
+    return typeStr.slice(0, -2) + ' ' + t('array');
   }
 
   // Handle generic types: List<String>, Map<String, Integer>, etc.
@@ -164,9 +55,9 @@ function parseType(typeStr, locale) {
     const innerTypes = typeStr.slice(genericStart + 1, genericEnd);
     // Recursively parse inner types (for nested generics)
     const parsedInner = innerTypes.split(',').map(function(innerType) {
-      return parseType(innerType.trim(), locale) || innerType.trim();
+      return parseType(innerType.trim(), locale, translations) || innerType.trim();
     }).join(', ');
-    return containerType + ' ' + t.of + ' ' + parsedInner;
+    return containerType + ' ' + t('of') + ' ' + parsedInner;
   }
 
   return typeStr;
@@ -892,19 +783,19 @@ function parsePlantUMLClassDiagram(code) {
  * Generate accessible description from parsed class diagram
  * Returns HTML with proper <ul><li> structure for better screen reader navigation
  */
-function generateAccessibleDescription(parsed, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
+function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
+  const t = createTranslator('class', locale, translations);
   const parts = [];
 
   const classCount = Object.keys(parsed.classes).length;
   const relationCount = parsed.relations.length;
 
   // Summary
-  parts.push('<p>' + t.classDiagram + ' ' + t.withClasses.replace('{count}', classCount) + ' ' + t.andRelations.replace('{count}', relationCount) + '.</p>');
+  parts.push('<p>' + t('classDiagram') + ' ' + t('withClasses', { count: classCount }) + ' ' + t('andRelations', { count: relationCount }) + '.</p>');
 
   // Classes section
   if (classCount > 0) {
-    parts.push('<p><strong>' + t.classes + ':</strong></p>');
+    parts.push('<p><strong>' + t('classes') + ':</strong></p>');
     parts.push('<ul>');
 
     for (const className of Object.keys(parsed.classes)) {
@@ -914,16 +805,16 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
       let classHeader;
       const stereotypeLower = classData.stereotype ? classData.stereotype.toLowerCase() : null;
       if (stereotypeLower === 'interface') {
-        classHeader = t.interface + ' ' + className;
+        classHeader = t('interface') + ' ' + className;
       } else if (stereotypeLower === 'abstract') {
-        classHeader = t.abstractClass + ' ' + className;
+        classHeader = t('abstractClass') + ' ' + className;
       } else if (stereotypeLower === 'enumeration') {
-        classHeader = t.enumeration + ' ' + className;
+        classHeader = t('enumeration') + ' ' + className;
       } else if (classData.stereotype) {
         // Custom stereotype (e.g., Aggregate Root, Entity, Value Object)
-        classHeader = t.class + ' ' + className + ' ' + t.withStereotype + ' ' + classData.stereotype;
+        classHeader = t('class') + ' ' + className + ' ' + t('withStereotype') + ' ' + classData.stereotype;
       } else {
-        classHeader = t.class + ' ' + className;
+        classHeader = t('class') + ' ' + className;
       }
 
       const hasAttributes = classData.attributes.length > 0;
@@ -934,52 +825,52 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
       // Check if class has no members at all
       if (!hasMembers) {
-        parts.push(' ' + t.noMethodsAndAttributes);
+        parts.push(' ' + t('noMethodsAndAttributes'));
       } else {
-        parts.push(' ' + t.with + ':');
+        parts.push(' ' + t('with') + ':');
         parts.push('<ul>');
 
         // Methods
         for (const method of classData.methods) {
-          const visibility = parseVisibility(method.visibility, locale);
-          let methodDesc = visibility + ' ' + t.method + ' \'' + method.name + '\'';
+          const visibility = parseVisibility(method.visibility, locale, translations);
+          let methodDesc = visibility + ' ' + t('method') + ' \'' + method.name + '\'';
 
           if (method.parameters.length === 0) {
-            methodDesc += ', ' + t.withoutParameters;
+            methodDesc += ', ' + t('withoutParameters');
           } else {
             const paramDescs = method.parameters.map(function(p) {
               // Only include type if present and not 'unknown'
               if (p.type && p.type !== 'unknown') {
-                return '\'' + p.name + '\' ' + t.ofType + ' ' + p.type;
+                return '\'' + p.name + '\' ' + t('ofType') + ' ' + p.type;
               } else {
                 return '\'' + p.name + '\'';
               }
             });
-            methodDesc += ', ' + t.withParameters + ' ' + paramDescs.join(', ');
+            methodDesc += ', ' + t('withParameters', { count: method.parameters.length }) + ' ' + paramDescs.join(', ');
           }
 
-          methodDesc += ', ' + t.returnType + ' ' + method.returnType;
+          methodDesc += ', ' + t('returnType') + ' ' + method.returnType;
           parts.push('<li>' + methodDesc + '</li>');
         }
 
         // Attributes
         for (const attr of classData.attributes) {
-          const visibility = parseVisibility(attr.visibility, locale);
-          const type = parseType(attr.type, locale);
+          const visibility = parseVisibility(attr.visibility, locale, translations);
+          const type = parseType(attr.type, locale, translations);
           // Only include type if present (Fowler-style), omit for Larman-style
           if (type) {
-            parts.push('<li>' + visibility + ' ' + t.attribute + ' \'' + attr.name + '\' ' + t.ofType + ' ' + type + '</li>');
+            parts.push('<li>' + visibility + ' ' + t('attribute') + ' \'' + attr.name + '\' ' + t('ofType') + ' ' + type + '</li>');
           } else {
-            parts.push('<li>' + visibility + ' ' + t.attribute + ' \'' + attr.name + '\'' + '</li>');
+            parts.push('<li>' + visibility + ' ' + t('attribute') + ' \'' + attr.name + '\'' + '</li>');
           }
         }
 
         // Explicit messages for missing members when class has some members
         if (!hasAttributes && hasMethods) {
-          parts.push('<li>' + t.noAttributes + '</li>');
+          parts.push('<li>' + t('noAttributes') + '</li>');
         }
         if (!hasMethods && hasAttributes) {
-          parts.push('<li>' + t.noMethods + '</li>');
+          parts.push('<li>' + t('noMethods') + '</li>');
         }
 
         parts.push('</ul>');
@@ -993,7 +884,7 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
   // Relations section
   if (relationCount > 0) {
-    parts.push('<p><strong>' + t.relations + ':</strong></p>');
+    parts.push('<p><strong>' + t('relations') + ':</strong></p>');
     parts.push('<ul>');
 
     for (const rel of parsed.relations) {
@@ -1003,36 +894,36 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
       // Format: "A heeft een associatie-relatie met naam 'x' met B" or "A heeft een associatie-relatie met B"
       function buildRelationDesc(from, relationType, to, label) {
         if (label) {
-          const namedPart = t.withNamedRelation.replace('{name}', label);
+          const namedPart = t('withNamedRelation', { name: label });
           return from + ' ' + relationType + ' ' + namedPart + ' ' + to;
         } else {
-          return from + ' ' + relationType + ' ' + t.withUnnamedRelation + ' ' + to;
+          return from + ' ' + relationType + ' ' + t('withUnnamedRelation') + ' ' + to;
         }
       }
 
       switch (rel.type) {
       case 'inheritance':
         // Inheritance doesn't use the named pattern
-        relDesc = rel.from + ' ' + t.inheritance + ' ' + rel.to;
+        relDesc = rel.from + ' ' + t('inheritance') + ' ' + rel.to;
         break;
       case 'implementation':
         // Implementation doesn't use the named pattern
-        relDesc = rel.from + ' ' + t.implementation + ' ' + rel.to;
+        relDesc = rel.from + ' ' + t('implementation') + ' ' + rel.to;
         break;
       case 'association':
-        relDesc = buildRelationDesc(rel.from, t.association, rel.to, rel.label);
+        relDesc = buildRelationDesc(rel.from, t('association'), rel.to, rel.label);
         break;
       case 'aggregation':
-        relDesc = buildRelationDesc(rel.from, t.aggregation, rel.to, rel.label);
+        relDesc = buildRelationDesc(rel.from, t('aggregation'), rel.to, rel.label);
         break;
       case 'composition':
-        relDesc = buildRelationDesc(rel.from, t.composition, rel.to, rel.label);
+        relDesc = buildRelationDesc(rel.from, t('composition'), rel.to, rel.label);
         break;
       case 'dependency':
         if (rel.reverse) {
-          relDesc = rel.from + ' ' + t.dependencyFrom + ' ' + rel.to;
+          relDesc = rel.from + ' ' + t('dependencyFrom') + ' ' + rel.to;
         } else {
-          relDesc = rel.from + ' ' + t.dependency + ' ' + rel.to;
+          relDesc = rel.from + ' ' + t('dependency') + ' ' + rel.to;
         }
         break;
       default:
@@ -1043,11 +934,11 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
       const details = [];
       // Handle multiplicities
       if (rel.multiplicityFrom && rel.multiplicityTo) {
-        details.push(t.multiplicity + ' ' + rel.multiplicityFrom + ' ' + t.multiplicityTo + ' ' + rel.multiplicityTo);
+        details.push(t('multiplicity') + ' ' + rel.multiplicityFrom + ' ' + t('multiplicityTo') + ' ' + rel.multiplicityTo);
       } else if (rel.multiplicityTo) {
-        details.push(t.multiplicity + ' ' + rel.multiplicityTo);
+        details.push(t('multiplicity') + ' ' + rel.multiplicityTo);
       } else if (rel.multiplicity) {
-        details.push(t.multiplicity + ' ' + rel.multiplicity);
+        details.push(t('multiplicity') + ' ' + rel.multiplicity);
       }
 
       if (details.length > 0) {
@@ -1062,11 +953,11 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
 
   // Notes section
   if (parsed.notes.length > 0) {
-    parts.push('<p><strong>' + t.notes + ':</strong></p>');
+    parts.push('<p><strong>' + t('notes') + ':</strong></p>');
     parts.push('<ul>');
 
     for (const note of parsed.notes) {
-      const noteHeader = t.noteFor.replace('{class}', note.className);
+      const noteHeader = t('noteFor', { class: note.className });
       // Clean up escaped newlines in note text
       const cleanText = note.text.split('\\n').join(' ');
       parts.push('<li>' + noteHeader + ': "' + cleanText + '"</li>');
