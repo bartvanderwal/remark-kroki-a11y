@@ -17,6 +17,7 @@ const passThrough = [
 
 module.exports = async function createConfigAsync() {
   const { default: remarkQuizdown } = await import('./src/remark/remark-quizdown.mjs');
+  const { default: rehypeCitation } = await import('rehype-citation');
   const krokiBase = process.env.KROKI_BASE_URL || 'https://kroki.io';
   return {
   title: 'remark-kroki-a11y',
@@ -98,6 +99,13 @@ module.exports = async function createConfigAsync() {
           rehypePlugins: [
             // Enable raw HTML in MDX (needed for remark plugin HTML output)
             [rehypeRaw, { passThrough }],
+            // Optional APA citations for Docusaurus-only documentation
+            [rehypeCitation, {
+              bibliography: './static/references.bib',
+              csl: 'apa',
+              linkCitations: true,
+              showTooltips: true,
+            }],
             // Fix hash alt text and connect images to generated a11y sections
             rehypeKrokiA11yImg,
           ],

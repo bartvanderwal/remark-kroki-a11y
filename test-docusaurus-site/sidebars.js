@@ -2,6 +2,7 @@ module.exports = {
   docs: [
     'readme-github',
     'playground',
+    'citation-demo',
     {
       type: 'category',
       label: 'Introduction to UML',

@@ -40,7 +40,8 @@ See: Nygard, M. (2011). [Documenting architecture decisions](https://cognitect.c
 | [0013](0013-i18n-framework.md) | Internationalization (i18n) framework | Pending |
 | [0014](0014-optional-relation-legend-for-dev-mode.md) | Optional filtered relation legend for `For devs` mode | Accepted |
 | [0015](0015-src-attribute-resolution-and-source-tab-fidelity.md) | `src` attribute resolution and source-tab fidelity | Proposed |
+| [0016](0016-apa-citation-processing.md) | APA citation processing for Docusaurus documentation | Accepted |
 
 ---
 
-*Last update*: 2026-03-18
+*Last update*: 2026-10-07
