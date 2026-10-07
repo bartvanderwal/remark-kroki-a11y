@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@types/react": ">=16",
+    "rehype-citation": "2.3.2",
     "remark-kroki-a11y": "file:../"
   }
 }
