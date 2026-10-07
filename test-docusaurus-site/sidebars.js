@@ -93,6 +93,7 @@ module.exports = {
       type: 'category',
       label: 'Contributing',
       items: [
+        'examples/citations',
         'contributing',
         'definition-of-done',
       ],

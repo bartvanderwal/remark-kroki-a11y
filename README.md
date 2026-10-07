@@ -194,6 +194,40 @@ module.exports = {
 };
 ```
 
+### Optional APA-style references
+
+For documentation that uses APA-style citations, you can add
+[rehype-citation](https://github.com/timlrx/rehype-citation) separately. It is
+an optional build-time rehype plugin and is not a dependency of
+remark-kroki-a11y.
+
+```bash
+npm install --save-dev rehype-citation
+```
+
+Docusaurus config files can dynamically import this ESM-only plugin. Add it to
+the `rehypePlugins` array in the `docs` configuration:
+
+```js
+const path = require('node:path');
+
+// In an async Docusaurus config function:
+const { default: rehypeCitation } = await import('rehype-citation');
+
+// Add to docs.rehypePlugins:
+[rehypeCitation, {
+  bibliography: path.resolve(__dirname, 'references.bib'),
+  style: 'apa',
+  linkCitations: true,
+  tooltipCitations: true,
+}],
+```
+
+Write citations such as `[@nash1950]` in Markdown and add their entries to
+`references.bib`. The plugin generates the formatted bibliography at the end
+of a page. Citation links and the visible bibliography are the primary
+navigation; optional native tooltips are only a convenience.
+
 ### Local Kroki via Docker (recommended for stable local builds)
 
 If `kroki.io` is unavailable or blocked, run a local Kroki server. The
