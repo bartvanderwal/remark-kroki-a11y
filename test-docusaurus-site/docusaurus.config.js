@@ -101,10 +101,11 @@ module.exports = async function createConfigAsync() {
             [rehypeRaw, { passThrough }],
             // Optional citation processing, validated against this MDX 3 site
             [rehypeCitation, {
-              bibliography: require('path').resolve(__dirname, 'references.bib'),
-              style: 'apa',
+              bibliography: 'references.bib',
+              path: __dirname,
+              csl: 'apa',
               linkCitations: true,
-              tooltipCitations: true,
+              showTooltips: true,
             }],
             // Fix hash alt text and connect images to generated a11y sections
             rehypeKrokiA11yImg,

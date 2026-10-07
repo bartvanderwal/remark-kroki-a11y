@@ -209,24 +209,23 @@ Docusaurus config files can dynamically import this ESM-only plugin. Add it to
 the `rehypePlugins` array in the `docs` configuration:
 
 ```js
-const path = require('node:path');
-
 // In an async Docusaurus config function:
 const { default: rehypeCitation } = await import('rehype-citation');
 
 // Add to docs.rehypePlugins:
 [rehypeCitation, {
-  bibliography: path.resolve(__dirname, 'references.bib'),
-  style: 'apa',
+  bibliography: 'references.bib',
+  path: __dirname,
+  csl: 'apa',
   linkCitations: true,
-  tooltipCitations: true,
+  showTooltips: true,
 }],
 ```
 
 Write citations such as `[@nash1950]` in Markdown and add their entries to
 `references.bib`. The plugin generates the formatted bibliography at the end
 of a page. Citation links and the visible bibliography are the primary
-navigation; optional native tooltips are only a convenience.
+navigation; optional native `title` tooltips are only a convenience.
 
 ### Local Kroki via Docker (recommended for stable local builds)
 
