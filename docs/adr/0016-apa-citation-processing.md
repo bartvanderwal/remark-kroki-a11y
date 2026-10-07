@@ -27,9 +27,8 @@ Keep hybrid Markdown and ADRs in GitHub-compatible Markdown; do not migrate thei
 - Docusaurus-only documentation can generate consistent APA bibliographies with optional citation links and tooltips.
 - The citation processor and its dependencies are confined to the documentation test site; users choose whether to add it to their own Docusaurus sites.
 - GitHub-rendered hybrid docs retain their existing manually formatted references.
-- The test site build validates the plugin against the repository's MDX 3 pipeline.
+- Compiler checks with MDX 2.3 and the test site's MDX 3 compiler generated APA citations, bibliography entries, citation links, and tooltips. A complete Docusaurus build still depends on Kroki being reachable for the site's existing diagram examples.
 
 ## References
 
 - Lin, T. (2026). *rehype-citation* (Version 2.3.2) [Computer software]. https://github.com/timlrx/rehype-citation/releases/tag/v2.3.2
-
