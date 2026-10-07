@@ -91,6 +91,7 @@
     "eslint-plugin-storybook": "^10.2.3",
     "husky": "^9.1.7",
     "playwright": "^1.58.1",
+    "rehype-citation": "2.3.2",
     "storybook": "^10.2.3",
     "unist-util-visit": "^5.0.0",
     "vitest": "^4.0.18"
