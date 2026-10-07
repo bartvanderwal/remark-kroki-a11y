@@ -38,7 +38,7 @@ activity(1, Alice, talks about the, Info: weather, with, Bob)
     });
 
     expect(result.diagramType).toBe('domainStory');
-    expect(result.a11yText).toContain('Domain story with 1 activities.');
+    expect(result.a11yText).toContain('Domain story with 1 activity.');
     expect(result.a11yText).toContain('Alice talks about the weather with Bob.');
   });
 });

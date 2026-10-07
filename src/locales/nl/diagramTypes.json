@@ -1,0 +1,13 @@
+{
+  "stateDiagram": "toestandsdiagrammen",
+  "classDiagram": "klassendiagrammen",
+  "sequenceDiagram": "sequentie-diagrammen",
+  "activityDiagram": "activity diagrammen",
+  "erDiagram": "ER-diagrammen",
+  "componentDiagram": "componentdiagrammen",
+  "usecaseDiagram": "use case diagrammen",
+  "pieDiagram": "taartdiagrammen",
+  "c4Diagram": "C4-diagrammen",
+  "domainStory": "domain stories",
+  "diagram": "dit diagram type"
+}

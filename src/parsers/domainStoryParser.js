@@ -5,18 +5,8 @@
  * natural-language activity list.
  */
 
-const i18n = {
-  nl: {
-    title: 'Domeinverhaal',
-    withActivities: 'met {count} activiteiten',
-    activities: 'Activiteiten',
-  },
-  en: {
-    title: 'Domain story',
-    withActivities: 'with {count} activities',
-    activities: 'Activities',
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('domainStory');
 
 function stripQuotes(value) {
   const trimmed = String(value || '').trim();
@@ -152,16 +142,16 @@ function buildSentence(activity, index) {
   return `${number}. ${sentence}.`;
 }
 
-function generateAccessibleDescription(parsed, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
+function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
+  const t = createTranslator('domainStory', locale, translations);
   const count = parsed.activities.length;
   const lines = [];
 
-  lines.push(`${t.title} ${t.withActivities.replace('{count}', count)}.`);
+  lines.push(`${t('title')} ${t('withActivities', { count })}.`);
 
   if (count > 0) {
     lines.push('');
-    lines.push(`${t.activities}:`);
+    lines.push(`${t('activities')}:`);
     parsed.activities.forEach((activity, index) => {
       lines.push(buildSentence(activity, index));
     });

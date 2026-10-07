@@ -5,44 +5,8 @@
  * appropriate accessibility messages.
  */
 
-// GitHub repository for contribution
-const GITHUB_REPO = 'https://github.com/AIM-ENE/remark-kroki-a11y';
-
-// Diagram type names per locale
-const diagramTypeNames = {
-  nl: {
-    c4: 'C4',
-    sequence: 'sequence',
-    activity: 'activity',
-    state: 'state',
-    er: 'ER',
-    gantt: 'Gantt',
-    pie: 'pie chart',
-    unknown: 'dit type',
-  },
-  en: {
-    c4: 'C4',
-    sequence: 'sequence',
-    activity: 'activity',
-    state: 'state',
-    er: 'ER',
-    gantt: 'Gantt',
-    pie: 'pie chart',
-    unknown: 'this type of',
-  }
-};
-
-// Message templates per locale
-const i18n = {
-  nl: {
-    notSupportedTemplate: 'De remark-kroki-a11y plugin ondersteunt nog geen {type} diagrammen.',
-    contributeLink: `<a href="${GITHUB_REPO}" target="_blank" rel="noopener noreferrer">Draag bij aan dit A11Y project</a> om ondersteuning toe te voegen voor andere diagram types of (natuurlijk) talen.`,
-  },
-  en: {
-    notSupportedTemplate: 'The remark-kroki-a11y plugin does not yet support {type} diagrams.',
-    contributeLink: `<a href="${GITHUB_REPO}" target="_blank" rel="noopener noreferrer">Contribute to this A11Y project</a> to add support for other diagram types or (natural) languages.`,
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('unsupported');
 
 /**
  * Detect if code is a C4 diagram
@@ -92,15 +56,14 @@ function detectUnsupportedDiagramType(code, diagramType) {
 /**
  * Generate an accessibility description for unsupported diagram types
  */
-function generateUnsupportedDescription(code, diagramType, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
-  const typeNames = diagramTypeNames[locale] || diagramTypeNames.nl;
+function generateUnsupportedDescription(code, diagramType, locale = 'nl', translations = {}) {
+  const t = createTranslator('unsupported', locale, translations);
   const type = detectUnsupportedDiagramType(code, diagramType);
 
-  const typeName = typeNames[type] || typeNames.unknown;
-  const message = t.notSupportedTemplate.replace('{type}', typeName);
+  const typeName = t(type);
+  const message = t('notSupportedTemplate', { type: typeName });
 
-  return message + ' ' + t.contributeLink;
+  return message + ' ' + t('contributeLink');
 }
 
 /**
