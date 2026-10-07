@@ -18,8 +18,7 @@ function getMessages(section) {
 }
 
 function createTranslator(section, locale = 'en', translations = {}) {
-  const formatter = formatMessage.namespace();
-  formatter.setup({ missingTranslation: 'ignore' });
+  const formatters = new Map();
   const normalizedLocale = locale.toLowerCase().replace(/_/g, '-');
   const locales = [...new Set([locale, normalizedLocale, normalizedLocale.split('-')[0], 'en'])];
 
@@ -30,7 +29,13 @@ function createTranslator(section, locale = 'en', translations = {}) {
       const pattern = custom && Object.prototype.hasOwnProperty.call(custom, key) ? custom[key]
         : builtin && Object.prototype.hasOwnProperty.call(builtin, key) ? builtin[key] : undefined;
       if (pattern !== undefined) {
-        return formatter(pattern, values, language.replace(/_/g, '-'));
+        const resolvedLocale = language.replace(/_/g, '-');
+        if (!formatters.has(resolvedLocale)) {
+          const formatter = formatMessage.namespace();
+          formatter.setup({ locale: resolvedLocale, missingTranslation: 'ignore' });
+          formatters.set(resolvedLocale, formatter);
+        }
+        return formatters.get(resolvedLocale)(pattern, values);
       }
     }
     return key;
@@ -39,8 +44,8 @@ function createTranslator(section, locale = 'en', translations = {}) {
 
 function formatPattern(pattern, values, locale = 'en') {
   const formatter = formatMessage.namespace();
-  formatter.setup({ missingTranslation: 'ignore' });
-  return formatter(pattern, values, locale.replace(/_/g, '-'));
+  formatter.setup({ locale: locale.replace(/_/g, '-'), missingTranslation: 'ignore' });
+  return formatter(pattern, values);
 }
 
 function formatFallback(locale, diagramType, translations = {}, fallbackA11yText = {}) {

@@ -37,6 +37,15 @@ describe('ICU localization', () => {
       .toBe('A {type} / A {type} / Mermaid');
   });
 
+  it('isolates identical patterns compiled for different fallback languages', () => {
+    const t = createTranslator('c4', 'fr', { fr: { c4: {
+      actors: '{count, plural, one {# system} other {# systems}}',
+    } } });
+    expect(t('actors', { count: 0 })).toBe('0 system');
+    expect(t('systems', { count: 0 })).toBe('0 systems');
+    expect(t('actors', { count: 0 })).toBe('0 system');
+  });
+
   it('localizes unsupported-diagram messages and keeps fallback overrides', () => {
     const options = { imgType: 'graphviz', content: 'digraph {}', locale: 'fr', translations: {
       fr: { ui: { fallbackA11yText: 'Description indisponible pour {diagramType}.' },
