@@ -783,6 +783,38 @@ function parsePlantUMLClassDiagram(code) {
  * Generate accessible description from parsed class diagram
  * Returns HTML with proper <ul><li> structure for better screen reader navigation
  */
+function getOrderedClassNames(parsed) {
+  const classNames = Object.keys(parsed.classes);
+  const classOrder = new Map(classNames.map((name, index) => [name, index]));
+  const dependencyCount = new Map(classNames.map(name => [name, 0]));
+  const dependents = new Map(classNames.map(name => [name, []]));
+
+  for (const relation of parsed.relations) {
+    if (relation.type !== 'dependency' || !dependencyCount.has(relation.from) || !dependencyCount.has(relation.to)) {
+      continue;
+    }
+    dependents.get(relation.from).push(relation.to);
+    dependencyCount.set(relation.to, dependencyCount.get(relation.to) + 1);
+  }
+
+  const available = classNames.filter(name => dependencyCount.get(name) === 0);
+  const ordered = [];
+  while (available.length > 0) {
+    available.sort((left, right) => classOrder.get(left) - classOrder.get(right));
+    const name = available.shift();
+    ordered.push(name);
+
+    for (const dependent of dependents.get(name)) {
+      dependencyCount.set(dependent, dependencyCount.get(dependent) - 1);
+      if (dependencyCount.get(dependent) === 0) {
+        available.push(dependent);
+      }
+    }
+  }
+
+  return ordered.concat(classNames.filter(name => !ordered.includes(name)));
+}
+
 function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
   const t = createTranslator('class', locale, translations);
   const parts = [];
@@ -798,7 +830,7 @@ function generateAccessibleDescription(parsed, locale = 'nl', translations = {})
     parts.push('<p><strong>' + t('classes') + ':</strong></p>');
     parts.push('<ul>');
 
-    for (const className of Object.keys(parsed.classes)) {
+    for (const className of getOrderedClassNames(parsed)) {
       const classData = parsed.classes[className];
 
       // Class header with stereotype
@@ -920,10 +952,15 @@ function generateAccessibleDescription(parsed, locale = 'nl', translations = {})
         relDesc = buildRelationDesc(rel.from, t('composition'), rel.to, rel.label);
         break;
       case 'dependency':
-        if (rel.reverse) {
-          relDesc = rel.from + ' ' + t('dependencyFrom') + ' ' + rel.to;
+        if (rel.label) {
+          relDesc = buildRelationDesc(
+            rel.from,
+            t(rel.reverse ? 'dependencyFrom' : 'dependency'),
+            rel.to,
+            rel.label
+          );
         } else {
-          relDesc = rel.from + ' ' + t('dependency') + ' ' + rel.to;
+          relDesc = rel.from + ' ' + t(rel.reverse ? 'dependencyFrom' : 'dependency') + ' ' + rel.to;
         }
         break;
       default:
