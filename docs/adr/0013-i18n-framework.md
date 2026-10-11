@@ -2,13 +2,13 @@
 
 ## Status
 
-Pending
+Accepted
 
 ## Context
 
-The plugin needs to generate natural language descriptions in multiple languages. Currently, localization uses a simple custom object structure with string arrays (`uiLabels` in `src/index.js`).
+The plugin generates natural language descriptions and interface labels in multiple languages. Its original localization used JavaScript objects (`uiLabels` in `src/index.js` and separate parser catalogs), simple placeholder replacement, and manually selected singular/plural forms.
 
-### Current implementation
+### Original implementation
 
 ```javascript
 const uiLabels = {
@@ -42,7 +42,7 @@ const uiLabels = {
 
 4. **Limited placeholders**: Only supports basic `{type}` and `{title}` substitution
 
-5. **No fallback mechanism**: Missing translations cause errors rather than graceful fallbacks
+5. **Inconsistent fallback**: Unsupported locales can produce English interface labels with Dutch descriptions.
 
 ### Key requirement: Contributor accessibility
 
@@ -55,137 +55,50 @@ The primary driver for choosing an i18n framework is **maintainability through c
 
 ## Options
 
-### Option A: format-message
+### Option A: format-message (selected)
 
-Lightweight ICU MessageFormat implementation.
+Supports ICU placeholders, plural/select messages, and CLDR plural categories directly. Its documented `namespace()` API isolates translation configuration, while translations can live in JSON files (format-message contributors, n.d.). This suits synchronous description generation in both Node and the browser playground.
 
 ### Option B: i18next
 
-Full-featured i18n framework, widely used.
+Provides JSON catalogs, language fallback, pluralization, and an extensive translation ecosystem. Its native plural messages use suffixed keys; ICU syntax requires the separate i18next-icu integration (i18next contributors, n.d.). Those additional features and integration are not needed by this plugin.
 
 ### Option C: @formatjs/intl
 
-React ecosystem standard (part of FormatJS/react-intl).
+Provides ICU message formatting and an imperative `createIntl` API without requiring React (FormatJS contributors, n.d.). It is suitable, but its broader date/number/rich-text API and associated tooling offer no necessary advantage for the current message-formatting requirement.
 
 ### Option D: Keep custom implementation
 
-Extend the current simple approach with pluralization rules.
-
-## Multi-criteria decision matrix
-
-Based on the [ICT Research Methods - Multi-criteria decision making](https://ictresearchmethods.nl/workshop/multi-criteria-decision-making/) approach.
-
-### Criteria (weighted)
-
-| Criterion | Weight | Description |
-|-----------|--------|-------------|
-| Contributor accessibility | 5 | Can non-developers add translations via standard files/tools? |
-| Pluralization support | 4 | Handles complex plural forms (Dutch, Russian, Arabic)? |
-| Bundle size | 3 | Impact on plugin size |
-| Translation tooling | 4 | Integration with Crowdin, Weblate, POEditor, etc. |
-| Documentation | 2 | Quality of docs and community support |
-| Maintenance burden | 3 | Long-term effort to maintain |
-
-### Scoring (1-5, higher is better)
-
-| Criterion | Weight | A: format-message | B: i18next | C: @formatjs | D: Custom |
-|-----------|--------|-------------------|------------|--------------|-----------|
-| Contributor accessibility | 5 | 3 | 5 | 3 | 1 |
-| Pluralization support | 4 | 5 | 5 | 5 | 2 |
-| Bundle size | 3 | 5 | 2 | 3 | 5 |
-| Translation tooling | 4 | 3 | 5 | 4 | 1 |
-| Documentation | 2 | 3 | 5 | 4 | 2 |
-| Maintenance burden | 3 | 4 | 3 | 3 | 2 |
-
-### Weighted scores
-
-| Option | Calculation | Total |
-|--------|-------------|-------|
-| A: format-message | (5×3)+(4×5)+(3×5)+(4×3)+(2×3)+(3×4) | 15+20+15+12+6+12 = **80** |
-| B: i18next | (5×5)+(4×5)+(3×2)+(4×5)+(2×5)+(3×3) | 25+20+6+20+10+9 = **90** |
-| C: @formatjs | (5×3)+(4×5)+(3×3)+(4×4)+(2×4)+(3×3) | 15+20+9+16+8+9 = **77** |
-| D: Custom | (5×1)+(4×2)+(3×5)+(4×1)+(2×2)+(3×2) | 5+8+15+4+4+6 = **42** |
+Extend the current simple approach with pluralization rules. This keeps dependencies unchanged but leaves the project maintaining grammar selection and message parsing itself, contrary to the requirement for a standard framework.
 
 ## Decision
 
-Status: *Pending - requires evaluation*
+Use **format-message** with ICU messages in separate JSON catalogs for interface labels, diagram type names, and parser descriptions.
 
-Based on the multi-criteria analysis, **Option B (i18next)** scores highest (90 points) primarily due to:
+The deciding criteria are standard grammar handling, translator-editable catalogs, isolated configuration, and compatibility with the plugin's synchronous Node/browser consumers. All three frameworks support translator-editable JSON; this is not an exclusive advantage of i18next.
 
-1. **Best contributor accessibility** - Standard JSON files, widely known format
-2. **Excellent translation tooling** - Supported by Crowdin, Weblate, Lokalise, POEditor
-3. **Strong pluralization** - Full ICU-like plural rules support
-4. **Large community** - Well-documented, many examples, active maintenance
+Keep English and Dutch built in. Applications can supply additional language catalogs through `translations`, including languages with more than two plural categories, without modifying parser code.
 
-The larger bundle size (~40KB vs ~3KB) is a trade-off, but acceptable given:
+Resolve messages by requested locale, base language, then English. Fallback messages use the plural rules of their source language, so an untranslated English message does not inherit another language's grammar. Configuration is isolated between plugin instances and per-diagram locale overrides.
 
-- This is a build-time plugin, not runtime code shipped to users
-- The accessibility benefits outweigh the size cost
-- Contributor accessibility is the primary driver for adoption
-
-## Example with i18next
-
-Translation file `locales/nl/translation.json`:
-
-```json
-{
-  "classCount_one": "{{count}} klasse",
-  "classCount_other": "{{count}} klassen",
-  "relationCount_one": "{{count}} relatie",
-  "relationCount_other": "{{count}} relaties",
-  "classDiagram": "Klassendiagram met {{classCount}} en {{relationCount}}"
-}
-```
-
-Usage in code:
-
-```javascript
-import i18next from 'i18next';
-
-await i18next.init({
-  lng: 'nl',
-  resources: {
-    nl: { translation: require('./locales/nl/translation.json') }
-  }
-});
-
-// Usage
-i18next.t('classCount', { count: 3 });
-// Output: "3 klassen"
-
-i18next.t('classCount', { count: 1 });
-// Output: "1 klasse"
-```
+Preserve existing locale defaults and public label/fallback options. Replace parenthesized plural suffixes and manual count-based wording with ICU plural messages.
 
 ## Consequences
 
-If i18next is chosen:
-
-- Translation files are separate JSON - editable by non-developers
-- Can integrate with translation platforms (Crowdin, Weblate)
-- Remove all `(n)/(s)` hacks
-- Bundle size increases (~40KB) - acceptable for build-time plugin
-- Can support additional languages more easily
-- Screenreader experience improves (no parentheses pauses)
-- Lower barrier for community translations
-
-## Actions
-
-1. [ ] Prototype with format-message
-2. [ ] Measure bundle size impact
-3. [ ] Migrate existing strings
-4. [ ] Test with screenreaders
-5. [ ] Update documentation
+- Translators edit standard JSON containing ICU messages rather than JavaScript.
+- Singular, zero, and plural counts are grammatical and no longer create parenthesized-suffix pauses for screen readers.
+- Missing messages fall back individually; partial translations remain usable, but can produce mixed-language descriptions.
+- Adding a language requires translated messages, not parser changes. Shipping an additional built-in language still requires review and registration.
+- A runtime dependency is added, including in browser consumers of the playground. No network backend, language detector, or translation service is required.
+- Applications must supply valid ICU syntax. Malformed messages are configuration errors rather than silently repaired translations.
+- Existing `uiLabels`/parser `i18n` exports remain catalog views for compatibility; rendering uses the framework.
 
 ## References
 
-- GitHub Issue: https://github.com/bartvanderwal/remark-kroki-a11y/issues/20
-- Related: Issue #15 (screenreader prosody)
-- ICU Message Format: https://unicode-org.github.io/icu/userguide/format_parse/messages/
-- format-message: https://github.com/format-message/format-message
-- i18next: https://www.i18next.com/
+- format-message contributors. (n.d.). *format-message API documentation*. https://github.com/format-message/format-message/blob/master/packages/format-message/README.md
+- i18next contributors. (n.d.). *i18next-icu integration*. https://github.com/i18next/i18next-icu/blob/master/README.md
+- FormatJS contributors. (n.d.). *Imperative intl API*. https://github.com/formatjs/formatjs/blob/main/packages/intl/create-intl.ts
 
 ---
 
-*Date: 2026-02-09*
-*Author: Bart van der Wal & Claude*
+*Decision date: 2026-10-07*

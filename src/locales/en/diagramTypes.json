@@ -1,0 +1,13 @@
+{
+  "stateDiagram": "state diagrams",
+  "classDiagram": "class diagrams",
+  "sequenceDiagram": "sequence diagrams",
+  "activityDiagram": "activity diagrams",
+  "erDiagram": "ER diagrams",
+  "componentDiagram": "component diagrams",
+  "usecaseDiagram": "use case diagrams",
+  "pieDiagram": "pie charts",
+  "c4Diagram": "C4 diagrams",
+  "domainStory": "domain stories",
+  "diagram": "this diagram type"
+}

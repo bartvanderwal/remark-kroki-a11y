@@ -168,25 +168,28 @@ function getNameById(id, actors, systems, components, containers) {
   return id;
 }
 
+const { createTranslator } = require('../i18n.cjs');
+
 /**
  * Generate accessible description as HTML with proper list structure
  */
-function generateAccessibleDescription(parsed, locale = 'en') {
+function generateAccessibleDescription(parsed, locale = 'en', translations = {}) {
   if (parsed.diagramType === 'component') {
-    return generateComponentDescription(parsed, locale);
+    return generateComponentDescription(parsed, locale, translations);
   }
 
   if (parsed.diagramType === 'container') {
-    return generateContainerDescription(parsed, locale);
+    return generateContainerDescription(parsed, locale, translations);
   }
 
-  return generateContextDescription(parsed, locale);
+  return generateContextDescription(parsed, locale, translations);
 }
 
 /**
  * Generate description for C4 System Context diagrams
  */
-function generateContextDescription(parsed, _locale = 'en') {
+function generateContextDescription(parsed, locale = 'en', translations = {}) {
+  const t = createTranslator('c4', locale, translations);
   const { actors, systems, components, containers, relationships } = parsed;
 
   const internalSystems = systems.filter(s => !s.external);
@@ -194,46 +197,36 @@ function generateContextDescription(parsed, _locale = 'en') {
 
   const parts = [];
 
-  parts.push('<p>C4 System Context diagram with:</p>');
+  parts.push(`<p>${t('context')}</p>`);
 
   parts.push('<ul>');
 
   // Actors summary
   if (actors.length === 0) {
-    parts.push('<li>0 actors</li>');
-  } else if (actors.length === 1) {
-    parts.push(`<li>1 actor: ${actors[0].name}</li>`);
+    parts.push(`<li>${t('actors', { count: 0 })}</li>`);
   } else {
     const actorNames = actors.map(a => a.name).join(', ');
-    parts.push(`<li>${actors.length} actors: ${actorNames}</li>`);
+    parts.push(`<li>${t('actors', { count: actors.length })}: ${actorNames}</li>`);
   }
 
   // Systems summary
   const totalSystems = systems.length;
   if (totalSystems === 0) {
-    parts.push('<li>0 systems</li>');
+    parts.push(`<li>${t('systems', { count: 0 })}</li>`);
   } else if (totalSystems === 1) {
-    parts.push(`<li>1 system: ${systems[0].name}</li>`);
+    parts.push(`<li>${t('systems', { count: 1 })}: ${systems[0].name}</li>`);
   } else {
-    let systemItem = `<li>${totalSystems} systems:`;
+    let systemItem = `<li>${t('systems', { count: totalSystems })}:`;
     systemItem += '<ul>';
 
     if (internalSystems.length > 0) {
       const internalNames = internalSystems.map(s => s.name).join(', ');
-      if (internalSystems.length === 1) {
-        systemItem += `<li>1 internal system: ${internalNames}</li>`;
-      } else {
-        systemItem += `<li>${internalSystems.length} internal systems: ${internalNames}</li>`;
-      }
+      systemItem += `<li>${t('internalSystems', { count: internalSystems.length })}: ${internalNames}</li>`;
     }
 
     if (externalSystems.length > 0) {
       const externalNames = externalSystems.map(s => s.name).join(', ');
-      if (externalSystems.length === 1) {
-        systemItem += `<li>1 external system: ${externalNames}</li>`;
-      } else {
-        systemItem += `<li>${externalSystems.length} external systems: ${externalNames}</li>`;
-      }
+      systemItem += `<li>${t('externalSystems', { count: externalSystems.length })}: ${externalNames}</li>`;
     }
 
     systemItem += '</ul></li>';
@@ -242,8 +235,7 @@ function generateContextDescription(parsed, _locale = 'en') {
 
   // Relationships summary
   if (relationships.length > 0) {
-    const relLabel = relationships.length === 1 ? 'relationship' : 'relationships';
-    let relItem = `<li>${relationships.length} ${relLabel}:`;
+    let relItem = `<li>${t('relationships', { count: relationships.length })}:`;
     relItem += '<ul>';
 
     relationships.forEach(rel => {
@@ -265,7 +257,8 @@ function generateContextDescription(parsed, _locale = 'en') {
 /**
  * Generate description for C4 Container diagrams
  */
-function generateContainerDescription(parsed, _locale = 'en') {
+function generateContainerDescription(parsed, locale = 'en', translations = {}) {
+  const t = createTranslator('c4', locale, translations);
   const { actors, systems, components, containers, relationships } = parsed;
 
   const containerItems = containers.filter(c => c.type === 'container' || c.type === 'database');
@@ -275,33 +268,31 @@ function generateContainerDescription(parsed, _locale = 'en') {
 
   // Header with system boundary name if available
   if (boundaries.length > 0) {
-    parts.push(`<p>C4 Container diagram for ${boundaries[0].name} with:</p>`);
+    parts.push(`<p>${t('containerFor', { name: boundaries[0].name })}</p>`);
   } else {
-    parts.push('<p>C4 Container diagram with:</p>');
+    parts.push(`<p>${t('container')}</p>`);
   }
 
   parts.push('<ul>');
 
   // Actors summary
-  if (actors.length === 1) {
-    parts.push(`<li>1 actor: ${actors[0].name}</li>`);
-  } else if (actors.length > 1) {
+  if (actors.length > 0) {
     const actorNames = actors.map(a => a.name).join(', ');
-    parts.push(`<li>${actors.length} actors: ${actorNames}</li>`);
+    parts.push(`<li>${t('actors', { count: actors.length })}: ${actorNames}</li>`);
   }
 
   // Containers summary
   if (containerItems.length === 1) {
     const c = containerItems[0];
     const tech = c.technology ? ` (${c.technology})` : '';
-    parts.push(`<li>1 container: ${c.name}${tech}</li>`);
+    parts.push(`<li>${t('containers', { count: 1 })}: ${c.name}${tech}</li>`);
   } else if (containerItems.length > 1) {
-    let containerItem = `<li>${containerItems.length} containers:`;
+    let containerItem = `<li>${t('containers', { count: containerItems.length })}:`;
     containerItem += '<ul>';
 
     containerItems.forEach(c => {
       const tech = c.technology ? ` (${c.technology})` : '';
-      const typeLabel = c.type === 'database' ? ' [database]' : '';
+      const typeLabel = c.type === 'database' ? ` [${t('database')}]` : '';
       containerItem += `<li>${c.name}${tech}${typeLabel}</li>`;
     });
 
@@ -311,17 +302,14 @@ function generateContainerDescription(parsed, _locale = 'en') {
 
   // External systems summary
   const externalSystems = systems.filter(s => s.external);
-  if (externalSystems.length === 1) {
-    parts.push(`<li>1 external system: ${externalSystems[0].name}</li>`);
-  } else if (externalSystems.length > 1) {
+  if (externalSystems.length > 0) {
     const externalNames = externalSystems.map(s => s.name).join(', ');
-    parts.push(`<li>${externalSystems.length} external systems: ${externalNames}</li>`);
+    parts.push(`<li>${t('externalSystems', { count: externalSystems.length })}: ${externalNames}</li>`);
   }
 
   // Relationships summary
   if (relationships.length > 0) {
-    const relLabel = relationships.length === 1 ? 'relationship' : 'relationships';
-    let relItem = `<li>${relationships.length} ${relLabel}:`;
+    let relItem = `<li>${t('relationships', { count: relationships.length })}:`;
     relItem += '<ul>';
 
     relationships.forEach(rel => {
@@ -343,7 +331,8 @@ function generateContainerDescription(parsed, _locale = 'en') {
 /**
  * Generate description for C4 Component diagrams
  */
-function generateComponentDescription(parsed, _locale = 'en') {
+function generateComponentDescription(parsed, locale = 'en', translations = {}) {
+  const t = createTranslator('c4', locale, translations);
   const { actors, systems, components, containers, relationships } = parsed;
 
   const boundaries = containers.filter(c => c.type === 'boundary');
@@ -352,25 +341,22 @@ function generateComponentDescription(parsed, _locale = 'en') {
 
   // Header with container name if available
   if (boundaries.length > 0) {
-    parts.push(`<p>C4 Component diagram for ${boundaries[0].name} with:</p>`);
+    parts.push(`<p>${t('componentFor', { name: boundaries[0].name })}</p>`);
   } else {
-    parts.push('<p>C4 Component diagram with:</p>');
+    parts.push(`<p>${t('component')}</p>`);
   }
 
   parts.push('<ul>');
 
   // Components summary
-  if (components.length === 1) {
-    parts.push(`<li>1 component: ${components[0].name}</li>`);
-  } else if (components.length > 1) {
+  if (components.length > 0) {
     const componentNames = components.map(c => c.name).join(', ');
-    parts.push(`<li>${components.length} components: ${componentNames}</li>`);
+    parts.push(`<li>${t('components', { count: components.length })}: ${componentNames}</li>`);
   }
 
   // Relationships summary
   if (relationships.length > 0) {
-    const relLabel = relationships.length === 1 ? 'relationship' : 'relationships';
-    let relItem = `<li>${relationships.length} ${relLabel}:`;
+    let relItem = `<li>${t('relationships', { count: relationships.length })}:`;
     relItem += '<ul>';
 
     relationships.forEach(rel => {
@@ -392,15 +378,21 @@ function generateComponentDescription(parsed, _locale = 'en') {
 /**
  * Generate ARIA HTML (visually hidden)
  */
-function generateAriaHtml(parsed, locale = 'en') {
-  const description = generateAccessibleDescription(parsed, locale);
+function generateAriaHtml(parsed, locale = 'en', translations = {}) {
+  const t = createTranslator('c4', locale, translations);
+  const description = generateAccessibleDescription(parsed, locale, translations);
   const escapedDescription = description
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
   
-  return `<div style="display: none;" role="doc-footnote" aria-label="System context description">${escapedDescription}</div>`;
+  const ariaLabel = t('ariaLabel')
+    .replace(/&/g, '&amp;')
+    .replace(/"/g, '&quot;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return `<div style="display: none;" role="doc-footnote" aria-label="${ariaLabel}">${escapedDescription}</div>`;
 }
 
 module.exports = {

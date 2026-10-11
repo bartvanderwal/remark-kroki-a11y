@@ -12,7 +12,7 @@
  * - Generates natural language descriptions for screen readers (state diagrams supported)
  * - Tabs interface for source code and description
  * - Keyboard accessible: native <details> element works with Enter/Space
- * - Localization support (nl, en)
+ * - ICU localization with built-in nl/en and custom language catalogs
  *
  * Usage in docusaurus.config.js:
  *
@@ -54,6 +54,7 @@
 const { visit } = require('unist-util-visit');
 const fs = require('fs');
 const path = require('path');
+const { createTranslator, formatPattern, formatFallback } = require('./i18n.cjs');
 
 let remarkKrokiModulePromise;
 
@@ -145,12 +146,12 @@ const parserRegistry = [
 ];
 
 // Try to generate a11y description using registered parsers
-function tryGenerateA11yDescription(imgType, diagramType, content, locale) {
+function tryGenerateA11yDescription(imgType, diagramType, content, locale, translations = {}) {
   for (const parser of parserRegistry) {
     if (parser.canParse(imgType, diagramType, content)) {
       try {
         const parsed = parser.parse(content);
-        return parser.generate(parsed, locale);
+        return parser.generate(parsed, locale, translations);
       } catch (e) {
         console.warn(`Failed to parse ${parser.name} for a11y:`, e.message);
       }
@@ -161,18 +162,17 @@ function tryGenerateA11yDescription(imgType, diagramType, content, locale) {
 
 // Shared runtime helper for environments outside remark AST processing
 // (e.g. the docs playground component).
-function generateA11yFromSource({ imgType, content, locale = 'en', fallbackA11yText = defaultFallbackA11yText }) {
+function generateA11yFromSource({ imgType, content, locale = 'en', translations = {}, fallbackA11yText = {} }) {
   const diagramType = imgType === 'plantuml'
     ? detectPlantUMLDiagramType(content)
     : imgType === 'mermaid'
       ? detectMermaidDiagramType(content)
       : 'diagram';
 
-  let a11yDescription = tryGenerateA11yDescription(imgType, diagramType, content, locale);
+  let a11yDescription = tryGenerateA11yDescription(imgType, diagramType, content, locale, translations);
   if (!a11yDescription) {
-    const fallbackTemplate = (fallbackA11yText && fallbackA11yText[locale]) || fallbackA11yText.en;
-    const diagramTypeName = (diagramTypeNames[locale] || diagramTypeNames.en)[diagramType] || diagramType;
-    a11yDescription = fallbackTemplate.replace('{diagramType}', diagramTypeName);
+    const diagramTypeName = createTranslator('diagramTypes', locale, translations)(diagramType);
+    a11yDescription = formatFallback(locale, diagramTypeName, translations, fallbackA11yText);
   }
 
   return {
@@ -543,34 +543,6 @@ function detectMermaidDiagramType(content) {
   return 'diagram';
 }
 
-// Human-readable names for diagram types
-const diagramTypeNames = {
-  nl: {
-    stateDiagram: 'toestandsdiagrammen',
-    classDiagram: 'klassendiagrammen',
-    sequenceDiagram: 'sequentie-diagrammen',
-    activityDiagram: 'activity diagrammen',
-    erDiagram: 'ER-diagrammen',
-    componentDiagram: 'componentdiagrammen',
-    usecaseDiagram: 'use case diagrammen',
-    pieDiagram: 'taartdiagrammen',
-    c4Diagram: 'C4-diagrammen',
-    diagram: 'dit diagram type',
-  },
-  en: {
-    stateDiagram: 'state diagrams',
-    classDiagram: 'class diagrams',
-    sequenceDiagram: 'sequence diagrams',
-    activityDiagram: 'activity diagrams',
-    erDiagram: 'ER diagrams',
-    componentDiagram: 'component diagrams',
-    usecaseDiagram: 'use case diagrams',
-    pieDiagram: 'pie charts',
-    c4Diagram: 'C4 diagrams',
-    diagram: 'this diagram type',
-  }
-};
-
 // Human-readable names for diagram languages
 // Note: 'kroki' maps to 'Diagram' because Kroki is a tool, not a language.
 // The actual language (PlantUML, Mermaid, etc.) should come from imgType.
@@ -596,49 +568,17 @@ const languageNames = {
   umlet: 'UMLet',
 };
 
-// Fallback text when no a11y description can be generated
-// Use {diagramType} as placeholder for the specific diagram type name
-const defaultFallbackA11yText = {
-  nl: 'Natuurlijke taal beschrijving nog niet beschikbaar voor {diagramType}.',
-  en: 'Natural language description not yet available for {diagramType}.',
-};
-
-// Localized UI labels for tabs
-const uiLabels = {
-  nl: {
-    tabSource: 'Bron',
-    tabA11y: 'In natuurlijke taal',
-    summaryText: '{type} broncode voor "{title}"',
-    a11ySummaryText: '"{title}" in natuurlijke taal',
-    speakOutLoud: 'Spreek uit',
-    diagramModeForDevs: 'Voor devs',
-    diagramModeSimpler: 'Simpeler',
-  },
-  en: {
-    tabSource: 'Source',
-    tabA11y: 'In natural language',
-    summaryText: '{type} source for "{title}"',
-    a11ySummaryText: '"{title}" in natural language',
-    speakOutLoud: 'Out loud',
-    diagramModeForDevs: 'For devs',
-    diagramModeSimpler: 'Simpler',
-  },
-};
-
 // Default options
 const defaultOptions = {
   showSource: true,
   showA11yDescription: true,
   defaultExpanded: false,
-  summaryText: '{type} source code for "{title}"',
-  a11ySummaryText: '"{title}" in natural language',
-  tabSourceLabel: 'Source',
-  tabA11yLabel: 'Description',
   cssClass: 'diagram-expandable-source',
   a11yCssClass: 'diagram-a11y-description',
   languages: ['kroki'],
   locale: 'en',
-  fallbackA11yText: defaultFallbackA11yText,
+  translations: {},
+  fallbackA11yText: {},
   showDiagramModeToggle: false,
   showDiagramLegend: false,
   skipKrokiRender: false,
@@ -671,11 +611,6 @@ function remarkKrokiA11y(options = {}) {
   const opts = {
     ...defaultOptions,
     ...options,
-    // Merge fallback texts per locale so users can override one language
-    fallbackA11yText: {
-      ...defaultFallbackA11yText,
-      ...(options.fallbackA11yText || {}),
-    },
   };
   const languages = Array.isArray(opts.languages) ? opts.languages : [opts.languages];
 
@@ -732,9 +667,11 @@ function remarkKrokiA11y(options = {}) {
 				  : imgType === 'mermaid'
 				    ? detectMermaidDiagramType(sourceForUiAndA11y)
 				    : 'diagram';
-      // Support per-block locale override via lang="nl" or lang="en"
+      // Support per-block locale override via lang="nl", lang="en", etc.
       const blockLocale = extractLocale(node.meta) || opts.locale;
-      const title = extractTitle(node.meta) || (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
+      const escapedLocale = escapeHtml(blockLocale);
+      const typeName = createTranslator('diagramTypes', blockLocale, opts.translations)(diagramType);
+      const title = extractTitle(node.meta) || typeName;
       const langName = languageNames[imgType] || languageNames[node.lang] || node.lang;
 
       const escapedCode = escapeHtml(sourceForUiAndA11y);
@@ -754,15 +691,12 @@ function remarkKrokiA11y(options = {}) {
 
       // Try registered parsers for a11y description
       if (shouldAttemptA11y && !a11yDescription) {
-        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, sourceForUiAndA11y, blockLocale);
+        a11yDescription = tryGenerateA11yDescription(imgType, diagramType, sourceForUiAndA11y, blockLocale, opts.translations);
       }
 
       // Fallback: always show a generic message when no parser output is available
       if (shouldAttemptA11y && !a11yDescription) {
-        const fallbackTemplate = (opts.fallbackA11yText && opts.fallbackA11yText[blockLocale]) || opts.fallbackA11yText.en;
-        // Get the human-readable diagram type name for the fallback message
-        const diagramTypeName = (diagramTypeNames[blockLocale] || diagramTypeNames.nl)[diagramType] || diagramType;
-        a11yDescription = fallbackTemplate.replace('{diagramType}', diagramTypeName);
+        a11yDescription = formatFallback(blockLocale, typeName, opts.translations, opts.fallbackA11yText);
       }
 
       const nodesToInsert = [];
@@ -772,18 +706,19 @@ function remarkKrokiA11y(options = {}) {
       const showA11yTab = shouldAttemptA11y && !!a11yDescription;
 
       // Get localized UI labels based on block locale
-      const ui = uiLabels[blockLocale] || uiLabels.en;
-      const tabSourceLabel = ui.tabSource;
-      const tabA11yLabel = ui.tabA11y;
+      const ui = createTranslator('ui', blockLocale, opts.translations);
+      const tabSourceLabel = escapeHtml(opts.tabSourceLabel ?? ui('tabSource'));
+      const tabA11yLabel = escapeHtml(opts.tabA11yLabel ?? ui('tabA11y'));
+      const summaryValues = { title, type: langName };
       const canShowDiagramModeToggle = showDiagramModeToggle &&
         imgType === 'plantuml' &&
         diagramType === 'classDiagram';
 
       if (showSourceTab && showA11yTab) {
         // Use tabs when both are available
-        const summaryText = ui.summaryText
-          .replace('{title}', escapeHtml(title))
-          .replace('{type}', escapeHtml(langName));
+        const summaryText = escapeHtml(opts.summaryText
+          ? formatPattern(opts.summaryText, summaryValues, blockLocale)
+          : ui('summaryText', summaryValues));
 
         // Generate unique IDs for ARIA relationships
         const tabId = `diagram-tabs-${index}`;
@@ -794,11 +729,11 @@ function remarkKrokiA11y(options = {}) {
         let speakButtonHtml = '';
         if (opts.showSpeakButton && !hideSpeakButton) {
           const speakBtnId = `diagram-speak-btn-${index}`;
-          const speakLabel = ui.speakOutLoud || 'Out loud';
-          speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
+          const speakLabel = ui('speakOutLoud');
+          speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${escapedLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
         }
         const tabsHtml = `
-<details class="${opts.cssClass}" lang="${blockLocale}"${openAttr}>
+<details class="${opts.cssClass}" lang="${escapedLocale}"${openAttr}>
 <summary>${summaryText}</summary>
 <div class="${opts.cssClass}-tabs">
 <div class="${opts.cssClass}-tab-buttons" role="tablist">
@@ -822,9 +757,9 @@ ${speakButtonHtml}
       } else {
         // Use separate details blocks
         if (showSourceTab) {
-          const summaryText = ui.summaryText
-            .replace('{title}', escapeHtml(title))
-            .replace('{type}', escapeHtml(langName));
+          const summaryText = escapeHtml(opts.summaryText
+            ? formatPattern(opts.summaryText, summaryValues, blockLocale)
+            : ui('summaryText', summaryValues));
 
           nodesToInsert.push({
             type: 'html',
@@ -837,9 +772,9 @@ ${speakButtonHtml}
         }
 
         if (showA11yTab) {
-          const a11ySummaryText = ui.a11ySummaryText
-            .replace('{title}', escapeHtml(title))
-            .replace('{type}', escapeHtml(langName));
+          const a11ySummaryText = escapeHtml(opts.a11ySummaryText
+            ? formatPattern(opts.a11ySummaryText, summaryValues, blockLocale)
+            : ui('a11ySummaryText', summaryValues));
 				
           // Generate unique IDs for ARIA relationships
           const a11yContentId = `diagram-a11y-content-${index}`;
@@ -850,14 +785,14 @@ ${speakButtonHtml}
           let speakButtonHtml = '';
           if (opts.showSpeakButton && !hideSpeakButton) {
             const speakBtnId = `diagram-speak-btn-${index}`;
-            const speakLabel = ui.speakOutLoud || 'Out loud';
-            speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${blockLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
+            const speakLabel = ui('speakOutLoud');
+            speakButtonHtml = `<button class="diagram-expandable-source-speak-btn" id="${speakBtnId}" data-lang="${escapedLocale}" aria-describedby="${a11yTextId}" aria-label="${escapeHtml(speakLabel)}" title="${escapeHtml(speakLabel)}"><span aria-hidden="true">🗣️ ${escapeHtml(speakLabel)} &rsaquo;</span></button>`;
           }
 
           nodesToInsert.push({
             type: 'html',
             value: `
-<details class="${opts.a11yCssClass}" lang="${blockLocale}"${openAttr}>
+<details class="${opts.a11yCssClass}" lang="${escapedLocale}"${openAttr}>
 <summary>${a11ySummaryText}</summary>
 <div class="${opts.a11yCssClass}-content" id="${a11yContentId}" aria-label="${a11yLabelText}">${speakButtonHtml}<div class="diagram-a11y-description-text" id="${a11yTextId}">${a11yDescription}</div></div>
 </details>`
@@ -883,8 +818,8 @@ ${speakButtonHtml}
             node.value = devModeCode;
             diagramModeToggleCounter += 1;
             const toggleGroupId = `diagram-visual-mode-${diagramModeToggleCounter}`;
-            const modeForDevsLabel = escapeHtml(ui.diagramModeForDevs || 'For devs');
-            const modeSimplerLabel = escapeHtml(ui.diagramModeSimpler || 'Simpler');
+            const modeForDevsLabel = escapeHtml(ui('diagramModeForDevs'));
+            const modeSimplerLabel = escapeHtml(ui('diagramModeSimpler'));
             const markerDev = {
               type: 'html',
               value: `<div class="diagram-visual-toggle-marker" data-diagram-group="${toggleGroupId}" data-mode="dev" aria-hidden="true"></div>`

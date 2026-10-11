@@ -72,6 +72,7 @@
   },
   "homepage": "https://bartvanderwal.github.io/remark-kroki-a11y/",
   "dependencies": {
+    "format-message": "^6.2.4",
     "remark-kroki": "^0.3.8",
     "unist-util-visit": "^5.0.0"
   },

@@ -17,7 +17,7 @@ Feature: English Domain Story descriptions
     When I generate a description in English
     Then the first line should be:
       """
-      Domain story with 1 activities.
+      Domain story with 1 activity.
       """
     And the description should contain "1. Alice talks about the weather with Bob."
 

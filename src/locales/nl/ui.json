@@ -1,0 +1,10 @@
+{
+  "tabSource": "Bron",
+  "tabA11y": "In natuurlijke taal",
+  "summaryText": "{type} broncode voor \"{title}\"",
+  "a11ySummaryText": "\"{title}\" in natuurlijke taal",
+  "speakOutLoud": "Spreek uit",
+  "diagramModeForDevs": "Voor devs",
+  "diagramModeSimpler": "Simpeler",
+  "fallbackA11yText": "Natuurlijke taal beschrijving nog niet beschikbaar voor {diagramType}."
+}

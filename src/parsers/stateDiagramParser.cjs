@@ -5,39 +5,8 @@
  * Supports ARIA-friendly output for screen readers.
  */
 
-// Localization strings
-const i18n = {
-  nl: {
-    stateDiagram: 'Toestandsdiagram',
-    withStates: 'met {count} toestand(en)',
-    andTransitions: 'en {count} overgang(en)',
-    states: 'Toestanden',
-    transitions: 'Overgangen',
-    initialState: 'Initiële toestand',
-    finalState: 'Eindtoestand',
-    state: 'Toestand',
-    from: 'van',
-    to: 'naar',
-    when: 'wanneer',
-    selfLoop: 'blijft in dezelfde toestand',
-    transitionTo: 'gaat over naar',
-  },
-  en: {
-    stateDiagram: 'State diagram',
-    withStates: 'with {count} state(s)',
-    andTransitions: 'and {count} transition(s)',
-    states: 'States',
-    transitions: 'Transitions',
-    initialState: 'Initial state',
-    finalState: 'Final state',
-    state: 'State',
-    from: 'from',
-    to: 'to',
-    when: 'when',
-    selfLoop: 'stays in the same state',
-    transitionTo: 'transitions to',
-  }
-};
+const { createTranslator, getMessages } = require('../i18n.cjs');
+const i18n = getMessages('state');
 
 /**
  * Parse a PlantUML state diagram
@@ -114,30 +83,30 @@ function parsePlantUMLStateDiagram(plantUmlCode) {
 /**
  * Generate accessible description from parsed diagram
  */
-function generateAccessibleDescription(parsed, locale = 'nl') {
-  const t = i18n[locale] || i18n.nl;
+function generateAccessibleDescription(parsed, locale = 'nl', translations = {}) {
+  const t = createTranslator('state', locale, translations);
   const parts = [];
 
   const stateCount = parsed.states.length;
   const transitionCount = parsed.transitions.length;
 
   // Summary
-  parts.push(`${t.stateDiagram} ${t.withStates.replace('{count}', stateCount)} ${t.andTransitions.replace('{count}', transitionCount)}.`);
+  parts.push(`${t('stateDiagram')} ${t('withStates', { count: stateCount })} ${t('andTransitions', { count: transitionCount })}.`);
 
   // Initial state
   if (parsed.initialState) {
     parts.push('');
-    parts.push(`${t.initialState}: ${parsed.initialState}`);
+    parts.push(`${t('initialState')}: ${parsed.initialState}`);
   }
 
   // States section
   if (parsed.states.length > 0) {
     parts.push('');
-    parts.push(`${t.states}:`);
+    parts.push(`${t('states')}:`);
     parsed.states.forEach((state, index) => {
       let stateDesc = `${index + 1}. ${state}`;
       if (parsed.finalStates.includes(state)) {
-        stateDesc += ` (${t.finalState.toLowerCase()})`;
+        stateDesc += ` (${t('finalState').toLowerCase()})`;
       }
       parts.push(stateDesc);
     });
@@ -146,17 +115,17 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
   // Transitions section
   if (parsed.transitions.length > 0) {
     parts.push('');
-    parts.push(`${t.transitions}:`);
+    parts.push(`${t('transitions')}:`);
     parsed.transitions.forEach((trans, index) => {
       let transDesc;
       if (trans.from === trans.to) {
         // Self-loop
-        transDesc = `${index + 1}. ${trans.from} ${t.selfLoop}`;
+        transDesc = `${index + 1}. ${trans.from} ${t('selfLoop')}`;
       } else {
-        transDesc = `${index + 1}. ${trans.from} ${t.transitionTo} ${trans.to}`;
+        transDesc = `${index + 1}. ${trans.from} ${t('transitionTo')} ${trans.to}`;
       }
       if (trans.label) {
-        transDesc += ` ${t.when} "${trans.label}"`;
+        transDesc += ` ${t('when')} "${trans.label}"`;
       }
       parts.push(transDesc);
     });
@@ -165,7 +134,7 @@ function generateAccessibleDescription(parsed, locale = 'nl') {
   // Final states
   if (parsed.finalStates.length > 0) {
     parts.push('');
-    parts.push(`${t.finalState}(s): ${parsed.finalStates.join(', ')}`);
+    parts.push(`${t('finalStates', { count: parsed.finalStates.length })}: ${parsed.finalStates.join(', ')}`);
   }
 
   return parts.join('\n');

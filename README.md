@@ -15,7 +15,7 @@ A [Remark](https://github.com/remarkjs/remark) plugin that adds accessible sourc
 - **Natural language descriptions** - Generates human-readable descriptions for screen readers (currently supports PlantUML state diagrams)
 - **Tabs interface** - Always uses tabs when source and (generated or fallback) description are available
 - **Keyboard accessible** - Uses native `<details>` element that works with Enter/Space
-- **Localization** - Supports Dutch (nl) and English (en)
+- **Localization** - Built-in Dutch and English, ICU pluralization, and custom language catalogs
 - **Per-diagram control** - Use `hideSource` or `hideA11y` flags to control visibility
 
 ## Supported Diagram Types
@@ -359,14 +359,15 @@ export function onRouteDidUpdate() {
 | `showSource` | boolean | `true` | Show source code tab |
 | `showA11yDescription` | boolean | `true` | Show natural language description tab |
 | `defaultExpanded` | boolean | `false` | Expand details by default |
-| `summaryText` | string | `'{type} source code for "{title}"'` | Summary text template |
-| `a11ySummaryText` | string | `'Natural language description for "{title}"'` | A11y summary text template |
-| `tabSourceLabel` | string | `'Source'` | Label for source tab |
-| `tabA11yLabel` | string | `'Description'` | Label for description tab |
+| `summaryText` | string | Localized | ICU source summary template (`{type}`, `{title}`) |
+| `a11ySummaryText` | string | Localized | ICU description summary template (`{type}`, `{title}`) |
+| `tabSourceLabel` | string | Localized | Override label for source tab |
+| `tabA11yLabel` | string | Localized | Override label for description tab |
 | `cssClass` | string | `'diagram-expandable-source'` | CSS class for the details element |
 | `languages` | string[] | `['kroki']` | Code block languages to process |
-| `locale` | string | `'en'` | Locale for generated descriptions (`'en'` or `'nl'`) |
-| `fallbackA11yText` | object | `{ en: '...', nl: '...' }` | Override fallback text per locale |
+| `locale` | string | `'en'` | Language tag for labels and descriptions (built-in: `'en'`, `'nl'`; regional tags supported) |
+| `translations` | object | `{}` | Additional or overridden ICU message catalogs, keyed by locale and section |
+| `fallbackA11yText` | object | Localized | Override fallback ICU text per locale (`{diagramType}`) |
 | `showDiagramModeToggle` | boolean | `false` | For PlantUML class diagrams, also render a simplified visual variant and show a `For devs`/`Simpler` toggle |
 | `showDiagramLegend` | boolean | `false` | For PlantUML class diagrams with mode toggle: add an auto-generated relation legend in `For devs` mode only |
 | `throwOnDiagramError` | boolean | `true` | Throw a `DiagramRenderError` when Kroki rendering returns the known `remark-kroki` fail SVG |
@@ -398,6 +399,37 @@ When `showDiagramModeToggle` is enabled:
 Note: PlantUML itself already supports manual legends using `legend ... endlegend` in diagram source. The plugin option above is specifically for auto-generated legends in generated `For devs`/`Simpler` class-diagram variants.
 
 Rationale: this follows the spirit of Simon Brown's talk _The Lost Art of Software Design_, where explicit notation and design communication matter. Relation-arrow semantics are often assumed as shared knowledge, but in practice symbols like `*-->` and `o-->` are frequently mixed up. An optional, filtered legend helps make design intent explicit without forcing extra visual noise on every diagram.
+
+## Internationalization
+
+Labels and generated descriptions use [ICU MessageFormat](https://unicode-org.github.io/icu/userguide/format_parse/messages/), powered by `format-message`. English and Dutch are built in: counts read as “1 class”, “2 classes”, “1 klasse”, or “2 klassen”, rather than parenthesized suffixes.
+
+Set `locale` globally, or use `lang="nl"` on a diagram block. Regional tags such as `nl-NL` resolve to their base language. Missing messages fall back individually to English, using English plural rules; partial catalogs can therefore produce mixed-language descriptions.
+
+Additional languages and overrides use the `translations` option. For example, load this JSON as `translations` and set `locale: 'fr'`:
+
+```json
+{
+  "fr": {
+    "ui": {
+      "tabSource": "Code source",
+      "tabA11y": "Description",
+      "summaryText": "{type} pour \"{title}\""
+    },
+    "class": {
+      "classDiagram": "Diagramme de classes",
+      "withClasses": "avec {count, plural, one {# classe} other {# classes}}",
+      "andRelations": "et {count, plural, one {# relation} other {# relations}}"
+    }
+  }
+}
+```
+
+Catalog sections are `ui`, `diagramTypes`, `class`, `state`, `sequence`, `activity`, `pie`, `domainStory`, `c4`, and `unsupported`. See the built-in JSON files in [src/locales/en](src/locales/en) and [src/locales/nl](src/locales/nl) for message keys and required placeholders. Translators can copy these sections into a new locale catalog without changing parsers. ICU supports `zero`, `one`, `two`, `few`, `many`, and `other` plural categories; include `other` and the categories required by the target language.
+
+Existing `summaryText`, `a11ySummaryText`, `tabSourceLabel`, `tabA11yLabel`, and `fallbackA11yText` options remain available and take precedence over catalog messages. Summary and fallback templates now accept ICU syntax, including repeated placeholders. UI text is HTML-escaped; catalogs must use valid ICU syntax. The shared `generateA11yFromSource` runtime helper also accepts `translations`.
+
+See [ADR-0013](docs/adr/0013-i18n-framework.md) for the framework comparison and decision.
 
 ## Markdown Flags
 

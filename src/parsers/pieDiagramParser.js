@@ -3,6 +3,8 @@
  * Parses Mermaid pie chart syntax and generates accessible descriptions
  */
 
+const { createTranslator } = require('../i18n.cjs');
+
 /**
  * Parses a Mermaid pie chart
  * @param {string} content - The pie chart source code
@@ -82,36 +84,22 @@ function calculatePercentages(segments) {
  * @param {string} locale - 'en' or 'nl'
  * @returns {string} Natural language description
  */
-function generateAccessibleDescription(parsed, locale = 'en') {
+function generateAccessibleDescription(parsed, locale = 'en', translations = {}) {
+  const t = createTranslator('pie', locale, translations);
   const { title, segments } = parsed;
   
   if (!segments || segments.length === 0) {
-    return locale === 'nl' 
-      ? 'Taartdiagram zonder segmenten.'
-      : 'Pie chart with no segments.';
+    return t('empty');
   }
 
   const segmentsWithPercentages = calculatePercentages(segments);
   
   // Build title part
-  let description = '';
-  if (locale === 'nl') {
-    if (title) {
-      description = `Taartdiagram met titel "${title}" met ${segments.length} segment${segments.length === 1 ? '' : 'en'}.\n\n`;
-    } else {
-      description = `Taartdiagram met ${segments.length} segment${segments.length === 1 ? '' : 'en'}.\n\n`;
-    }
-  } else {
-    if (title) {
-      description = `Pie chart with title "${title}" showing ${segments.length} segment${segments.length === 1 ? '' : 's'}.\n\n`;
-    } else {
-      description = `Pie chart showing ${segments.length} segment${segments.length === 1 ? '' : 's'}.\n\n`;
-    }
-  }
+  let description = t(title ? 'summaryWithTitle' : 'summary', { title, count: segments.length }) + '\n\n';
 
   // Build segments list
   const segmentDescriptions = segmentsWithPercentages.map(seg => {
-    return `${seg.label}: ${seg.value} (${seg.percentage}%)`;
+    return t('segment', seg);
   });
 
   description += segmentDescriptions.join('\n');
@@ -125,8 +113,8 @@ function generateAccessibleDescription(parsed, locale = 'en') {
  * @param {string} locale - 'en' or 'nl'
  * @returns {string} HTML for aria-describedby
  */
-function generateAriaHtml(parsed, locale = 'en') {
-  const description = generateAccessibleDescription(parsed, locale);
+function generateAriaHtml(parsed, locale = 'en', translations = {}) {
+  const description = generateAccessibleDescription(parsed, locale, translations);
   const id = `pie-description-${Date.now()}`;
   
   return {

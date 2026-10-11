@@ -5,6 +5,7 @@ const { parsePlantUMLActivityDiagram, generateAccessibleDescription: generateAct
 const { parseC4Context, generateAccessibleDescription: generateC4Description } = require('../parsers/c4DiagramParser.cjs');
 const { parseMermaidPieChart, generateAccessibleDescription: generatePieDescription } = require('../parsers/pieDiagramParser.cjs');
 const { parseDomainStory, generateAccessibleDescription: generateDomainStoryDescription } = require('../parsers/domainStoryParser.cjs');
+const { createTranslator, getMessages, formatFallback } = require('../i18n.cjs');
 
 const parserRegistry = [
   {
@@ -64,12 +65,12 @@ const parserRegistry = [
   },
 ];
 
-function tryGenerateA11yDescription(imgType, diagramType, content, locale) {
+function tryGenerateA11yDescription(imgType, diagramType, content, locale, translations = {}) {
   for (const parser of parserRegistry) {
     if (parser.canParse(imgType, diagramType, content)) {
       try {
         const parsed = parser.parse(content);
-        return parser.generate(parsed, locale);
+        return parser.generate(parsed, locale, translations);
       } catch (e) {
         console.warn(`Failed to parse ${parser.name} for a11y:`, e.message);
       }
@@ -121,34 +122,7 @@ function detectMermaidDiagramType(content) {
   return 'diagram';
 }
 
-const diagramTypeNames = {
-  nl: {
-    stateDiagram: 'toestandsdiagrammen',
-    classDiagram: 'klassendiagrammen',
-    sequenceDiagram: 'sequentie-diagrammen',
-    activityDiagram: 'activity diagrammen',
-    erDiagram: 'ER-diagrammen',
-    componentDiagram: 'componentdiagrammen',
-    usecaseDiagram: 'use case diagrammen',
-    pieDiagram: 'taartdiagrammen',
-    c4Diagram: 'C4-diagrammen',
-    domainStory: 'domain stories',
-    diagram: 'dit diagram type',
-  },
-  en: {
-    stateDiagram: 'state diagrams',
-    classDiagram: 'class diagrams',
-    sequenceDiagram: 'sequence diagrams',
-    activityDiagram: 'activity diagrams',
-    erDiagram: 'ER diagrams',
-    componentDiagram: 'component diagrams',
-    usecaseDiagram: 'use case diagrams',
-    pieDiagram: 'pie charts',
-    c4Diagram: 'C4 diagrams',
-    domainStory: 'domain stories',
-    diagram: 'this diagram type',
-  }
-};
+const diagramTypeNames = getMessages('diagramTypes');
 
 const languageNames = {
   kroki: 'Diagram',
@@ -172,31 +146,10 @@ const languageNames = {
   umlet: 'UMLet',
 };
 
-const defaultFallbackA11yText = {
-  nl: 'Natuurlijke taal beschrijving nog niet beschikbaar voor {diagramType}.',
-  en: 'Natural language description not yet available for {diagramType}.',
-};
-
-const uiLabels = {
-  nl: {
-    tabSource: 'Bron',
-    tabA11y: 'In natuurlijke taal',
-    summaryText: '{type} broncode voor "{title}"',
-    a11ySummaryText: '"{title}" in natuurlijke taal',
-    speakOutLoud: 'Spreek uit',
-    diagramModeForDevs: 'Voor devs',
-    diagramModeSimpler: 'Simpeler',
-  },
-  en: {
-    tabSource: 'Source',
-    tabA11y: 'In natural language',
-    summaryText: '{type} source for "{title}"',
-    a11ySummaryText: '"{title}" in natural language',
-    speakOutLoud: 'Out loud',
-    diagramModeForDevs: 'For devs',
-    diagramModeSimpler: 'Simpler',
-  },
-};
+const uiLabels = getMessages('ui');
+const defaultFallbackA11yText = Object.fromEntries(
+  Object.entries(uiLabels).map(([locale, messages]) => [locale, messages.fallbackA11yText])
+);
 
 function extractTextContent(html) {
   return html
@@ -211,18 +164,17 @@ function extractTextContent(html) {
     .trim();
 }
 
-function generateA11yFromSource({ imgType, content, locale = 'en', fallbackA11yText = defaultFallbackA11yText }) {
+function generateA11yFromSource({ imgType, content, locale = 'en', translations = {}, fallbackA11yText = {} }) {
   const diagramType = imgType === 'plantuml'
     ? detectPlantUMLDiagramType(content)
     : imgType === 'mermaid'
       ? detectMermaidDiagramType(content)
       : 'diagram';
 
-  let a11yDescription = tryGenerateA11yDescription(imgType, diagramType, content, locale);
+  let a11yDescription = tryGenerateA11yDescription(imgType, diagramType, content, locale, translations);
   if (!a11yDescription) {
-    const fallbackTemplate = (fallbackA11yText && fallbackA11yText[locale]) || fallbackA11yText.en;
-    const diagramTypeName = (diagramTypeNames[locale] || diagramTypeNames.en)[diagramType] || diagramType;
-    a11yDescription = fallbackTemplate.replace('{diagramType}', diagramTypeName);
+    const diagramTypeName = createTranslator('diagramTypes', locale, translations)(diagramType);
+    a11yDescription = formatFallback(locale, diagramTypeName, translations, fallbackA11yText);
   }
 
   return {
